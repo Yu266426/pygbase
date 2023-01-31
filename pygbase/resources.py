@@ -40,7 +40,7 @@ class ResourceManager:
 
 	_max_load_per_update: int = 1
 
-	_resources_to_load: deque[tuple[int, str, str]] = deque()
+	_resources_to_load: deque[tuple[int, str, str]] = deque()  # [type_id, path , name]
 	_loaded_resources: dict[int, dict[str, Any]] = {}
 
 	@classmethod
@@ -50,6 +50,7 @@ class ResourceManager:
 	@classmethod
 	def _init_for_resource(cls, type_id: int, resource_type: ResourceType):
 		config_path = os.path.join(resource_type.container_path, "config.json")
+		names = set()
 
 		# Create config if it does not exist
 		if not os.path.isfile(config_path):
@@ -63,6 +64,24 @@ class ResourceManager:
 
 					resource_type.generate_config(config_path, file_name)
 					cls._resources_to_load.append((type_id, file_path, file_name[:-4]))
+
+					names.add(file_name[:-4])
+
+		with open(config_path, "r") as config_file:
+			config_data: dict = json.load(config_file)
+
+		data = {}
+		for key, value in config_data.items():
+			if key in names:
+				data[key] = value
+
+		keys = list(data.keys())
+		keys.sort()
+
+		sorted_data = {key: data[key] for key in keys}
+
+		with open(config_path, "w") as config_file:
+			config_file.write(json.dumps(sorted_data))
 
 		cls._loaded_resources[type_id] = {}
 
