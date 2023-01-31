@@ -1,16 +1,15 @@
 import pygame
 
 from ..camera import Camera
-from data.modules.base.constants import TILE_SCALE
 from ..ui.text import Text
 
 
 class SpriteSheet:
-	def __init__(self, data: dict, resource_path: str):
+	def __init__(self, data: dict, resource_path: str, default_scale: float):
 		# Data info
 		self.n_rows: int = data["rows"]
 		self.n_cols: int = data["columns"]
-		self.scale: int = data["scale"] if data["scale"] != 0 else TILE_SCALE
+		self.scale: int = data["scale"] if data["scale"] != 0 else default_scale
 		self.tile_width: int = data["tile_width"] * self.scale
 		self.tile_height: int = data["tile_height"] * self.scale
 

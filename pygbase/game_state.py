@@ -1,19 +1,15 @@
-import enum
 from abc import abstractmethod
 
 import pygame
 
 
-class GameStateIds(enum.IntEnum):
-	ALL = 0
-	LOADING = 1
-	MAIN_MENU = 2
-	GAME = 3
-	EDITOR = 4
-
-
 class GameState:
 	def __init__(self, state_id: int):
+		if state_id == 0:
+			raise ValueError(f"The id 0 is reserved by pygbase for every game state")
+		elif state_id == 1:
+			raise ValueError(f"The id 1 is reserved by pygbase for the resource loader")
+
 		self.id: int = state_id
 
 	@abstractmethod

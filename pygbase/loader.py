@@ -1,21 +1,21 @@
-from typing import Type
+from typing import Type, Union
 
 import pygame
 
 from .resources import ResourceManager
-from .game_state import GameState, GameStateIds
+from .game_state import GameState
 
 
-class Loading(GameState):
+class Loading:
 	def __init__(self, after_load_state: Type[GameState]):
-		super().__init__(GameStateIds.LOADING)
+		self.id = 1
 
 		ResourceManager.init_load()
 
 		self.should_switch = False
 		self.after_load_state = after_load_state
 
-	def next_state(self) -> GameState:
+	def next_state(self) -> Union["Loading", GameState]:
 		if self.should_switch:
 			return self.after_load_state()
 		return self

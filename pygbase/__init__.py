@@ -1,12 +1,15 @@
+from .camera import Camera
+from .common import Common
 from .events import EventManager
+from .game_state import GameState
 from .inputs import InputManager
 from .resources import ResourceType, ResourceManager
 
-SCREEN_WIDTH: int = 800
-SCREEN_HEIGHT: int = 800
 
+def init(screen_size: tuple[int, int]):
+	Common.add_value("screen_width", screen_size[0])
+	Common.add_value("screen_height", screen_size[1])
 
-def init():
 	EventManager.init()
 	InputManager.register_handlers()
 

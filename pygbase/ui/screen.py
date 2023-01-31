@@ -1,6 +1,6 @@
 import pygame
 
-from .. import SCREEN_WIDTH, SCREEN_HEIGHT
+from .. import Common
 from ..camera import Camera
 from ..inputs import InputManager
 from .element import Frame
@@ -23,28 +23,30 @@ class ControlledScreen:
 		return self._camera
 
 	def _handle_bounds(self):
+		screen_width = Common.get_value("screen_width")
+		screen_height = Common.get_value("screen_height")
 		if self.keep_in is not None:
-			if self.keep_in[2] - self.keep_in[0] < SCREEN_WIDTH:
+			if self.keep_in[2] - self.keep_in[0] < screen_width:
 				if self.keep_in[0] < self._camera.target.x:
 					self._camera.target.x = self.keep_in[0]
-				if self._camera.target.x + SCREEN_WIDTH < self.keep_in[2]:
-					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH
+				if self._camera.target.x + screen_width < self.keep_in[2]:
+					self._camera.target.x = self.keep_in[2] - screen_width
 			else:
 				if self._camera.target.x < self.keep_in[0] - 30:
 					self._camera.target.x = self.keep_in[0] - 30
-				if self.keep_in[2] + 30 < self._camera.target.x + SCREEN_WIDTH:
-					self._camera.target.x = self.keep_in[2] - SCREEN_WIDTH + 30
+				if self.keep_in[2] + 30 < self._camera.target.x + screen_width:
+					self._camera.target.x = self.keep_in[2] - screen_width + 30
 
-			if self.keep_in[3] - self.keep_in[1] < SCREEN_HEIGHT:
+			if self.keep_in[3] - self.keep_in[1] < screen_height:
 				if self.keep_in[1] < self._camera.target.y:
 					self._camera.target.y = self.keep_in[1]
-				if self._camera.target.y + SCREEN_HEIGHT < self.keep_in[3]:
-					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT
+				if self._camera.target.y + screen_height < self.keep_in[3]:
+					self._camera.target.y = self.keep_in[3] - screen_height
 			else:
 				if self._camera.target.y < self.keep_in[1] - 30:
 					self._camera.target.y = self.keep_in[1] - 30
-				if self.keep_in[3] + 30 < self._camera.target.y + SCREEN_HEIGHT:
-					self._camera.target.y = self.keep_in[3] - SCREEN_HEIGHT + 30
+				if self.keep_in[3] + 30 < self._camera.target.y + screen_height:
+					self._camera.target.y = self.keep_in[3] - screen_height + 30
 
 	def _mouse_update(self):
 		self._mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
