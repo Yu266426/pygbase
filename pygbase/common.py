@@ -5,7 +5,7 @@ class Common:
 	_values: dict[str, Any] = {}
 
 	@classmethod
-	def add_value(cls, name: str, value: Any) -> None:
+	def set_value(cls, name: str, value: Any) -> None:
 		cls._values[name] = value
 
 	@classmethod

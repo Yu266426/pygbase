@@ -2,7 +2,7 @@ from typing import Type, Union
 
 import pygame.display
 
-from . import Common
+from .common import Common
 from .events import EventManager
 from .game_state import GameState
 from .inputs import InputManager
@@ -10,13 +10,10 @@ from .loader import Loading
 
 
 class App:
-	def __init__(self, after_load_state: Type[GameState]):
+	def __init__(self, after_load_state: Type[GameState], flags=pygame.SCALED, vsync=True):
 		self.is_running: bool = True
 
-		self.flags = pygame.SCALED
-		self.vsync = True
-
-		self.window: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=self.flags, vsync=self.vsync)
+		self.window: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=flags, vsync=vsync)
 		self.clock: pygame.time.Clock = pygame.time.Clock()
 
 		self.game_state: Union[Loading, GameState] = Loading(after_load_state)

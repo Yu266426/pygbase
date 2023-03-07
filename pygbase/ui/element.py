@@ -70,6 +70,8 @@ class Frame(UIElement):
 				element.added_to_frame(self)
 
 				self.elements.append(element)
+			else:
+				print(f"WARNING: Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
 		else:
 			print(f"WARNING: Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
 
@@ -90,8 +92,8 @@ class Frame(UIElement):
 
 
 class Image(UIElement):
-	def __init__(self, pos: tuple, image_name: str, size: Optional[tuple] = None):
-		self.image: pygame.Surface = ResourceManager.get_resource(1, image_name)
+	def __init__(self, pos: tuple, resource_type: int, resource_name: str, size: Optional[tuple] = None):
+		self.image: pygame.Surface = ResourceManager.get_resource(resource_type, resource_name)
 
 		if size is not None:
 			self.image = pygame.transform.scale(self.image, size)
@@ -103,8 +105,8 @@ class Image(UIElement):
 
 
 class Button(UIElement):
-	def __init__(self, pos: tuple, image_name: str, callback, *callback_args, size: Optional[tuple] = None, text: str = "", alignment: str = "l"):
-		self.image: pygame.Surface = ResourceManager.get_resource(1, image_name)
+	def __init__(self, pos: tuple, resource_type: int, resource_name: str, callback, *callback_args, size: Optional[tuple] = None, text: str = "", alignment: str = "l"):
+		self.image: pygame.Surface = ResourceManager.get_resource(resource_type, resource_name)
 
 		if size is not None:
 			if size[0] is None:
@@ -155,7 +157,7 @@ class Button(UIElement):
 
 
 class TextElement(UIElement):
-	def __init__(self, pos: tuple, height: int | float, font_name: str, colour, text: str, centered=False, use_sys=True):
+	def __init__(self, pos: tuple, font_name: str, height: int | float, colour, text: str, centered=False, use_sys=True):
 		super().__init__(pos, (0, height))
 
 		self.text = Text(pos, font_name, height * 1.25, colour, text, use_sys=use_sys)
@@ -179,7 +181,7 @@ class TextElement(UIElement):
 
 
 class TextSelectionMenu(Frame):
-	def __init__(self, pos: tuple, size: tuple, options: list):
+	def __init__(self, pos: tuple, size: tuple, image_resource_type: int, options: list):
 		super().__init__(pos, size, bg_colour=(0, 0, 0, 150))
 
 		self.options = options
@@ -187,10 +189,10 @@ class TextSelectionMenu(Frame):
 		self.index: int = 0
 		self.current_option = self.options[self.index]
 
-		self.add_element(Button((0, 0), "left", self.change_option, -1, size=(None, self.rect.height)))
-		self.add_element(Button((self.rect.width, 0), "right", self.change_option, 1, size=(None, self.rect.height), alignment="r"))
+		self.add_element(Button((0, 0), image_resource_type, "left", self.change_option, -1, size=(None, self.rect.height)))
+		self.add_element(Button((self.rect.width, 0), image_resource_type, "right", self.change_option, 1, size=(None, self.rect.height), alignment="r"))
 
-		self.text = TextElement((self.rect.width / 2, self.rect.height * 0.3 / 2), self.rect.height * 0.7, "arial", (255, 255, 255), self.current_option, centered=True)
+		self.text = TextElement((self.rect.width / 2, self.rect.height * 0.3 / 2), "arial", self.rect.height * 0.7, (255, 255, 255), self.current_option, centered=True)
 		self.add_element(self.text)
 
 	def change_option(self, direction):
