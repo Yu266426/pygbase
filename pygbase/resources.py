@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from collections import deque
 from typing import Any, Callable, Optional
@@ -67,6 +68,7 @@ class ResourceManager:
 
 					names.add(file_name[:-4])
 
+		# Sort the json in alphabetical order
 		with open(config_path, "r") as config_file:
 			config_data: dict = json.load(config_file)
 
@@ -95,7 +97,7 @@ class ResourceManager:
 		# If all resources are loaded
 		if len(cls._resources_to_load) == 0:
 			for type_id, resource_type in cls._resource_types.items():
-				print(f"Loaded {len(cls._loaded_resources[type_id])} {resource_type.name}s")
+				logging.info(f"Loaded {len(cls._loaded_resources[type_id])} {resource_type.name}s")
 			return True
 
 		# Load resources
@@ -111,7 +113,7 @@ class ResourceManager:
 					resource_path = resource_info[1]
 					resource_name = resource_info[2]
 
-					print(f"Loading: {resource_path}")
+					logging.debug(f"Loading: {resource_path}")
 
 					with open(os.path.join(resource_type.container_path, "config.json")) as config_file:
 						config_data = json.load(config_file)
@@ -120,7 +122,7 @@ class ResourceManager:
 					if resource_type.check_init(data):
 						cls._loaded_resources[resource_type_id][resource_name] = resource_type.load_resource(data, resource_path)
 					else:
-						print(f"WARNING: Skipping {resource_path}, uninitialized config")
+						logging.warning(f"Skipping {resource_path}, uninitialized config")
 
 			return False
 

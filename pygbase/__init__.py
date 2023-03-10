@@ -1,3 +1,5 @@
+import logging
+
 import pygame
 
 from .app import App
@@ -12,6 +14,8 @@ from .resources import ResourceType, ResourceManager
 
 
 def init(screen_size: tuple[int, int]):
+	logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+
 	pygame.init()
 
 	Common.set_value("screen_width", screen_size[0])

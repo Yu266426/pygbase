@@ -1,3 +1,4 @@
+import logging
 from typing import Optional, Union
 
 import pygame
@@ -71,9 +72,9 @@ class Frame(UIElement):
 
 				self.elements.append(element)
 			else:
-				print(f"WARNING: Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
+				logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
 		else:
-			print(f"WARNING: Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
+			logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
 
 		return self
 
