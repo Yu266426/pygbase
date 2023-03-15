@@ -8,18 +8,21 @@ from .common import Common
 from .events import EventManager
 from .game_state import GameState
 from .graphics.animation import Animation, AnimationManager
+from .graphics.image import Image
 from .graphics.sprite_sheet import SpriteSheet
 from .inputs import InputManager
 from .resources import ResourceType, ResourceManager
 
 
-def init(screen_size: tuple[int, int]):
-	logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5):
+	logging.basicConfig(level=logging_level, format="%(asctime)s - %(levelname)s - %(message)s")
 
 	pygame.init()
 
 	Common.set_value("screen_width", screen_size[0])
 	Common.set_value("screen_height", screen_size[1])
+
+	Common.set_value("rotate_resolution", rotate_resolution)
 
 	EventManager.init()
 	InputManager.register_handlers()
@@ -34,14 +37,13 @@ def add_resource_type(type_id: int, resource_type: ResourceType):
 def add_image_resource(name: str, type_id: int, dir_path: str):
 	def load_image(data: dict, resource_path: str):
 		scale = data["scale"]
+		rotatable = data["rotatable"]
 
-		image = pygame.image.load(resource_path).convert_alpha()
-		image = pygame.transform.scale_by(image, scale)
-		return image
+		return Image(resource_path, scale, rotatable)
 
 	add_resource_type(type_id, ResourceType(
 		name, dir_path,
-		{"scale": 1},
+		{"scale": 1, "rotatable": False},
 		None,
 		load_image
 	))
@@ -55,7 +57,8 @@ def add_sprite_sheet_resource(name: str, type_id: int, tile_scale: float, dir_pa
 			"columns": 0,
 			"tile_width": 0,
 			"tile_height": 0,
-			"scale": -1
+			"scale": -1,
+			"rotatable": False
 		},
 		lambda data: data["scale"] != -1,
 		lambda data, resource_path: SpriteSheet(data, resource_path, tile_scale)

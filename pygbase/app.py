@@ -28,10 +28,10 @@ class App:
 		EventManager.handle_events(self.game_state.id)
 
 	def update(self):
-		self.clock.tick()
-		pygame.display.set_caption(f"{round(self.clock.get_fps())}")
+		delta = self.clock.tick() / 1000
+		pygame.display.set_caption(f"fps: {round(self.clock.get_fps())}, delta: {delta}")
 
-		self.game_state.update(self.clock.get_time() / 1000)
+		self.game_state.update(delta)
 
 	def draw(self):
 		self.game_state.draw(self.window)

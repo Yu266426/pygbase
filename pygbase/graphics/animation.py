@@ -1,5 +1,6 @@
 import pygame
 
+from .image import Image
 from ..camera import Camera
 from ..resources import ResourceManager
 
@@ -13,7 +14,7 @@ class Animation:
 		self.looping = looping
 
 		self.frame = 0.0
-		self.images: list[pygame.Surface] = []
+		self.images: list[Image] = []
 
 		self._load_animation()
 
@@ -35,20 +36,20 @@ class Animation:
 			else:
 				self.frame = 0
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, flag=0, draw_pos: str = "topleft"):
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flag: int = 0, draw_pos: str = "topleft"):
 		image = self.images[int(self.frame)]
 
 		# TODO: Finish all variations
 		if draw_pos == "topleft":
-			rect = image.get_rect(topleft=pos)
+			rect = image.get_image(angle).get_rect(center=image.get_image().get_rect(topleft=pos).center)
 		elif draw_pos == "center":
-			rect = image.get_rect(center=pos)
+			rect = image.get_image(angle).get_rect(center=image.get_image().get_rect(center=pos).center)
 		elif draw_pos == "midbottom":
-			rect = image.get_rect(midbottom=pos)
+			rect = image.get_image(angle).get_rect(center=image.get_image().get_rect(midbottom=pos).center)
 		else:
 			raise ValueError(f"{draw_pos} not a valid position.")
 
-		screen.blit(image, camera.world_to_screen(rect.topleft), special_flags=flag)
+		image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, special_flags=flag)
 
 
 class AnimationManager:
@@ -73,5 +74,5 @@ class AnimationManager:
 	def update(self, delta: float):
 		self.states[self.current_state].change_frame(self.animation_info[self.current_state][0] * delta)
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, flag=0, draw_pos: str = "topleft"):
-		self.states[self.current_state].draw_at_pos(screen, pos, camera, flag, draw_pos)
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flag=0, draw_pos: str = "topleft"):
+		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, flag=flag, draw_pos=draw_pos)

@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 import pygame
 
+from ..graphics.image import Image
 from ..inputs import InputManager
 from ..resources import ResourceManager
 from ..ui.text import Text
@@ -92,37 +93,37 @@ class Frame(UIElement):
 				element.draw(screen)
 
 
-class Image(UIElement):
+class ImageElement(UIElement):
 	def __init__(self, pos: tuple, resource_type: int, resource_name: str, size: Optional[tuple] = None):
-		self.image: pygame.Surface = ResourceManager.get_resource(resource_type, resource_name)
+		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
 
 		if size is not None:
-			self.image = pygame.transform.scale(self.image, size)
+			self.image.scale(size)
 
-		super().__init__(pos, self.image.get_size())
+		super().__init__(pos, self.image.get_image().get_size())
 
 	def draw(self, screen: pygame.Surface):
-		screen.blit(self.image, self.rect)
+		self.image.draw(screen, self.rect)
 
 
 class Button(UIElement):
 	def __init__(self, pos: tuple, resource_type: int, resource_name: str, callback, *callback_args, size: Optional[tuple] = None, text: str = "", alignment: str = "l"):
-		self.image: pygame.Surface = ResourceManager.get_resource(resource_type, resource_name)
+		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
 
 		if size is not None:
 			if size[0] is None:
-				self.image = pygame.transform.scale(self.image, (self.image.get_width() * size[1] / self.image.get_height(), size[1]))
+				self.image.scale((self.image.get_image().get_width() * size[1] / self.image.get_image().get_height(), size[1]))
 			elif size[1] is None:
-				self.image = pygame.transform.scale(self.image, (size[0], self.image.get_height() * size[0] / self.image.get_width()))
+				self.image.scale((size[0], self.image.get_image().get_height() * size[0] / self.image.get_image().get_width()))
 			else:
-				self.image = pygame.transform.scale(self.image, size)
+				self.image.scale(size)
 
 		if alignment == "l":
-			super().__init__(pos, self.image.get_size())
+			super().__init__(pos, self.image.get_image().get_size())
 		elif alignment == "r":
-			super().__init__((pos[0] - self.image.get_width(), pos[1]), self.image.get_size())
+			super().__init__((pos[0] - self.image.get_image().get_width(), pos[1]), self.image.get_image().get_size())
 		elif alignment == "c":
-			super().__init__((pos[0] - self.image.get_width() / 2, pos[1]), self.image.get_size())
+			super().__init__((pos[0] - self.image.get_image().get_width() / 2, pos[1]), self.image.get_image().get_size())
 		else:
 			raise ValueError(f"center: `{alignment}` on {self.__class__.__name__} is not valid")
 
@@ -130,7 +131,7 @@ class Button(UIElement):
 		self.callback_args = callback_args
 
 		self.mouse_on = False
-		self.highlight = pygame.Surface(self.image.get_size()).convert_alpha()
+		self.highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.highlight.fill((255, 255, 255, 40))
 
 		self.text: Union[Text, str] = text
@@ -150,7 +151,7 @@ class Button(UIElement):
 			self.mouse_on = False
 
 	def draw(self, screen: pygame.Surface):
-		screen.blit(self.image, self.rect)
+		self.image.draw(screen, self.rect)
 		self.text.draw(screen, "c")
 
 		if self.mouse_on:
