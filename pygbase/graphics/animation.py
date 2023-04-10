@@ -1,6 +1,7 @@
 import pygame
 
 from .image import Image
+from .. import Common
 from ..camera import Camera
 from ..resources import ResourceManager
 
@@ -20,7 +21,10 @@ class Animation:
 
 	def _load_animation(self):
 		for index in range(self.anim_start_index, self.anim_start_index + self.length):
-			self.images.append(ResourceManager.get_resource(2, self.sprite_sheet_id).get_image(index))
+			self.images.append(ResourceManager.get_resource(
+				Common.get_value("sprite_sheet_res"),
+				self.sprite_sheet_id
+			).get_image(index))
 
 	def change_frame(self, amount: float):
 		self.frame += amount
@@ -36,7 +40,7 @@ class Animation:
 			else:
 				self.frame = 0
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flag: int = 0, draw_pos: str = "topleft"):
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flip: bool = False, flag: int = 0, draw_pos: str = "topleft"):
 		image = self.images[int(self.frame)]
 
 		# TODO: Finish all variations
@@ -49,11 +53,11 @@ class Animation:
 		else:
 			raise ValueError(f"{draw_pos} not a valid position.")
 
-		image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, special_flags=flag)
+		image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, flip=flip, special_flags=flag)
 
 
 class AnimationManager:
-	def __init__(self, states: list[tuple[str, Animation, int]], starting_state: str, reset_animation_on_switch: bool = True):
+	def __init__(self, states: list[tuple[str, Animation, float]], starting_state: str, reset_animation_on_switch: bool = True):
 		self.current_state = starting_state
 		self.states = {}
 		self.animation_info = {}
@@ -74,5 +78,5 @@ class AnimationManager:
 	def update(self, delta: float):
 		self.states[self.current_state].change_frame(self.animation_info[self.current_state][0] * delta)
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flag=0, draw_pos: str = "topleft"):
-		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, flag=flag, draw_pos=draw_pos)
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flip: bool = False, flag=0, draw_pos: str = "topleft"):
+		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, flip=flip, flag=flag, draw_pos=draw_pos)

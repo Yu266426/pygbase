@@ -51,10 +51,10 @@ class Image:
 		else:
 			return self.image
 
-	def draw(self, screen: pygame.Surface, rect: pygame.Rect, angle: float = 0, special_flags: int = 0):
+	def draw(self, screen: pygame.Surface, rect: pygame.Rect | tuple[int | float, int | float], angle: float = 0, flip: bool = False, special_flags: int = 0):
 		if angle != 0:
 			image = self._get_angled_image(angle)
-
-			screen.blit(image, rect, special_flags=special_flags)
 		else:
-			screen.blit(self.image, rect, special_flags=special_flags)
+			image = self.image
+
+		screen.blit(pygame.transform.flip(image, flip, False), rect, special_flags=special_flags)
