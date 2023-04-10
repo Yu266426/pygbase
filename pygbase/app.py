@@ -28,7 +28,7 @@ class App:
 		EventManager.handle_events(self.game_state.id)
 
 	def update(self):
-		delta = self.clock.tick() / 1000
+		delta = min(self.clock.tick() / 1000, 0.12)
 		pygame.display.set_caption(f"fps: {round(self.clock.get_fps())}, delta: {delta}")
 
 		self.game_state.update(delta)

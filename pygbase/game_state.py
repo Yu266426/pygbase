@@ -7,7 +7,7 @@ import pygame
 class GameState:
 	def __init__(self, state_id: int):
 		if state_id == 0:
-			raise ValueError(f"The id 0 is reserved by pygbase for every game state")
+			raise ValueError(f"The id 0 is reserved by pygbase to represent every game state")
 
 		self.id: int = state_id
 
