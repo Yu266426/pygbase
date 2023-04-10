@@ -11,6 +11,7 @@ from .graphics.animation import Animation, AnimationManager
 from .graphics.image import Image
 from .graphics.sprite_sheet import SpriteSheet
 from .inputs import InputManager
+from .particles.particle_settings import ParticleTypes, ParticleOptions
 from .resources import ResourceType, ResourceManager
 
 
@@ -23,6 +24,17 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 	Common.set_value("screen_height", screen_size[1])
 
 	Common.set_value("rotate_resolution", rotate_resolution)
+
+	Common.set_value("particle_settings", {
+		ParticleTypes.DEFAULT: {
+			ParticleOptions.COLOUR: "white",
+			ParticleOptions.SIZE: (4.0, 7.0),
+			ParticleOptions.SIZE_DECAY: (3.0, 5.0),
+			ParticleOptions.VELOCITY_DECAY: (1.8, 2.2),
+			ParticleOptions.GRAVITY: (0, 0),
+			ParticleOptions.EFFECTOR: True
+		}
+	})
 
 	EventManager.init()
 	InputManager.register_handlers()
@@ -49,7 +61,7 @@ def add_image_resource(name: str, type_id: int, dir_path: str):
 	))
 
 
-def add_sprite_sheet_resource(name: str, type_id: int, tile_scale: float, dir_path: str):
+def add_sprite_sheet_resource(name: str, type_id: int, dir_path: str, default_scale: float = 1):
 	add_resource_type(type_id, ResourceType(
 		name, dir_path,
 		{
@@ -61,7 +73,7 @@ def add_sprite_sheet_resource(name: str, type_id: int, tile_scale: float, dir_pa
 			"rotatable": False
 		},
 		lambda data: data["scale"] != -1,
-		lambda data, resource_path: SpriteSheet(data, resource_path, tile_scale)
+		lambda data, resource_path: SpriteSheet(data, resource_path, default_scale)
 	))
 
 
