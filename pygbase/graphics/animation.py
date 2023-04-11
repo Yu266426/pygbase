@@ -43,7 +43,7 @@ class Animation:
 			else:
 				self.frame = 0
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flip: bool = False, flag: int = 0, draw_pos: str = "topleft"):
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, flip: bool = False, flag: int = 0, draw_pos: str = "topleft"):
 		image = self.get_current_image()
 
 		# TODO: Finish all variations
@@ -84,5 +84,5 @@ class AnimationManager:
 	def update(self, delta: float):
 		self.states[self.current_state].change_frame(self.animation_info[self.current_state][0] * delta)
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flip: bool = False, flag=0, draw_pos: str = "topleft"):
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, flip: bool = False, flag=0, draw_pos: str = "topleft"):
 		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, flip=flip, flag=flag, draw_pos=draw_pos)
