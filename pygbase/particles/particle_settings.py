@@ -1,11 +1,6 @@
 import enum
 
 
-class ParticleTypes(enum.Enum):
-	DEFAULT = enum.auto()
-	PLAYER_ENERGY = enum.auto()
-
-
 class ParticleOptions(enum.Enum):
 	COLOUR = enum.auto()
 	SIZE = enum.auto()

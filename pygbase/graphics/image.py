@@ -57,4 +57,7 @@ class Image:
 		else:
 			image = self.image
 
-		screen.blit(pygame.transform.flip(image, flip, False), rect, special_flags=special_flags)
+		if flip:
+			image = pygame.transform.flip(image, True, False)
+
+		screen.blit(image, rect, special_flags=special_flags)

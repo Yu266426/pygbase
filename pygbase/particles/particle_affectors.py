@@ -1,4 +1,10 @@
+import enum
+
 import pygame
+
+
+class AffectorTypes(enum.Enum):
+	ATTRACTOR = enum.auto()
 
 
 class ParticleAttractor:

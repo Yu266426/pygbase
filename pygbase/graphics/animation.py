@@ -26,6 +26,9 @@ class Animation:
 				self.sprite_sheet_id
 			).get_image(index))
 
+	def get_current_image(self):
+		return self.images[int(self.frame)]
+
 	def change_frame(self, amount: float):
 		self.frame += amount
 
@@ -41,7 +44,7 @@ class Animation:
 				self.frame = 0
 
 	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2, camera: Camera, angle: float = 0, flip: bool = False, flag: int = 0, draw_pos: str = "topleft"):
-		image = self.images[int(self.frame)]
+		image = self.get_current_image()
 
 		# TODO: Finish all variations
 		if draw_pos == "topleft":
@@ -67,6 +70,9 @@ class AnimationManager:
 			self.animation_info[state] = [animation_speed]
 
 		self.reset_animation_on_switch = reset_animation_on_switch
+
+	def get_current_image(self):
+		return self.states[self.current_state].get_current_image()
 
 	def switch_state(self, new_state: str):
 		if self.current_state != new_state:

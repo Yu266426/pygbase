@@ -2,44 +2,41 @@ import random
 
 import pygame
 
-from .. import Common
-from ..particles.particle_affectors import ParticleAttractor
-from ..particles.particle_settings import ParticleTypes
+from ..camera import Camera
+from ..particles.particle_affectors import ParticleAttractor, AffectorTypes
 from ..particles.particle_settings import ParticleOptions as Options
 
 
 class Particle:
-	def __init__(self, pos, particle_type: ParticleTypes, initial_velocity=(0, 0)):
-		settings = Common.get_value("particle_settings")
-
+	def __init__(self, pos, settings: dict, initial_velocity=(0, 0)):
 		self.pos = pygame.Vector2(pos)
 
 		self.size = random.uniform(
-			settings[particle_type][Options.SIZE][0],
-			settings[particle_type][Options.SIZE][1]
+			settings[Options.SIZE][0],
+			settings[Options.SIZE][1]
 		)
 		self.size_decay = random.uniform(
-			settings[particle_type][Options.SIZE_DECAY][0],
-			settings[particle_type][Options.SIZE_DECAY][1]
+			settings[Options.SIZE_DECAY][0],
+			settings[Options.SIZE_DECAY][1]
 		)
 
-		self.colour = settings[particle_type][Options.COLOUR]
+		self.colour = random.choice(settings[Options.COLOUR])
 
 		self.velocity = pygame.Vector2(initial_velocity)
 		self.velocity_decay = random.uniform(
-			settings[particle_type][Options.VELOCITY_DECAY][0],
-			settings[particle_type][Options.VELOCITY_DECAY][1]
+			settings[Options.VELOCITY_DECAY][0],
+			settings[Options.VELOCITY_DECAY][1]
 		)
 
-		self.gravity = settings[particle_type][Options.GRAVITY]
-		self.effector = settings[particle_type][Options.EFFECTOR]
+		self.gravity = settings[Options.GRAVITY]
+		self.effector = settings[Options.EFFECTOR]
 
 	def alive(self):
 		return self.size > 0.2
 
-	def update(self, delta, affectors: dict[str, list]):
+	def update(self, delta, affectors: dict[AffectorTypes, list]):
 		if self.effector:
-			for attractor in affectors["attractor"]:
+			for attractor in affectors[AffectorTypes.ATTRACTOR]:
 				attractor: ParticleAttractor
 
 				direction_vector, distance = attractor.get_towards(self.pos)
@@ -56,5 +53,5 @@ class Particle:
 
 		self.size -= delta * self.size_decay
 
-	def draw(self, screen: pygame.Surface, scroll: pygame.Vector2):
-		pygame.draw.rect(screen, self.colour, (self.pos - scroll, (self.size, self.size)))
+	def draw(self, screen: pygame.Surface, camera: Camera):
+		pygame.draw.rect(screen, self.colour, (camera.world_to_screen(self.pos), (self.size, self.size)))

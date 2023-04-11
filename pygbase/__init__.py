@@ -13,8 +13,8 @@ from .graphics.sprite_sheet import SpriteSheet
 from .inputs import InputManager
 from .particles.particle_affectors import ParticleAttractor
 from .particles.particle_manager import ParticleManager
-from .particles.particle_settings import ParticleTypes, ParticleOptions
-from .particles.particle_spawners import ParticleSpawner, PointSpawner, CircleSpawner
+from .particles.particle_settings import ParticleOptions
+from .particles.particle_spawners import ParticleSpawner, PointSpawner, CircleSpawner, RectSpawner
 from .resources import ResourceType, ResourceManager
 from .timer import Timer
 
@@ -30,8 +30,8 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 	Common.set_value("rotate_resolution", rotate_resolution)
 
 	Common.set_value("particle_settings", {
-		ParticleTypes.DEFAULT: {
-			ParticleOptions.COLOUR: "white",
+		"default": {
+			ParticleOptions.COLOUR: ["white"],
 			ParticleOptions.SIZE: (4.0, 7.0),
 			ParticleOptions.SIZE_DECAY: (3.0, 5.0),
 			ParticleOptions.VELOCITY_DECAY: (1.8, 2.2),
@@ -79,6 +79,27 @@ def add_sprite_sheet_resource(name: str, type_id: int, dir_path: str, default_sc
 		lambda data: data["scale"] != -1,
 		lambda data, resource_path: SpriteSheet(data, resource_path, default_scale)
 	))
+
+
+def add_particle_setting(
+		name: str,
+		colour: list,
+		size: tuple[float, float],
+		size_decay: tuple[float, float],
+		velocity_decay: tuple[float, float],
+		gravity: tuple[float, float],
+		effector: bool
+):
+	particle_settings = Common.get_value("particle_settings")
+
+	particle_settings[name] = {
+		ParticleOptions.COLOUR: colour,
+		ParticleOptions.SIZE: size,
+		ParticleOptions.SIZE_DECAY: size_decay,
+		ParticleOptions.VELOCITY_DECAY: velocity_decay,
+		ParticleOptions.GRAVITY: gravity,
+		ParticleOptions.EFFECTOR: effector
+	}
 
 
 def quit():
