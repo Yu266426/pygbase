@@ -11,8 +11,12 @@ from .graphics.animation import Animation, AnimationManager
 from .graphics.image import Image
 from .graphics.sprite_sheet import SpriteSheet
 from .inputs import InputManager
+from .particles.particle_affectors import ParticleAttractor
+from .particles.particle_manager import ParticleManager
 from .particles.particle_settings import ParticleTypes, ParticleOptions
+from .particles.particle_spawners import ParticleSpawner, PointSpawner, CircleSpawner
 from .resources import ResourceType, ResourceManager
+from .timer import Timer
 
 
 def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5):
