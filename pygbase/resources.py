@@ -6,10 +6,12 @@ from typing import Any, Callable, Optional
 
 
 class ResourceType:
-	def __init__(self, name: str, container_path: str, default_data: dict, init_check: Optional[Callable[[dict], bool]], load_resource: Callable[[dict, str], Any]):
+	def __init__(self, name: str, container_path: str, file_ending: str, default_data: dict, init_check: Optional[Callable[[dict], bool]], load_resource: Callable[[dict, str], Any]):
 		self.name = name
 
 		self.container_path = container_path
+
+		self.file_ending = file_ending
 
 		self.default_data = default_data
 
@@ -60,7 +62,7 @@ class ResourceManager:
 
 		for dir_path, _, file_names in os.walk(resource_type.container_path):
 			for file_name in file_names:
-				if file_name.endswith(".png"):
+				if file_name.endswith(resource_type.file_ending):
 					file_path = os.path.join(dir_path, file_name)
 
 					resource_type.generate_config(config_path, file_name)

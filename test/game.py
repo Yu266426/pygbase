@@ -1,8 +1,8 @@
 import pygame
 
+from pygbase import Frame, Button
 from pygbase import GameState, InputManager, EventManager
-from pygbase.ui.screen import UIScreen
-from pygbase.ui.element import Frame, Button
+from pygbase import UIScreen
 
 
 class Game(GameState):

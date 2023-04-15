@@ -18,7 +18,7 @@ class Loading(GameState):
 
 	def update(self, delta: float):
 		if ResourceManager.load_update():
-			self.set_next_state(self.after_load_state)
+			self.set_next_state(self.after_load_state())
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((0, 0, 0))

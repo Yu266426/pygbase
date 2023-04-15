@@ -17,6 +17,9 @@ from .particles.particle_settings import ParticleOptions
 from .particles.particle_spawners import ParticleSpawner, PointSpawner, CircleSpawner, RectSpawner
 from .resources import ResourceType, ResourceManager
 from .timer import Timer
+from .transition_states import FadeTransition
+from .ui.element import Frame, ImageElement, TextElement, TextSelectionMenu, Button
+from .ui.screen import UIScreen, ControlledScreen
 
 
 def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5):
@@ -58,7 +61,7 @@ def add_image_resource(name: str, type_id: int, dir_path: str):
 		return Image(resource_path, scale, rotatable)
 
 	add_resource_type(type_id, ResourceType(
-		name, dir_path,
+		name, dir_path, ".png",
 		{"scale": 1, "rotatable": False},
 		None,
 		load_image
@@ -67,7 +70,7 @@ def add_image_resource(name: str, type_id: int, dir_path: str):
 
 def add_sprite_sheet_resource(name: str, type_id: int, dir_path: str, default_scale: float = 1):
 	add_resource_type(type_id, ResourceType(
-		name, dir_path,
+		name, dir_path, ".png",
 		{
 			"rows": 0,
 			"columns": 0,
@@ -78,6 +81,24 @@ def add_sprite_sheet_resource(name: str, type_id: int, dir_path: str, default_sc
 		},
 		lambda data: data["scale"] != -1,
 		lambda data, resource_path: SpriteSheet(data, resource_path, default_scale)
+	))
+
+
+def add_sound_resource(name: str, type_id: int, dir_path: str, sound_ending: str):
+	def load_sound(data: dict, resource_path: str):
+		volume = data["volume"]
+
+		sound = pygame.mixer.Sound(resource_path)
+		sound.set_volume(volume)
+		return sound
+
+	add_resource_type(type_id, ResourceType(
+		name, dir_path, sound_ending,
+		{
+			"volume": 1
+		},
+		None,
+		load_sound
 	))
 
 

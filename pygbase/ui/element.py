@@ -94,20 +94,39 @@ class Frame(UIElement):
 
 
 class ImageElement(UIElement):
-	def __init__(self, pos: tuple, resource_type: int, resource_name: str, size: Optional[tuple] = None):
+	def __init__(self, pos: tuple, resource_type: int, resource_name: str, size: Optional[tuple] = None, alignment: str = "l"):
 		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
 
 		if size is not None:
 			self.image.scale(size)
 
-		super().__init__(pos, self.image.get_image().get_size())
+		if alignment == "l":
+			super().__init__(pos, self.image.get_image().get_size())
+		elif alignment == "r":
+			super().__init__((pos[0] - self.image.get_image().get_width(), pos[1]), self.image.get_image().get_size())
+		elif alignment == "c":
+			super().__init__((pos[0] - self.image.get_image().get_width() / 2, pos[1]), self.image.get_image().get_size())
+		else:
+			raise ValueError(f"center: `{alignment}` on {self.__class__.__name__} is not valid")
 
 	def draw(self, screen: pygame.Surface):
 		self.image.draw(screen, self.rect)
 
 
 class Button(UIElement):
-	def __init__(self, pos: tuple, resource_type: int, resource_name: str, callback, *callback_args, size: Optional[tuple] = None, text: str = "", alignment: str = "l"):
+	def __init__(
+			self,
+			pos: tuple,
+			resource_type: int,
+			resource_name: str,
+			callback,
+			*callback_args,
+			size: Optional[tuple] = None,
+			text: str = "",
+			text_colour="",
+			font: str = "",
+			alignment: str = "l"
+	):
 		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
 
 		if size is not None:
@@ -135,10 +154,12 @@ class Button(UIElement):
 		self.highlight.fill((255, 255, 255, 40))
 
 		self.text: Union[Text, str] = text
+		self.text_colour = text_colour
+		self.font = font
 
 	def added_to_frame(self, frame: "Frame"):
 		super().added_to_frame(frame)
-		self.text = Text((self.rect.centerx, self.rect.top + self.rect.height * 0.2), "arial", self.size[1] * 0.8, "white", self.text, use_sys=True)
+		self.text = Text((self.rect.centerx, self.rect.top + self.rect.height * 0.2), self.font, self.size[1] * 0.7, self.text_colour, self.text, use_sys=True)
 
 	def update(self, delta: float):
 		if self.rect.collidepoint(pygame.mouse.get_pos()):

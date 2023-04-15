@@ -13,11 +13,8 @@ class GameState:
 
 		self._next_state = self
 
-	def set_next_state(self, next_state: Type["GameState"], *args):
-		if len(args) == 0:
-			self._next_state = next_state()  # NoQA
-		else:
-			self._next_state = next_state(args)  # NoQA
+	def set_next_state(self, next_state: "GameState"):
+		self._next_state = next_state
 
 	def next_state(self) -> "GameState":
 		return self._next_state

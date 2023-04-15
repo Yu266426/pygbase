@@ -1,6 +1,6 @@
-from typing import Type, Union
+from typing import Type, Union, Optional
 
-import pygame.display
+import pygame
 
 from .common import Common
 from .events import EventManager
@@ -10,11 +10,15 @@ from .loader import Loading
 
 
 class App:
-	def __init__(self, after_load_state: Type[GameState], flags=pygame.SCALED, vsync=True):
+	def __init__(self, after_load_state: Type[GameState], title: Optional[str], flags=pygame.SCALED, vsync=True):
 		self.is_running: bool = True
 
 		self.window: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=flags, vsync=vsync)
 		self.clock: pygame.time.Clock = pygame.time.Clock()
+
+		self.title = title
+		if self.title is not None:
+			pygame.display.set_caption(self.title)
 
 		self.game_state: Union[Loading, GameState] = Loading(after_load_state)
 
@@ -29,7 +33,9 @@ class App:
 
 	def update(self):
 		delta = min(self.clock.tick() / 1000, 0.12)
-		pygame.display.set_caption(f"fps: {round(self.clock.get_fps())}, delta: {delta}")
+
+		if self.title is None:
+			pygame.display.set_caption(f"fps: {round(self.clock.get_fps())}, delta: {delta}")
 
 		self.game_state.update(delta)
 
