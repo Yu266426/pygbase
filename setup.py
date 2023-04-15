@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
 	name="pygbase-engine",
 	version="0.0.1",
-	description="A basic engine for Pygame to help with resource loading, and handling of game states",
+	description="A basic engine for Pygame to remove some boilerplate",
 	url="https://github.com/Yu266426/pygbase",
 	author="Yu266426",
 	author_email="yu266426@gmail.com",

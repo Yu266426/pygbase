@@ -123,8 +123,8 @@ class Button(UIElement):
 			*callback_args,
 			size: Optional[tuple] = None,
 			text: str = "",
-			text_colour="",
-			font: str = "",
+			text_colour="white",
+			font: str = "arial",
 			alignment: str = "l"
 	):
 		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)

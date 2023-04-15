@@ -10,7 +10,7 @@ from .loader import Loading
 
 
 class App:
-	def __init__(self, after_load_state: Type[GameState], title: Optional[str], flags=pygame.SCALED, vsync=True):
+	def __init__(self, after_load_state: Type[GameState], title: Optional[str] = None, flags=pygame.SCALED, vsync=True):
 		self.is_running: bool = True
 
 		self.window: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=flags, vsync=vsync)
