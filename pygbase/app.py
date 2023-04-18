@@ -45,7 +45,7 @@ class App:
 		pygame.display.flip()
 
 	def switch_state(self):
-		self.game_state = self.game_state.next_state()
+		self.game_state = self.game_state.get_next_state()
 
 	def run(self):
 		while self.is_running:

@@ -13,7 +13,7 @@ class Game(GameState):
 
 		self.ui = UIScreen()
 		self.button_frame = self.ui.add_frame(Frame((20, 20), (400, 760), bg_colour=(50, 50, 50, 100)))
-		self.button_frame.add_element(Button((0, 0), 1, "button", self.button_pressed, text="Test", size=(400, None)))
+		self.button_frame.add_element(Button((0, 0), 1, "button", self.button_pressed, (), text="Test", size=(400, None)))
 
 	def button_pressed(self):
 		print("Button Pressed!")

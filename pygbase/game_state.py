@@ -22,7 +22,7 @@ class GameState:
 		else:
 			self._next_state = next_state()
 
-	def next_state(self) -> "GameState":
+	def get_next_state(self) -> "GameState":
 		return self._next_state
 
 	@abstractmethod
