@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Union
+from typing import Optional, Union, Callable
 
 import pygame
 
@@ -119,8 +119,8 @@ class Button(UIElement):
 			pos: tuple,
 			resource_type: int,
 			resource_name: str,
-			callback,
-			*callback_args,
+			callback: Callable[..., None],
+			callback_args: tuple,
 			size: Optional[tuple] = None,
 			text: str = "",
 			text_colour="white",
@@ -189,7 +189,6 @@ class TextElement(UIElement):
 
 	def set_text(self, new_text: str):
 		self.text.set_text(new_text)
-		self.text.render_text()
 
 	def draw(self, screen: pygame.Surface):
 		render_surface = pygame.Surface(self.text.rendered_text[1].size).convert_alpha()
@@ -212,8 +211,8 @@ class TextSelectionMenu(Frame):
 		self.index: int = 0
 		self.current_option = self.options[self.index]
 
-		self.add_element(Button((0, 0), image_resource_type, "left", self.change_option, -1, size=(None, self.rect.height)))
-		self.add_element(Button((self.rect.width, 0), image_resource_type, "right", self.change_option, 1, size=(None, self.rect.height), alignment="r"))
+		self.add_element(Button((0, 0), image_resource_type, "left", self.change_option, (-1,), size=(None, self.rect.height)))
+		self.add_element(Button((self.rect.width, 0), image_resource_type, "right", self.change_option, (1,), size=(None, self.rect.height), alignment="r"))
 
 		self.text = TextElement((self.rect.width / 2, self.rect.height * 0.3 / 2), "arial", self.rect.height * 0.7, (255, 255, 255), self.current_option, centered=True)
 		self.add_element(self.text)

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pygame.freetype
 
 
@@ -14,7 +16,7 @@ class Text:
 
 		self.pos = pos
 
-		self.rendered_text: tuple[pygame.Surface, pygame.Rect] | None = None
+		self.rendered_text: Optional[tuple[pygame.Surface, pygame.Rect]] = None
 		self.render_text()
 
 	def set_text(self, text: str):
@@ -22,8 +24,8 @@ class Text:
 		self.render_text()
 
 	def render_text(self):
-		self.rendered_text = self.font.render(self.text, self.colour)
-		self.rendered_text = self.rendered_text[0].convert_alpha(), self.rendered_text[1]
+		rendered_text = self.font.render(self.text, self.colour)
+		self.rendered_text = rendered_text[0].convert_alpha(), rendered_text[1]
 
 	def draw(self, screen: pygame.Surface, draw_from: str = "l", pos=None) -> None:
 		if pos is None:

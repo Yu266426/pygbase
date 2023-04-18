@@ -29,8 +29,6 @@ class EventManager:
 					for handler in cls.handlers[current_game_state][event.type]:
 						handler(event)
 
-					break
-
 			if event.type in cls.handlers[0]:
 				for handler in cls.handlers[0][event.type]:
 					handler(event)

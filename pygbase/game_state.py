@@ -16,6 +16,12 @@ class GameState:
 	def set_next_state(self, next_state: "GameState"):
 		self._next_state = next_state
 
+	def set_next_state_type(self, next_state: Type["GameState"], args: tuple):
+		if len(args) > 0:
+			self._next_state = next_state(*args)
+		else:
+			self._next_state = next_state()
+
 	def next_state(self) -> "GameState":
 		return self._next_state
 
