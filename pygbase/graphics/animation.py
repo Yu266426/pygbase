@@ -22,7 +22,7 @@ class Animation:
 	def _load_animation(self):
 		for index in range(self.anim_start_index, self.anim_start_index + self.length):
 			self.images.append(ResourceManager.get_resource(
-				Common.get_value("sprite_sheet_res"),
+				Common.get_resource_type("sprite_sheet"),
 				self.sprite_sheet_id
 			).get_image(index))
 
