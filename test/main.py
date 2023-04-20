@@ -1,5 +1,7 @@
 import pathlib
 
+import pygame
+
 import pygbase
 from game import Game
 
@@ -9,6 +11,12 @@ if __name__ == '__main__':
 	pygbase.init((800, 800))
 
 	pygbase.add_image_resource("image", 1, str(CURRENT_DIR / "images"))
+
+	pygbase.EventManager.add_handler(
+		"all",
+		pygame.KEYDOWN,
+		handler=lambda e: pygbase.EventManager.post_event(pygame.QUIT) if e.key == pygame.K_ESCAPE else None
+	)
 
 	app = pygbase.App(Game)
 	app.run()

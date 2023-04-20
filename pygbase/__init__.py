@@ -37,7 +37,7 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 
 
 def add_resource_type(type_id: int, resource_type: ResourceType):
-	Common.set_value(f"{resource_type.name}_res", type_id)
+	Common.add_resource_type(resource_type.name, type_id)
 
 	ResourceManager.add_resource_type(type_id, resource_type)
 

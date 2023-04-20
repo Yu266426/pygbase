@@ -9,6 +9,8 @@ class Common:
 
 	_game_states: dict[str, int] = {"all": 0}
 
+	_resource_types: dict[str, int] = {}
+
 	_particle_settings: dict[str, dict[ParticleOptions, list[str] | tuple[float] | bool]] = {
 		"default": {
 			ParticleOptions.COLOUR: ["white"],
@@ -43,6 +45,22 @@ class Common:
 		else:
 			logging.error(f"Game state name: `{name}` does not exist")
 			raise KeyError(f"Game state name: `{name}` does not exist")
+
+	@classmethod
+	def add_resource_type(cls, name: str, resource_id: int):
+		if name not in cls._resource_types:
+			cls._resource_types[name] = resource_id
+		else:
+			logging.error(f"Resource name: `{name}` already taken")
+			raise KeyError(f"Resource name: `{name}` does not exist")
+
+	@classmethod
+	def get_resource_type(cls, name: str):
+		if name in cls._resource_types:
+			return cls._resource_types[name]
+		else:
+			logging.error(f"Resource name: `{name}` does not exist")
+			raise KeyError(f"Resource name: `{name}` does not exist")
 
 	@classmethod
 	def add_particle_setting(
