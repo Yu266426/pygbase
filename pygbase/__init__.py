@@ -32,17 +32,6 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 
 	Common.set_value("rotate_resolution", rotate_resolution)
 
-	Common.set_value("particle_settings", {
-		"default": {
-			ParticleOptions.COLOUR: ["white"],
-			ParticleOptions.SIZE: (4.0, 7.0),
-			ParticleOptions.SIZE_DECAY: (3.0, 5.0),
-			ParticleOptions.VELOCITY_DECAY: (1.8, 2.2),
-			ParticleOptions.GRAVITY: (0, 0),
-			ParticleOptions.EFFECTOR: True
-		}
-	})
-
 	EventManager.init()
 	InputManager.register_handlers()
 
