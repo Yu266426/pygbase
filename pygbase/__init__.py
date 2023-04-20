@@ -111,16 +111,7 @@ def add_particle_setting(
 		gravity: tuple[float, float],
 		effector: bool
 ):
-	particle_settings = Common.get_value("particle_settings")
-
-	particle_settings[name] = {
-		ParticleOptions.COLOUR: colour,
-		ParticleOptions.SIZE: size,
-		ParticleOptions.SIZE_DECAY: size_decay,
-		ParticleOptions.VELOCITY_DECAY: velocity_decay,
-		ParticleOptions.GRAVITY: gravity,
-		ParticleOptions.EFFECTOR: effector
-	}
+	Common.add_particle_setting(name, colour, size, size_decay, velocity_decay, gravity, effector)
 
 
 def quit():

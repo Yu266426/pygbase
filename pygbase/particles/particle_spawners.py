@@ -21,7 +21,7 @@ class ParticleSpawner:
 		self.type = particle_type
 		self.manager = manager
 
-		self.particle_settings = Common.get_value("particle_settings")[particle_type]
+		self.particle_settings = Common.get_particle_setting(particle_type)
 
 	def link_pos(self, pos: pygame.Vector2) -> "ParticleSpawner":
 		self.pos = pos
