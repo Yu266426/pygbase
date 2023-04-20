@@ -30,10 +30,10 @@ class InputManager:
 
 	@classmethod
 	def register_handlers(cls):
-		EventManager.add_handler(0, pygame.KEYDOWN, cls._keydown_handler)
-		EventManager.add_handler(0, pygame.KEYUP, cls._keyup_handler)
-		EventManager.add_handler(0, pygame.MOUSEBUTTONDOWN, cls._mouse_down_handler)
-		EventManager.add_handler(0, pygame.MOUSEBUTTONUP, cls._mouse_up_handler)
+		EventManager.add_handler("all", pygame.KEYDOWN, cls._keydown_handler)
+		EventManager.add_handler("all", pygame.KEYUP, cls._keyup_handler)
+		EventManager.add_handler("all", pygame.MOUSEBUTTONDOWN, cls._mouse_down_handler)
+		EventManager.add_handler("all", pygame.MOUSEBUTTONUP, cls._mouse_up_handler)
 
 	@classmethod
 	def _keydown_handler(cls, event: pygame.event.Event):

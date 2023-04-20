@@ -22,7 +22,7 @@ class App:
 
 		self.game_state: Union[Loading, GameState] = Loading(after_load_state)
 
-		EventManager.add_handler(Common.get_game_state_id("all"), pygame.QUIT, self.quit_handler)
+		EventManager.add_handler("all", pygame.QUIT, self.quit_handler)
 
 	def quit_handler(self, event: pygame.event.Event):
 		self.is_running = False

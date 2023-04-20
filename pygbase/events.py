@@ -2,24 +2,27 @@ from typing import Callable, Any
 
 import pygame
 
+from .common import Common
+
 
 class EventManager:
 	handlers: dict[int, dict[int, list[Callable[[pygame.event.Event], None]]]] = {}
 
 	@classmethod
 	def init(cls):
-		# 0 is base state
-		cls.handlers[0] = {}
+		cls.handlers[Common.get_game_state_id("all")] = {}
 
 	@classmethod
-	def add_handler(cls, game_state: int, event_type: int, handler: Callable[[pygame.event.Event], None]):
-		if game_state not in cls.handlers:
-			cls.handlers[game_state] = {}
+	def add_handler(cls, state_name: str, event_type: int, handler: Callable[[pygame.event.Event], None]):
+		game_state_id = Common.get_game_state_id(state_name)
 
-		if event_type not in cls.handlers[game_state]:
-			cls.handlers[game_state][event_type] = []
+		if game_state_id not in cls.handlers:
+			cls.handlers[game_state_id] = {}
 
-		cls.handlers[game_state][event_type].append(handler)
+		if event_type not in cls.handlers[game_state_id]:
+			cls.handlers[game_state_id][event_type] = []
+
+		cls.handlers[game_state_id][event_type].append(handler)
 
 	@classmethod
 	def handle_events(cls, current_game_state: int):
@@ -33,9 +36,12 @@ class EventManager:
 				for handler in cls.handlers[0][event.type]:
 					handler(event)
 
+	# TODO: Determine if this is needed
 	@classmethod
-	def run_handlers(cls, game_state: int, event_type: int, **kwargs):
-		for handler in cls.handlers[game_state][event_type]:
+	def run_handlers(cls, state_name: str, event_type: int, **kwargs):
+		game_state_id = Common.get_game_state_id(state_name)
+
+		for handler in cls.handlers[game_state_id][event_type]:
 			handler(pygame.event.Event(event_type, kwargs))
 
 	@classmethod
