@@ -6,7 +6,7 @@ from .resources import ResourceManager
 from .game_state import GameState
 
 
-class Loading(GameState):
+class Loading(GameState, name="loading"):
 	def __init__(self, after_load_state: Type[GameState]):  # noqa
 		# From GameState, but no parent __init__ call, so have to do it manually
 		self.id = -1

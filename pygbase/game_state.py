@@ -3,23 +3,33 @@ from typing import Type
 
 import pygame
 
+from .common import Common
+
 
 class GameState:
-	# def __init_subclass__(cls, **kwargs):
-	# 	if "name" not in kwargs:
-	# 		raise KeyError("\"name\" keyword argument not in class definition. It should look like <class Child(GameState, name=\"child\")>")
-	#
-	# 	name = kwargs["name"]
-	#
-	# 	if name == "loader":
-	# 		return
+	child_state_id = 1
 
-	def __init__(self, state_id: int):
-		if state_id == 0:
-			raise ValueError(f"The id 0 is reserved by pygbase to represent every game state")
+	def __init_subclass__(cls, **kwargs):
+		if "name" not in kwargs:
+			raise KeyError("\"name\" keyword argument not in class definition. It should look like <class Child(GameState, name=\"child\")>")
 
-		self.id: int = state_id
+		name = kwargs["name"]
 
+		# Disregard built in game_states
+		if (
+				name == "loading" or
+				name == "transition" or
+				name == "fade_transition"
+		):
+			return
+
+		# Add id to common and child class, then increment by 1
+		Common.add_game_state(name, GameState.child_state_id)
+		cls.id = GameState.child_state_id
+
+		GameState.child_state_id += 1
+
+	def __init__(self):
 		self._next_state = self
 
 	def set_next_state(self, next_state: "GameState"):

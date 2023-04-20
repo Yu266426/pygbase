@@ -7,6 +7,8 @@ from .particles.particle_settings import ParticleOptions
 class Common:
 	_values: dict[str, Any] = {}
 
+	_game_states: dict[str, int] = {"all": 0}
+
 	_particle_settings: dict[str, dict[ParticleOptions, list[str] | tuple[float] | bool]] = {
 		"default": {
 			ParticleOptions.COLOUR: ["white"],
@@ -25,6 +27,22 @@ class Common:
 	@classmethod
 	def get_value(cls, name: str) -> Any:
 		return cls._values[name]
+
+	@classmethod
+	def add_game_state(cls, name: str, game_state_id: int):
+		if name not in cls._game_states:
+			cls._game_states[name] = game_state_id
+		else:
+			logging.error(f"Game state name: `{name}` already taken")
+			raise KeyError(f"Game state name: `{name}` does not exist")
+
+	@classmethod
+	def get_game_state_id(cls, name: str):
+		if name in cls._game_states:
+			return cls._game_states[name]
+		else:
+			logging.error(f"Game state name: `{name}` does not exist")
+			raise KeyError(f"Game state name: `{name}` does not exist")
 
 	@classmethod
 	def add_particle_setting(

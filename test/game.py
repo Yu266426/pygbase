@@ -5,9 +5,9 @@ from pygbase import GameState, InputManager, EventManager
 from pygbase import UIScreen
 
 
-class Game(GameState):
+class Game(GameState, name="game"):
 	def __init__(self):
-		super().__init__(1)
+		super().__init__()
 
 		print("Loaded game")
 

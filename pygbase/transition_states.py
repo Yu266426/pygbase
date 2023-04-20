@@ -6,7 +6,7 @@ from . import Common
 from .game_state import GameState
 
 
-class Transition(GameState):
+class Transition(GameState, name="transition"):
 	def __init__(self, current_state: GameState, to_state: GameState):  # NoQA
 		self.id = -2
 		self._next_state = self
@@ -21,7 +21,7 @@ class Transition(GameState):
 		pass
 
 
-class FadeTransition(Transition):
+class FadeTransition(Transition, name="fade_transition"):
 	def __init__(self, current_state: GameState, to_state: GameState, transition_time: float, fade_colour: tuple[int, int, int]):
 		super().__init__(current_state, to_state)
 
