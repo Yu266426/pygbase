@@ -3,7 +3,7 @@ import pygame
 from .. import Common
 from ..camera import Camera
 from ..inputs import InputManager
-from .element import Frame
+from .element import Frame, UIElement
 
 
 class ControlledScreen:
@@ -83,11 +83,14 @@ class ControlledScreen:
 
 class UIScreen:
 	def __init__(self):
-		self._frames: list[Frame] = []
+		self._frames: list[Frame] = [Frame((0, 0), (Common.get_value("screen_width"), Common.get_value("screen_height")))]
 
 	def add_frame(self, frame: Frame):
 		self._frames.append(frame)
 		return frame
+
+	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> Frame:
+		return self._frames[0].add_element(element, align_with_previous=align_with_previous, add_on_to_previous=add_on_to_previous)
 
 	def on_ui(self) -> bool:
 		for frame in self._frames:
