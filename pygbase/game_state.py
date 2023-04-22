@@ -44,10 +44,11 @@ class GameState:
 	def get_next_state(self) -> "GameState":
 		return self._next_state
 
-	@abstractmethod
 	def update(self, delta: float):
 		pass
 
-	@abstractmethod
+	def fixed_update(self, delta: float):
+		pass
+
 	def draw(self, screen: pygame.Surface):
 		pass

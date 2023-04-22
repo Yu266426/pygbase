@@ -1,3 +1,4 @@
+import time
 from typing import Type, Union, Optional
 
 import pygame
@@ -10,7 +11,14 @@ from .loader import Loading
 
 
 class App:
-	def __init__(self, after_load_state: Type[GameState], title: Optional[str] = None, flags=pygame.SCALED, vsync=True):
+	def __init__(
+			self,
+			after_load_state: Type[GameState],
+			title: Optional[str] = None,
+			flags=0,
+			vsync=True,
+			fixed_time_fps: int = 60
+	):
 		self.is_running: bool = True
 
 		self.window: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=flags, vsync=vsync)
@@ -22,6 +30,8 @@ class App:
 
 		self.game_state: Union[Loading, GameState] = Loading(after_load_state)
 
+		self.fixed_time_rate = 1 / fixed_time_fps
+
 		EventManager.add_handler("all", pygame.QUIT, self.quit_handler)
 
 	def quit_handler(self, event: pygame.event.Event):
@@ -31,13 +41,14 @@ class App:
 		InputManager.reset()
 		EventManager.handle_events(self.game_state.id)
 
-	def update(self):
-		delta = min(self.clock.tick() / 1000, 0.12)
-
+	def update(self, delta):
 		if self.title is None:
 			pygame.display.set_caption(f"fps: {round(self.clock.get_fps())}, delta: {delta}")
 
 		self.game_state.update(delta)
+
+	def fixed_update(self):
+		self.game_state.fixed_update(self.fixed_time_rate)
 
 	def draw(self):
 		self.game_state.draw(self.window)
@@ -48,8 +59,19 @@ class App:
 		self.game_state = self.game_state.get_next_state()
 
 	def run(self):
+		update_timer = 0.0
+
 		while self.is_running:
+			delta = min(self.clock.tick() / 1000, 0.12)
+
+			update_timer += delta
+
 			self.handle_events()
-			self.update()
+			self.update(delta)
+
+			while update_timer >= self.fixed_time_rate:
+				self.fixed_update()
+				update_timer -= self.fixed_time_rate
+
 			self.draw()
 			self.switch_state()
