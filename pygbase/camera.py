@@ -10,7 +10,7 @@ class Camera:
 		self.pos: pygame.Vector2 = target.copy()
 
 	def lerp_to_target(self, target: pygame.Vector2, amount: float):
-		# clamp amount so that it does not go above 1.0
+		# clamp amount so that it does not go above 1.0!
 		amount = max(0.0, min(amount, 1.0))
 		if self.pos.distance_to(target) < 1:
 			# correct any minor position error
