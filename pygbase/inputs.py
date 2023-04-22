@@ -9,6 +9,8 @@ class InputManager:
 	mouse_up: list[bool, bool, bool] = [False, False, False]
 	mouse_pressed: tuple[bool, bool, bool] = (False, False, False)
 
+	scroll: pygame.Vector2 = pygame.Vector2()
+
 	# Keyboard
 	keys_down = [False] * 512
 	keys_pressed = [False] * 512
@@ -22,6 +24,8 @@ class InputManager:
 		cls.mouse_up[:] = [False, False, False]
 		cls.mouse_pressed = pygame.mouse.get_pressed(3)
 
+		cls.scroll.update(0)
+
 		cls.keys_down[:] = [False] * 512
 		cls.keys_up[:] = [False] * 512
 		cls.keys_pressed = pygame.key.get_pressed()
@@ -34,6 +38,7 @@ class InputManager:
 		EventManager.add_handler("all", pygame.KEYUP, cls._keyup_handler)
 		EventManager.add_handler("all", pygame.MOUSEBUTTONDOWN, cls._mouse_down_handler)
 		EventManager.add_handler("all", pygame.MOUSEBUTTONUP, cls._mouse_up_handler)
+		EventManager.add_handler("all", pygame.MOUSEWHEEL, cls._mouse_wheel_handler)
 
 	@classmethod
 	def _keydown_handler(cls, event: pygame.event.Event):
@@ -56,3 +61,11 @@ class InputManager:
 		button = event.button - 1
 		if button <= 2:
 			cls.mouse_up[button] = True
+
+	@classmethod
+	def _mouse_wheel_handler(cls, event: pygame.event.Event):
+		wheel_x = event.precise_x
+		wheel_y = event.precise_y
+
+		cls.scroll.x = wheel_x
+		cls.scroll.y = wheel_y
