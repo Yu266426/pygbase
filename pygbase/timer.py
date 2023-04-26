@@ -7,6 +7,9 @@ class Timer:
 
 		self._is_done = start_on
 
+	def set_cooldown(self, cooldown: float):
+		self._cooldown = cooldown
+
 	def tick(self, delta: float = 1 / 60):
 		self._time -= delta
 
