@@ -12,7 +12,7 @@ class Game(pygbase.GameState, name="game"):
 		self.button_frame.add_element(pygbase.Button((0, 0), 1, "button", self.button_pressed, (), text="Test", size=(400, None)))
 		from particle_playground import ParticlePlayground
 		self.button_frame.add_element(
-			pygbase.Button((0, 20), pygbase.Common.get_resource_type("image"), "button", self.set_next_state_type, (ParticlePlayground, ()), text="Test", size=(400, None)),
+			pygbase.Button((0, 20), pygbase.Common.get_resource_type("image"), "button", self.set_next_state_type, (ParticlePlayground, ()), text="Particle", size=(400, None)),
 			align_with_previous=(True, False),
 			add_on_to_previous=(False, True)
 		)

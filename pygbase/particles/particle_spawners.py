@@ -1,3 +1,4 @@
+import math
 import random
 from abc import abstractmethod
 
@@ -70,7 +71,7 @@ class CircleSpawner(ParticleSpawner):
 
 	def spawn(self):
 		self.manager.add_particle(
-			self.pos + get_angled_vector(random.uniform(0, 360), random.uniform(0, self.radius)),
+			self.pos + get_angled_vector(random.uniform(0, 360), random.uniform(0, self.radius ** 2) ** 0.5),
 			self.particle_settings
 		)
 
