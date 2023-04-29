@@ -1,4 +1,3 @@
-import time
 from typing import Type, Union, Optional
 
 import pygame

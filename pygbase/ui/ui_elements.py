@@ -32,14 +32,14 @@ class Frame(UIElement):
 	def __init__(self, pos: tuple, size: tuple, bg_colour=None):
 		super().__init__(pos, size)
 
+		self.active = True
+
 		self.bg = None
 		if bg_colour is not None:
 			self.bg = pygame.Surface(self.size).convert_alpha()
 			self.bg.fill(bg_colour)
 
 		self.elements: list[UIElement] = []
-
-		self.active = True
 
 	def added_to_frame(self, frame: "Frame"):
 		super().added_to_frame(frame)
@@ -66,6 +66,8 @@ class Frame(UIElement):
 			element.pos = element.pos[0], self.elements[-1].pos[1] + self.elements[-1].size[1] + element.pos[1]
 			element.rect = pygame.Rect(element.pos, element.size)
 
+		out_of_bounds = False
+
 		# If element does not go out of frame, add it to the frame
 		if 0 <= element.pos[0] and element.pos[0] + element.size[0] <= self.size[0]:
 			if 0 <= element.pos[1] and element.pos[1] + element.size[1] <= self.size[1]:
@@ -73,8 +75,11 @@ class Frame(UIElement):
 
 				self.elements.append(element)
 			else:
-				logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
+				out_of_bounds = True
 		else:
+			out_of_bounds = True
+
+		if out_of_bounds:
 			logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element.pos}) is not contained within frame (size: {self.size})")
 
 		return self
@@ -131,11 +136,11 @@ class Button(UIElement):
 
 		if size is not None:
 			if size[0] is None:
-				self.image.scale((self.image.get_image().get_width() * size[1] / self.image.get_image().get_height(), size[1]))
+				self.image = self.image.scale((self.image.get_image().get_width() * size[1] / self.image.get_image().get_height(), size[1]))
 			elif size[1] is None:
-				self.image.scale((size[0], self.image.get_image().get_height() * size[0] / self.image.get_image().get_width()))
+				self.image = self.image.scale((size[0], self.image.get_image().get_height() * size[0] / self.image.get_image().get_width()))
 			else:
-				self.image.scale(size)
+				self.image = self.image.scale(size)
 
 		if alignment == "l":
 			super().__init__(pos, self.image.get_image().get_size())

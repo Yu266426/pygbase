@@ -19,8 +19,8 @@ from .particles.particle_spawners import ParticleSpawner, PointSpawner, CircleSp
 from .resources import ResourceType, ResourceManager
 from .timer import Timer
 from .transition_states import FadeTransition
-from .ui.element import Frame, ImageElement, TextElement, TextSelectionMenu, Button
-from .ui.screen import UIScreen, ControlledScreen
+from .ui.ui_elements import Frame, ImageElement, TextElement, TextSelectionMenu, Button
+from .ui.ui_manager import UIManager
 
 
 def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5):
