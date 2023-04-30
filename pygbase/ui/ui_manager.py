@@ -3,14 +3,13 @@ import logging
 import pygame
 
 from .ui_elements import UIElement, Frame
-from ..common import Common
 
 
 class UIManager:
 	def __init__(self):
-		self._frames: list[Frame] = [Frame((0, 0), (Common.get_value("screen_width"), Common.get_value("screen_height")))]
+		self._frames: list[Frame] = [Frame((0, 0), (1, 1))]
 
-	def add_frame(self, frame: Frame):
+	def add_frame(self, frame: Frame) -> Frame:
 		self._frames.append(frame)
 		return frame
 

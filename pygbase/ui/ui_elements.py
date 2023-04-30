@@ -3,6 +3,7 @@ from typing import Optional, Union, Callable
 
 import pygame
 
+from .. import Common
 from ..graphics.image import Image
 from ..inputs import InputManager
 from ..resources import ResourceManager
@@ -10,16 +11,51 @@ from ..ui.text import Text
 
 
 class UIElement:
-	def __init__(self, pos: tuple, size: tuple):
-		self.pos = pos
-		self.size = size
+	def __init__(self, percent_pos: tuple[float, float], percent_size: tuple[float, float]):
+		# Validate ranges
+		if not (0 <= percent_pos[0] <= 1):
+			logging.error(f"Percent pos x: {percent_pos[0]} is not in range")
+			raise ValueError(f"Percent pos x: {percent_pos[0]} is not in range")
+		if not (0 <= percent_pos[1] <= 1):
+			logging.error(f"Percent pos y: {percent_pos[1]} is not in range")
+			raise ValueError(f"Percent pos y: {percent_pos[1]} is not in range")
 
-		self.rect = pygame.Rect(pos, size) if pos[1] is not None else None
+		if not (0 <= percent_size[0] <= 1):
+			logging.error(f"Percent size width: {percent_pos[0]} is not in range")
+			raise ValueError(f"Percent size width: {percent_pos[0]} is not in range")
+		if not (0 <= percent_size[1] <= 1):
+			logging.error(f"Percent size height: {percent_pos[1]} is not in range")
+			raise ValueError(f"Percent size height: {percent_pos[1]} is not in range")
+
+		# Percent size of container
+		self.percent_pos: tuple[float, float] = percent_pos
+		self.percent_size: tuple[float, float] = percent_size
+
+		# Defaults size to screen, but is later changed if added to a frame
+		self.pos: pygame.Vector2 = pygame.Vector2(
+			Common.get_value("screen_width") * self.percent_pos[0],
+			Common.get_value("screen_height") * self.percent_pos[1]
+		)
+		self.size: pygame.Vector2 = pygame.Vector2(
+			Common.get_value("screen_width") * self.percent_size[0],
+			Common.get_value("screen_height") * self.percent_size[1]
+		)
+
+		self.rect = pygame.Rect(self.pos, self.size)
 
 	def added_to_frame(self, frame: "Frame"):
-		# Offset the rect to frame space
-		self.rect.x += frame.rect.x
-		self.rect.y += frame.rect.y
+		self.pos.update(
+			frame.size.x * self.percent_pos[0],
+			frame.size.y * self.percent_pos[1]
+		)
+
+		self.size.update(
+			frame.size.x * self.percent_size[0],
+			frame.size.y * self.percent_size[1]
+		)
+
+		self.rect.topleft = self.pos + frame.pos
+		self.rect.size = self.size
 
 	def update(self, delta: float):
 		pass
@@ -29,20 +65,21 @@ class UIElement:
 
 
 class Frame(UIElement):
-	def __init__(self, pos: tuple, size: tuple, bg_colour=None):
-		super().__init__(pos, size)
+	def __init__(self, percent_pos: tuple[float, float], percent_size: tuple[float, float], bg_colour=None):
+		super().__init__(percent_pos, percent_size)
 
 		self.active = True
 
 		self.bg = None
 		if bg_colour is not None:
-			self.bg = pygame.Surface(self.size).convert_alpha()
+			self.bg = pygame.Surface(self.size, flags=pygame.SRCALPHA)
 			self.bg.fill(bg_colour)
 
 		self.elements: list[UIElement] = []
 
 	def added_to_frame(self, frame: "Frame"):
 		super().added_to_frame(frame)
+
 		for f_element in self.elements:
 			f_element.rect.x += frame.rect.x
 			f_element.rect.y += frame.rect.y
@@ -50,29 +87,25 @@ class Frame(UIElement):
 	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> "Frame":
 		# Align
 		if align_with_previous[0]:
-			element.pos = self.elements[-1].pos[0], element.pos[1]
-			element.rect = pygame.Rect(element.pos, element.size)
+			element.percent_pos = self.elements[-1].percent_pos[0], element.percent_pos[1]
 
 		if align_with_previous[1]:
-			element.pos = element.pos[0], self.elements[-1].pos[1]
-			element.rect = pygame.Rect(element.pos, element.size)
+			element.percent_pos = element.percent_pos[0], self.elements[-1].percent_pos[1]
 
 		# Add on
 		if add_on_to_previous[0]:
-			element.pos = self.elements[-1].pos[0] + self.elements[-1].size[0] + element.pos[0], element.pos[1]
-			element.rect = pygame.Rect(element.pos, element.size)
+			element.percent_pos = self.elements[-1].percent_pos[0] + self.elements[-1].percent_size[0] + element.percent_pos[0], element.percent_pos[1]
 
 		if add_on_to_previous[1]:
-			element.pos = element.pos[0], self.elements[-1].pos[1] + self.elements[-1].size[1] + element.pos[1]
-			element.rect = pygame.Rect(element.pos, element.size)
+			element.percent_pos = element.percent_pos[0], self.elements[-1].percent_pos[1] + self.elements[-1].percent_size[1] + element.percent_pos[1]
+
+		element.added_to_frame(self)
 
 		out_of_bounds = False
 
 		# If element does not go out of frame, add it to the frame
 		if 0 <= element.pos[0] and element.pos[0] + element.size[0] <= self.size[0]:
 			if 0 <= element.pos[1] and element.pos[1] + element.size[1] <= self.size[1]:
-				element.added_to_frame(self)
-
 				self.elements.append(element)
 			else:
 				out_of_bounds = True
@@ -99,20 +132,48 @@ class Frame(UIElement):
 
 
 class ImageElement(UIElement):
-	def __init__(self, pos: tuple, resource_type: int, resource_name: str, size: Optional[tuple] = None, alignment: str = "l"):
+	def __init__(self, percent_pos: tuple[float, float], percent_size: tuple[float, float], resource_type: int, resource_name: str, alignment: str = "l"):
+		super().__init__(percent_pos, percent_size)
+
 		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
+		self.alignment = alignment
 
-		if size is not None:
-			self.image.scale(size)
+	def added_to_frame(self, frame: "Frame"):
+		image_size = self.image.get_image().get_size()
 
-		if alignment == "l":
-			super().__init__(pos, self.image.get_image().get_size())
-		elif alignment == "r":
-			super().__init__((pos[0] - self.image.get_image().get_width(), pos[1]), self.image.get_image().get_size())
-		elif alignment == "c":
-			super().__init__((pos[0] - self.image.get_image().get_width() / 2, pos[1]), self.image.get_image().get_size())
+		if self.percent_size[0] != 0 and self.percent_size[1] != 0:
+			self.image: Image = self.image.scale((frame.size.x * self.percent_size[0], frame.size.y * self.percent_size[1]))
+		elif self.percent_size[0] != 0:
+			new_width = frame.size[0] * self.percent_size[0]
+
+			self.image: Image = self.image.scale((new_width, new_width * image_size[1] / image_size[0]))
+		elif self.percent_size[1] != 0:
+			new_height = frame.size[1] * self.percent_size[1]
+
+			self.image: Image = self.image.scale((new_height * image_size[0] / image_size[1], new_height))
+
+		self.percent_size = (
+			self.image.get_image().get_width() / frame.size[0],
+			self.image.get_image().get_height() / frame.size[1]
+		)
+
+		if self.alignment == "l":
+			# Position unchanged
+			pass
+		elif self.alignment == "r":
+			self.percent_pos = (
+				self.percent_pos[0] - self.percent_size[0],
+				self.percent_pos[1]
+			)
+		elif self.alignment == "c":
+			self.percent_pos = (
+				self.percent_pos[0] - self.percent_size[0] / 2,
+				self.percent_pos[1]
+			)
 		else:
-			raise ValueError(f"center: `{alignment}` on {self.__class__.__name__} is not valid")
+			raise ValueError(f"center: `{self.alignment}` on {self.__class__.__name__} is not valid")
+
+		super().added_to_frame(frame)
 
 	def draw(self, screen: pygame.Surface):
 		self.image.draw(screen, self.rect)
@@ -121,40 +182,28 @@ class ImageElement(UIElement):
 class Button(UIElement):
 	def __init__(
 			self,
-			pos: tuple,
+			percent_pos: tuple[float, float],
+			percent_size: tuple[float, float],
 			resource_type: int,
 			resource_name: str,
 			callback: Callable[..., None],
 			callback_args: tuple,
-			size: Optional[tuple] = None,
 			text: str = "",
 			text_colour="white",
 			font: str = "arial",
 			alignment: str = "l"
 	):
+		super().__init__(percent_pos, percent_size)
+
 		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
 
-		if size is not None:
-			if size[0] is None:
-				self.image = self.image.scale((self.image.get_image().get_width() * size[1] / self.image.get_image().get_height(), size[1]))
-			elif size[1] is None:
-				self.image = self.image.scale((size[0], self.image.get_image().get_height() * size[0] / self.image.get_image().get_width()))
-			else:
-				self.image = self.image.scale(size)
-
-		if alignment == "l":
-			super().__init__(pos, self.image.get_image().get_size())
-		elif alignment == "r":
-			super().__init__((pos[0] - self.image.get_image().get_width(), pos[1]), self.image.get_image().get_size())
-		elif alignment == "c":
-			super().__init__((pos[0] - self.image.get_image().get_width() / 2, pos[1]), self.image.get_image().get_size())
-		else:
-			raise ValueError(f"center: `{alignment}` on {self.__class__.__name__} is not valid")
+		self.alignment = alignment
 
 		self.callback = callback
 		self.callback_args = callback_args
 
 		self.mouse_on = False
+
 		self.highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.highlight.fill((255, 255, 255, 40))
 
@@ -163,7 +212,45 @@ class Button(UIElement):
 		self.font = font
 
 	def added_to_frame(self, frame: "Frame"):
+		image_size = self.image.get_image().get_size()
+
+		if self.percent_size[0] != 0 and self.percent_size[1] != 0:
+			self.image: Image = self.image.scale((frame.size.x * self.percent_size[0], frame.size.y * self.percent_size[1]))
+		elif self.percent_size[0] != 0:
+			new_width = frame.size[0] * self.percent_size[0]
+
+			self.image: Image = self.image.scale((new_width, new_width * image_size[1] / image_size[0]))
+		elif self.percent_size[1] != 0:
+			new_height = frame.size[1] * self.percent_size[1]
+
+			self.image: Image = self.image.scale((new_height * image_size[0] / image_size[1], new_height))
+
+		self.percent_size = (
+			self.image.get_image().get_width() / frame.size[0],
+			self.image.get_image().get_height() / frame.size[1]
+		)
+
+		self.highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
+		self.highlight.fill((255, 255, 255, 40))
+
+		if self.alignment == "l":
+			# Position unchanged
+			pass
+		elif self.alignment == "r":
+			self.percent_pos = (
+				self.percent_pos[0] - self.percent_size[0],
+				self.percent_pos[1]
+			)
+		elif self.alignment == "c":
+			self.percent_pos = (
+				self.percent_pos[0] - self.percent_size[0] / 2,
+				self.percent_pos[1]
+			)
+		else:
+			raise ValueError(f"center: `{self.alignment}` on {self.__class__.__name__} is not valid")
+
 		super().added_to_frame(frame)
+
 		self.text = Text((self.rect.centerx, self.rect.top + self.rect.height * 0.2), self.font, self.size[1] * 0.7, self.text_colour, self.text, use_sys=True)
 
 	def update(self, delta: float):
@@ -184,6 +271,7 @@ class Button(UIElement):
 			screen.blit(self.highlight, self.rect)
 
 
+# TODO: Change these to use percentages
 class TextElement(UIElement):
 	def __init__(self, pos: tuple, font_name: str, height: int | float, colour, text: str, centered=False, use_sys=True):
 		super().__init__(pos, (0, height))
