@@ -50,8 +50,8 @@ class UIElement:
 		)
 
 		self.size.update(
-			frame.size.x * self.percent_size[0],
-			frame.size.y * self.percent_size[1]
+			self.percent_size[0] * frame.size.x,
+			self.percent_size[1] * frame.size.y
 		)
 
 		self.rect.topleft = self.pos + frame.pos
@@ -70,34 +70,44 @@ class Frame(UIElement):
 
 		self.active = True
 
+		self.bg_colour = bg_colour
 		self.bg = None
-		if bg_colour is not None:
+
+		if self.bg_colour is not None:
 			self.bg = pygame.Surface(self.size, flags=pygame.SRCALPHA)
-			self.bg.fill(bg_colour)
+			self.bg.fill(self.bg_colour)
 
 		self.elements: list[UIElement] = []
 
 	def added_to_frame(self, frame: "Frame"):
 		super().added_to_frame(frame)
 
+		if self.bg_colour is not None:
+			self.bg = pygame.Surface(self.size, flags=pygame.SRCALPHA)
+			self.bg.fill(self.bg_colour)
+
+		self.reposition_elements_on_frame_add(frame)
+
+	def reposition_elements_on_frame_add(self, frame: "Frame"):
 		for f_element in self.elements:
 			f_element.rect.x += frame.rect.x
 			f_element.rect.y += frame.rect.y
 
 	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> "Frame":
-		# Align
-		if align_with_previous[0]:
-			element.percent_pos = self.elements[-1].percent_pos[0], element.percent_pos[1]
+		if len(self.elements) > 0:
+			# Align
+			if align_with_previous[0]:
+				element.percent_pos = self.elements[-1].percent_pos[0], element.percent_pos[1]
 
-		if align_with_previous[1]:
-			element.percent_pos = element.percent_pos[0], self.elements[-1].percent_pos[1]
+			if align_with_previous[1]:
+				element.percent_pos = element.percent_pos[0], self.elements[-1].percent_pos[1]
 
-		# Add on
-		if add_on_to_previous[0]:
-			element.percent_pos = self.elements[-1].percent_pos[0] + self.elements[-1].percent_size[0] + element.percent_pos[0], element.percent_pos[1]
+			# Add on
+			if add_on_to_previous[0]:
+				element.percent_pos = self.elements[-1].percent_pos[0] + self.elements[-1].percent_size[0] + element.percent_pos[0], element.percent_pos[1]
 
-		if add_on_to_previous[1]:
-			element.percent_pos = element.percent_pos[0], self.elements[-1].percent_pos[1] + self.elements[-1].percent_size[1] + element.percent_pos[1]
+			if add_on_to_previous[1]:
+				element.percent_pos = element.percent_pos[0], self.elements[-1].percent_pos[1] + self.elements[-1].percent_size[1] + element.percent_pos[1]
 
 		element.added_to_frame(self)
 
@@ -271,14 +281,23 @@ class Button(UIElement):
 			screen.blit(self.highlight, self.rect)
 
 
-# TODO: Change these to use percentages
 class TextElement(UIElement):
-	def __init__(self, pos: tuple, font_name: str, height: int | float, colour, text: str, centered=False, use_sys=True):
-		super().__init__(pos, (0, height))
+	def __init__(self, percent_pos: tuple[float, float], font_name: str, percent_height: float, colour, text: str, centered=False, use_sys=True):
+		super().__init__(percent_pos, (0, percent_height))
 
-		self.text = Text(pos, font_name, height * 1.25, colour, text, use_sys=use_sys)
+		self.font_name = font_name
+		self.colour = colour
+		self.text_str = text
+		self.use_sys = use_sys
+
+		self.text: Optional[Text] = None
 
 		self.centered = centered
+
+	def added_to_frame(self, frame: "Frame"):
+		super().added_to_frame(frame)
+
+		self.text = Text(self.pos, self.font_name, self.size.y * 1.25, self.colour, self.text_str, use_sys=self.use_sys)
 
 	def set_text(self, new_text: str):
 		self.text.set_text(new_text)
@@ -296,21 +315,30 @@ class TextElement(UIElement):
 
 
 class TextSelectionMenu(Frame):
-	def __init__(self, pos: tuple, size: tuple, image_resource_type: int, options: list):
-		super().__init__(pos, size, bg_colour=(0, 0, 0, 150))
+	def __init__(self, percent_pos: tuple[float, float], percent_size: tuple[float, float], image_resource_type: int, options: list):
+		super().__init__(percent_pos, percent_size, bg_colour=(0, 0, 0, 150))
+
+		self.image_resource_type = image_resource_type
 
 		self.options = options
 
 		self.index: int = 0
 		self.current_option = self.options[self.index]
 
-		self.add_element(Button((0, 0), image_resource_type, "left", self.change_option, (-1,), size=(None, self.rect.height)))
-		self.add_element(Button((self.rect.width, 0), image_resource_type, "right", self.change_option, (1,), size=(None, self.rect.height), alignment="r"))
+		self.text: Optional[TextElement] = None
 
-		self.text = TextElement((self.rect.width / 2, self.rect.height * 0.3 / 2), "arial", self.rect.height * 0.7, (255, 255, 255), self.current_option, centered=True)
+	def added_to_frame(self, frame: "Frame"):
+		super().added_to_frame(frame)
+
+		self.add_element(Button((0, 0), (0, 1), self.image_resource_type, "left", self._change_option, (-1,)))
+		self.add_element(Button((1, 0), (0, 1), self.image_resource_type, "right", self._change_option, (1,), alignment="r"))
+
+		self.text = TextElement((0.5, 0.15), "arial", 0.7, (255, 255, 255), self.current_option, centered=True)
 		self.add_element(self.text)
 
-	def change_option(self, direction):
+		self.reposition_elements_on_frame_add(frame)
+
+	def _change_option(self, direction):
 		self.index += direction
 
 		if self.index < 0:

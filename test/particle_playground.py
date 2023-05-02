@@ -40,10 +40,6 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 	def draw(self, screen: pygame.Surface):
 		screen.fill((20, 20, 20))
 
-		# screen.blit(self.ui._frames[0].elements[0].image.get_image(), (0, 0))
-
-		# print(self.ui._frames[0].elements[0].pos, self.ui._frames[0].elements[0].size, self.ui._frames[0].elements[0].image.get_image().get_size())
-
 		self.particles.draw(screen, self.camera)
 
 		self.ui.draw(screen)
