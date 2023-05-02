@@ -9,6 +9,10 @@ class UIManager:
 	def __init__(self):
 		self._frames: list[Frame] = [Frame((0, 0), (1, 1))]
 
+	@property
+	def base_container(self):
+		return self._frames[0]
+
 	def add_frame(self, frame: Frame) -> Frame:
 		self._frames.append(frame)
 		return frame
@@ -19,7 +23,7 @@ class UIManager:
 	def on_ui(self) -> bool:
 		for frame in self._frames:
 			if frame.active:
-				if frame.rect.collidepoint(*pygame.mouse.get_pos()):
+				if frame._rect.collidepoint(*pygame.mouse.get_pos()):
 					return True
 
 		return False
