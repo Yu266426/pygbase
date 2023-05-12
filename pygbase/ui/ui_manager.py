@@ -1,5 +1,3 @@
-import logging
-
 import pygame
 
 from .ui_elements import UIElement, Frame
@@ -21,10 +19,14 @@ class UIManager:
 		return self._frames[0].add_element(element, align_with_previous=align_with_previous, add_on_to_previous=add_on_to_previous)
 
 	def on_ui(self) -> bool:
-		for frame in self._frames:
+		for frame in self._frames[1:]:
 			if frame.active:
 				if frame.rect.collidepoint(*pygame.mouse.get_pos()):
 					return True
+
+		for element in self._frames[0].elements:
+			if element.rect.collidepoint(*pygame.mouse.get_pos()):
+				return True
 
 		return False
 

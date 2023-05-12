@@ -21,23 +21,18 @@ class UIElement:
 
 		self._validate_init_values()
 
-		if container is None:
-			frame_size = Common.get_value("screen_width"), Common.get_value("screen_height")
-			container_offset = (0, 0)
-		else:
-			frame_size = container.size
-			container_offset = container.rect.topleft
+		self._update_container_properties()
 
 		self._pos: pygame.Vector2 = pygame.Vector2(
-			frame_size[0] * self.percent_pos[0],
-			frame_size[1] * self.percent_pos[1]
+			self.frame_size[0] * self.percent_pos[0],
+			self.frame_size[1] * self.percent_pos[1]
 		)
 		self._size: pygame.Vector2 = pygame.Vector2(
-			frame_size[0] * self.percent_size[0],
-			frame_size[1] * self.percent_size[1]
+			self.frame_size[0] * self.percent_size[0],
+			self.frame_size[1] * self.percent_size[1]
 		)
 
-		self._rect: pygame.Rect = pygame.Rect(self._pos + container_offset, self.size)
+		self._rect: pygame.Rect = pygame.Rect(self._pos + self.container_offset, self.size)
 
 		self.time = 0
 		self.hovered = False
@@ -60,6 +55,14 @@ class UIElement:
 			logging.error(f"Percent size height: {self.percent_size[1]} is not in range")
 			raise ValueError(f"Percent size height: {self.percent_size[1]} is not in range")
 
+	def _update_container_properties(self):
+		if self.container is None:
+			self.frame_size = Common.get_value("screen_width"), Common.get_value("screen_height")
+			self.container_offset = (0, 0)
+		else:
+			self.frame_size = self.container.size
+			self.container_offset = self.container.rect.topleft
+
 	@property
 	def pos(self) -> pygame.Vector2:
 		return self._pos
@@ -73,16 +76,18 @@ class UIElement:
 		return self._rect
 
 	def reposition(self):
+		self._update_container_properties()
+
 		self._pos.update(
-			self.container.size[0] * self.percent_pos[0],
-			self.container.size[1] * self.percent_pos[1]
+			self.frame_size[0] * self.percent_pos[0],
+			self.frame_size[1] * self.percent_pos[1]
 		)
 		self._size.update(
-			self.container.size[0] * self.percent_size[0],
-			self.container.size[1] * self.percent_size[1]
+			self.frame_size[0] * self.percent_size[0],
+			self.frame_size[1] * self.percent_size[1]
 		)
 
-		self._rect.topleft = self.pos + self.container.rect.topleft
+		self._rect.topleft = self.pos + self.container_offset
 		self._rect.size = self.size
 
 	def add_action(self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()) -> "UIElement":
