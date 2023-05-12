@@ -10,11 +10,11 @@ class Game(pygbase.GameState, name="game"):
 		self.ui = pygbase.UIManager()
 		self.button_frame = self.ui.add_frame(pygbase.Frame((0.02, 0.02), (0.4, 0.96), bg_colour=(50, 50, 50, 100)))
 
-		self.button_frame.add_element(pygbase.Button((0, 0), (1, 0), pygbase.Common.get_resource_type("image"), "button", print, ("Button Pressed!",), self.button_frame, text="Button"))
+		self.button_frame.add_element(pygbase.Button((0, 0), (1, 0), pygbase.Common.get_resource_type("image"), "button", self.button_frame, print, callback_args=("Button Pressed!",), text="Click"))
 
 		from particle_playground import ParticlePlayground
 		self.button_frame.add_element(
-			pygbase.Button((0, 0.01), (1, 0), pygbase.Common.get_resource_type("image"), "button", self.set_next_state_type, (ParticlePlayground, ()), self.button_frame, text="Particle"),
+			pygbase.Button((0, 0.01), (1, 0), pygbase.Common.get_resource_type("image"), "button", self.button_frame, self.set_next_state_type, callback_args=(ParticlePlayground, ()), text="Particle"),
 			align_with_previous=(True, False),
 			add_on_to_previous=(False, True)
 		)

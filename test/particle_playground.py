@@ -14,8 +14,8 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 			pygbase.Button(
 				(0.02, 0.02), (0.2, 0),
 				pygbase.Common.get_resource_type("image"), "button",
-				self.set_next_state_type, (Game, ()),
 				self.ui.base_container,
+				self.set_next_state_type, callback_args=(Game, ()),
 				text="Back",
 			)
 		)

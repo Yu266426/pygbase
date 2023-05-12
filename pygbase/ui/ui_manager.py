@@ -23,7 +23,7 @@ class UIManager:
 	def on_ui(self) -> bool:
 		for frame in self._frames:
 			if frame.active:
-				if frame._rect.collidepoint(*pygame.mouse.get_pos()):
+				if frame.rect.collidepoint(*pygame.mouse.get_pos()):
 					return True
 
 		return False

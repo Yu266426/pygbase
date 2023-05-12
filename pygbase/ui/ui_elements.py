@@ -3,6 +3,7 @@ from typing import Optional, Callable
 
 import pygame
 
+from .enums import UIActionTriggers
 from .. import Common
 from ..graphics.image import Image
 from ..inputs import InputManager
@@ -12,26 +13,13 @@ from ..ui.text import Text
 
 class UIElement:
 	def __init__(self, percent_pos: tuple[float, float], percent_size: tuple[float, float], container: Optional["Frame"]):
-		# Validate ranges
-		if not (0 <= percent_pos[0] <= 1):
-			logging.error(f"Percent pos x: {percent_pos[0]} is not in range")
-			raise ValueError(f"Percent pos x: {percent_pos[0]} is not in range")
-		if not (0 <= percent_pos[1] <= 1):
-			logging.error(f"Percent pos y: {percent_pos[1]} is not in range")
-			raise ValueError(f"Percent pos y: {percent_pos[1]} is not in range")
-
-		if not (0 < percent_size[0] <= 1):
-			logging.error(f"Percent size width: {percent_size[0]} is not in range")
-			raise ValueError(f"Percent size width: {percent_size[0]} is not in range")
-		if not (0 < percent_size[1] <= 1):
-			logging.error(f"Percent size height: {percent_size[1]} is not in range")
-			raise ValueError(f"Percent size height: {percent_size[1]} is not in range")
-
 		self.container = container
 
 		# Percent size of container
 		self.percent_pos: tuple[float, float] = percent_pos
 		self.percent_size: tuple[float, float] = percent_size
+
+		self._validate_init_values()
 
 		if container is None:
 			frame_size = Common.get_value("screen_width"), Common.get_value("screen_height")
@@ -50,6 +38,27 @@ class UIElement:
 		)
 
 		self._rect: pygame.Rect = pygame.Rect(self._pos + container_offset, self.size)
+
+		self.time = 0
+		self.hovered = False
+
+		self._actions: dict[UIActionTriggers, list[tuple[Callable[..., None], tuple]]] = {trigger: [] for trigger in UIActionTriggers}
+
+	def _validate_init_values(self):
+		# Validate ranges
+		if not (0 <= self.percent_pos[0] <= 1):
+			logging.error(f"Percent pos x: {self.percent_pos[0]} is not in range")
+			raise ValueError(f"Percent pos x: {self.percent_pos[0]} is not in range")
+		if not (0 <= self.percent_pos[1] <= 1):
+			logging.error(f"Percent pos y: {self.percent_pos[1]} is not in range")
+			raise ValueError(f"Percent pos y: {self.percent_pos[1]} is not in range")
+
+		if not (0 < self.percent_size[0] <= 1):
+			logging.error(f"Percent size width: {self.percent_size[0]} is not in range")
+			raise ValueError(f"Percent size width: {self.percent_size[0]} is not in range")
+		if not (0 < self.percent_size[1] <= 1):
+			logging.error(f"Percent size height: {self.percent_size[1]} is not in range")
+			raise ValueError(f"Percent size height: {self.percent_size[1]} is not in range")
 
 	@property
 	def pos(self) -> pygame.Vector2:
@@ -76,8 +85,31 @@ class UIElement:
 		self._rect.topleft = self.pos + self.container.rect.topleft
 		self._rect.size = self.size
 
+	def add_action(self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()) -> "UIElement":
+		self._actions[trigger].append((action, action_args))
+		return self
+
+	def _perform_action(self, trigger: UIActionTriggers):
+		for action in self._actions[trigger]:
+			action[0](*action[1])
+
 	def update(self, delta: float):
-		pass
+		self.time += delta
+
+		if self._rect.collidepoint(pygame.mouse.get_pos()):
+			if not self.hovered:
+				self.hovered = True
+				self._perform_action(UIActionTriggers.ON_HOVER_ENTER)
+
+			if InputManager.mouse_down[0]:
+				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
+			if InputManager.mouse_up[0]:
+				self._perform_action(UIActionTriggers.ON_CLICK_UP)
+		else:
+			if self.hovered:
+				self.hovered = False
+
+				self._perform_action(UIActionTriggers.ON_HOVER_EXIT)
 
 	def draw(self, screen: pygame.Surface):
 		pass
@@ -104,7 +136,7 @@ class Frame(UIElement):
 		for element in self.elements:
 			element.reposition()
 
-	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> "Frame":
+	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElement:
 		if len(self.elements) > 0:
 			# Align
 			if align_with_previous[0]:
@@ -136,9 +168,12 @@ class Frame(UIElement):
 		if out_of_bounds:
 			logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element._pos}) is not contained within frame (size: {self._size})")
 
-		return self
+		# return self
+		return element
 
 	def update(self, delta: float):
+		super().update(delta)
+
 		if self.active:
 			for element in self.elements:
 				element.update(delta)
@@ -205,64 +240,24 @@ class ImageElement(UIElement):
 		self.image.draw(screen, self._rect)
 
 
-class Button(UIElement):
+class Button(ImageElement):
 	def __init__(
 			self,
 			percent_pos: tuple[float, float],
 			percent_size: tuple[float, float],
 			resource_type: int,
 			resource_name: str,
-			callback: Callable[..., None],
-			callback_args: tuple,
 			container: Frame,
+			callback: Callable[..., None],
+			callback_args: tuple = (),
 			text: str = "",
 			text_colour="white",
 			font: str = "arial",
-			alignment: str = "l",
+			alignment: str = "l"
 	):
-		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
-		image_size = self.image.get_image().get_size()
+		super().__init__(percent_pos, percent_size, resource_type, resource_name, container, alignment=alignment)
 
-		if percent_size[0] != 0 and percent_size[1] != 0:
-			self.image: Image = self.image.scale((container._size.x * percent_size[0], container._size.y * percent_size[1]))
-		elif percent_size[0] != 0:
-			new_width = container._size[0] * percent_size[0]
-
-			self.image: Image = self.image.scale((new_width, new_width * image_size[1] / image_size[0]))
-		elif percent_size[1] != 0:
-			new_height = container._size[1] * percent_size[1]
-
-			self.image: Image = self.image.scale((new_height * image_size[0] / image_size[1], new_height))
-
-		new_percent_size = (
-			self.image.get_image().get_width() / container._size[0],
-			self.image.get_image().get_height() / container._size[1]
-		)
-
-		self.alignment = alignment
-		new_percent_pos = percent_pos
-		if self.alignment == "l":
-			# Position unchanged
-			pass
-		elif self.alignment == "r":
-			new_percent_pos = (
-				percent_pos[0] - new_percent_size[0],
-				percent_pos[1]
-			)
-		elif self.alignment == "c":
-			new_percent_pos = (
-				percent_pos[0] - new_percent_size[0] / 2,
-				percent_pos[1]
-			)
-		else:
-			raise ValueError(f"center: `{self.alignment}` on {self.__class__.__name__} is not valid")
-
-		super().__init__(new_percent_pos, new_percent_size, container)
-
-		self.callback = callback
-		self.callback_args = callback_args
-
-		self.mouse_on = False
+		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
 
 		self.highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.highlight.fill((255, 255, 255, 40))
@@ -274,22 +269,12 @@ class Button(UIElement):
 
 		self.text.pos = (self.rect.centerx, self.rect.top + self.rect.height * 0.2)
 
-	def update(self, delta: float):
-		if self._rect.collidepoint(pygame.mouse.get_pos()):
-			self.mouse_on = True
-
-			if InputManager.mouse_up[0]:
-				if self.callback is not None:
-					self.callback(*self.callback_args)
-		else:
-			self.mouse_on = False
-
 	def draw(self, screen: pygame.Surface):
-		self.image.draw(screen, self._rect)
+		super().draw(screen)
 		self.text.draw(screen, "c")
 
-		if self.mouse_on:
-			screen.blit(self.highlight, self._rect)
+		if self.hovered:
+			screen.blit(self.highlight, self.rect)
 
 
 class TextElement(UIElement):
@@ -364,8 +349,8 @@ class TextSelectionMenu(Frame):
 
 		self.text: Optional[TextElement] = None
 
-		self.add_element(Button((0, 0), (0, 1), self.image_resource_type, "left", self._change_option, (-1,), self))
-		self.add_element(Button((1, 0), (0, 1), self.image_resource_type, "right", self._change_option, (1,), self, alignment="r"))
+		self.add_element(Button((0, 0), (0, 1), self.image_resource_type, "left", self, self._change_option, callback_args=(-1,)))
+		self.add_element(Button((1, 0), (0, 1), self.image_resource_type, "right", self, self._change_option, callback_args=(1,), alignment="r"))
 
 		self.text = TextElement((0.5, 0.15), "arial", 0.7, (255, 255, 255), self.current_option, self, centered=True)
 		self.add_element(self.text)
