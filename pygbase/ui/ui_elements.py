@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Callable
+from typing import Optional, Callable, TypeVar
 
 import pygame
 
@@ -35,9 +35,11 @@ class UIElement:
 		self._rect: pygame.Rect = pygame.Rect(self._pos + self.container_offset, self.size)
 
 		self.time = 0
+		self.timed_actions: dict[int, list[UIActionTriggers]] = {}  # TODO
+
 		self.hovered = False
 
-		self._actions: dict[UIActionTriggers, list[tuple[Callable[..., None], tuple]]] = {trigger: [] for trigger in UIActionTriggers}
+		self._actions: dict[UIActionTriggers, list[tuple[Callable[..., None], tuple]]] = {trigger: [] for trigger in UIActionTriggers}  # TODO: Change to have list of set actions. Callables would be an action with input of a Callable
 
 	def _validate_init_values(self):
 		# Validate ranges
@@ -120,6 +122,9 @@ class UIElement:
 		pass
 
 
+T = TypeVar('T', bound=UIElement)
+
+
 class Frame(UIElement):
 	def __init__(self, percent_pos: tuple[float, float], percent_size: tuple[float, float], container: Optional["Frame"] = None, bg_colour=None):
 		super().__init__(percent_pos, percent_size, container)
@@ -141,7 +146,7 @@ class Frame(UIElement):
 		for element in self.elements:
 			element.reposition()
 
-	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElement:
+	def add_element(self, element: T, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> T:
 		if len(self.elements) > 0:
 			# Align
 			if align_with_previous[0]:
