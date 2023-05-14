@@ -111,6 +111,10 @@ class UIElement:
 
 				self.time = 0
 
+				if InputManager.mouse_pressed[0]:
+					self.clicked = True
+					self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
+
 			if InputManager.mouse_down[0]:
 				self.clicked = True
 				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
@@ -125,6 +129,11 @@ class UIElement:
 			if self.hovered:
 				self.hovered = False
 				self._perform_action(UIActionTriggers.ON_HOVER_EXIT)
+
+				self.time = 0
+
+			if self.clicked:
+				self.clicked = False
 
 				self.time = 0
 
