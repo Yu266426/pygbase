@@ -38,6 +38,7 @@ class UIElement:
 		self.timed_actions: dict[int, list[UIActionTriggers]] = {}  # TODO
 
 		self.hovered = False
+		self.clicked = False
 
 		self._actions: dict[UIActionTriggers, list[tuple[Callable[..., None], tuple]]] = {trigger: [] for trigger in UIActionTriggers}  # TODO: Change to have list of set actions. Callables would be an action with input of a Callable
 
@@ -108,15 +109,24 @@ class UIElement:
 				self.hovered = True
 				self._perform_action(UIActionTriggers.ON_HOVER_ENTER)
 
+				self.time = 0
+
 			if InputManager.mouse_down[0]:
+				self.clicked = True
 				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
+
+				self.time = 0
 			if InputManager.mouse_up[0]:
+				self.clicked = False
 				self._perform_action(UIActionTriggers.ON_CLICK_UP)
+
+				self.time = 0
 		else:
 			if self.hovered:
 				self.hovered = False
-
 				self._perform_action(UIActionTriggers.ON_HOVER_EXIT)
+
+				self.time = 0
 
 	def draw(self, screen: pygame.Surface):
 		pass
@@ -269,8 +279,11 @@ class Button(ImageElement):
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
 
-		self.highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
-		self.highlight.fill((255, 255, 255, 40))
+		self.hover_highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
+		self.hover_highlight.fill((255, 255, 255, 40))
+
+		self.clicked_highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
+		self.clicked_highlight.fill((255, 255, 255, 70))
 
 		self.text: Text = Text((self.rect.centerx, self.rect.top + self.rect.height * 0.2), font, self.size[1] * 0.7, text_colour, text, use_sys=True)
 
@@ -283,8 +296,10 @@ class Button(ImageElement):
 		super().draw(screen)
 		self.text.draw(screen, "c")
 
-		if self.hovered:
-			screen.blit(self.highlight, self.rect)
+		if self.clicked:
+			screen.blit(self.clicked_highlight, self.rect)
+		elif self.hovered:
+			screen.blit(self.hover_highlight, self.rect)
 
 
 class TextElement(UIElement):
