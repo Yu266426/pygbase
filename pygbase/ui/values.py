@@ -27,7 +27,7 @@ class UIAnchors(enum.Enum):
 
 
 class UIValue:
-	def __init__(self, value: float, is_pixels: bool):
+	def __init__(self, value: float, is_pixels: bool = True):
 		self.is_pixels = is_pixels
 
 		if not self.is_pixels:
