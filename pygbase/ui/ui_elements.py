@@ -33,19 +33,26 @@ class Frame(UIElement):
 
 	def add_element(self, element: UIElementType, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElementType:
 		if len(self.elements) > 0:
+			prev_element = self.elements[-1]
 			# Align
 			if align_with_previous[0]:
-				element.ui_pos = self.elements[-1].ui_pos[0], element.ui_pos[1]
+				element.ui_pos = prev_element.ui_pos[0], element.ui_pos[1]
 
 			if align_with_previous[1]:
-				element.ui_pos = element.ui_pos[0], self.elements[-1].ui_pos[1]
+				element.ui_pos = element.ui_pos[0], prev_element.ui_pos[1]
 
 			# Add on
 			if add_on_to_previous[0]:
-				element.ui_pos = self.elements[-1].ui_pos[0].add(self.elements[-1].ui_size[0], self.container_size[0]).add(element.ui_pos[0], self.container_size[0]), element.ui_pos[1]
+				element.ui_pos = (
+					prev_element.ui_pos[0].add(prev_element.ui_size[0], prev_element.container_size[0]).add(element.ui_pos[0], prev_element.container_size[0]),
+					element.ui_pos[1]
+				)
 
 			if add_on_to_previous[1]:
-				element.ui_pos = element.ui_pos[0], self.elements[-1].ui_pos[1].add(self.elements[-1].ui_size[1], self.container_size[1]).add(element.ui_pos[1], self.container_size[1])
+				element.ui_pos = (
+					element.ui_pos[0],
+					prev_element.ui_pos[1].add(prev_element.ui_size[1], prev_element.container_size[1]).add(element.ui_pos[1], prev_element.container_size[1])
+				)
 
 		element.reposition()
 
