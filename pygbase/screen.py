@@ -62,7 +62,7 @@ class ControlledScreen:
 		self._handle_bounds()
 
 	def _keyboard_control(self, delta: float, speed: float = 600):
-		if not InputManager.get_modifiers(pygame.KMOD_LCTRL):
+		if not InputManager.check_modifiers(pygame.KMOD_LCTRL):
 			x_input = InputManager.get_key_pressed(pygame.K_d) - InputManager.get_key_pressed(pygame.K_a)
 			y_input = InputManager.get_key_pressed(pygame.K_s) - InputManager.get_key_pressed(pygame.K_w)
 

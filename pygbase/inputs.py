@@ -81,7 +81,7 @@ class InputManager:
 		return cls._scroll.y
 
 	@classmethod
-	def get_modifiers(cls, *modifiers):
+	def check_modifiers(cls, *modifiers):
 		result = True
 		for modifier in modifiers:
 			if not cls._mods & modifier:
