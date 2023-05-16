@@ -1,4 +1,3 @@
-import logging
 from typing import Optional, Callable, TypeVar, TYPE_CHECKING
 
 import pygame
@@ -15,6 +14,8 @@ class UIElement:
 	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"]):
 		# UI data
 		self.container = container
+		self.container_size: tuple[float, float]
+		self.container_offset: tuple[float, float]
 		self._update_container_properties()
 
 		self.ui_pos: tuple[UIValue, UIValue] = pos
@@ -93,16 +94,16 @@ class UIElement:
 
 				self.time = 0
 
-				if InputManager.mouse_pressed[0]:
+				if InputManager.get_mouse_just_pressed(0):
 					self.clicked = True
 					self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
-			if InputManager.mouse_down[0]:
+			if InputManager.get_mouse_pressed(0):
 				self.clicked = True
 				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
 				self.time = 0
-			if InputManager.mouse_up[0]:
+			if InputManager.get_mouse_just_released(0):
 				self.clicked = False
 				self._perform_action(UIActionTriggers.ON_CLICK_UP)
 

@@ -1,5 +1,4 @@
 import enum
-from typing import Optional
 
 
 class UIActionTriggers(enum.Enum):

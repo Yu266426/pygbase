@@ -55,7 +55,7 @@ class Game(pygbase.GameState, name="game"):
 	def update(self, delta: float):
 		self.ui.update(delta)
 
-		if pygbase.InputManager.keys_down[pygame.K_ESCAPE]:
+		if pygbase.InputManager.get_key_just_pressed(pygame.K_ESCAPE):
 			pygbase.EventManager.post_event(pygame.QUIT)
 
 	def draw(self, screen: pygame.Surface):

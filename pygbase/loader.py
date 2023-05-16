@@ -1,9 +1,9 @@
-from typing import Type, Union
+from typing import Type
 
 import pygame
 
-from .resources import ResourceManager
 from .game_state import GameState
+from .resources import ResourceManager
 
 
 class Loading(GameState, name="loading"):
