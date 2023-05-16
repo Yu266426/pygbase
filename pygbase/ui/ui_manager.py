@@ -3,13 +3,14 @@ from typing import TypeVar
 import pygame
 
 from .ui_elements import UIElement, Frame
+from .values import UIValue
 
 T = TypeVar('T', bound=UIElement)
 
 
 class UIManager:
 	def __init__(self):
-		self._frames: list[Frame] = [Frame((0, 0), (1, 1))]
+		self._frames: list[Frame] = [Frame((UIValue(0, False), UIValue(0, False)), (UIValue(1, False), UIValue(1, False)))]
 
 	@property
 	def base_container(self):

@@ -12,7 +12,7 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 		from game import Game
 		self.ui.add_element(
 			pygbase.Button(
-				(0.02, 0.02), (0.2, 0),
+				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)), (pygbase.UIValue(0.2, False), pygbase.UIValue(0, False)),
 				pygbase.Common.get_resource_type("image"), "button",
 				self.ui.base_container,
 				self.set_next_state_type, callback_args=(Game, ()),

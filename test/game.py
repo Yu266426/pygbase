@@ -8,25 +8,48 @@ class Game(pygbase.GameState, name="game"):
 		super().__init__()
 
 		self.ui = pygbase.UIManager()
-		self.button_frame = self.ui.add_frame(pygbase.Frame((0.02, 0.02), (0.4, 0.96), bg_colour=(50, 50, 50, 100)))
+		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)), (pygbase.UIValue(0.4, False), pygbase.UIValue(0.96, False)), bg_colour=(50, 50, 50, 100)))
 
-		self.button_frame.add_element(pygbase.Button((0, 0), (1, 0), pygbase.Common.get_resource_type("image"), "button", self.button_frame, print, callback_args=("Button Pressed!",), text="Click"))
+		self.button_frame.add_element(pygbase.Button(
+			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
+			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
+			pygbase.Common.get_resource_type("image"),
+			"button",
+			self.button_frame,
+			print, callback_args=("Button Pressed!",),
+			text="Click"
+		))
 
 		from particle_playground import ParticlePlayground
 		self.button_frame.add_element(
-			pygbase.Button((0, 0.01), (1, 0), pygbase.Common.get_resource_type("image"), "button", self.button_frame, self.set_next_state_type, callback_args=(ParticlePlayground, ()), text="Particle"),
+			pygbase.Button(
+				(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
+				(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
+				pygbase.Common.get_resource_type("image"),
+				"button",
+				self.button_frame,
+				self.set_next_state_type,
+				callback_args=(ParticlePlayground, ()),
+				text="Particle"
+			),
 			align_with_previous=(True, False),
 			add_on_to_previous=(False, True)
 		)
 
 		self.button_frame.add_element(
-			pygbase.TextSelectionMenu((0, 0.01), (1, 0.1), pygbase.Common.get_resource_type("image"), ["first", "second"], self.button_frame),
+			pygbase.TextSelectionMenu(
+				(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
+				(pygbase.UIValue(1, False), pygbase.UIValue(0.1, False)),
+				pygbase.Common.get_resource_type("image"),
+				["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+				self.button_frame
+			),
 			align_with_previous=(True, False),
 			add_on_to_previous=(False, True)
 		)
 
 		self.ui.add_element(
-			pygbase.TextElement((0.5, 0.1), "arial", 0.1, "white", "Test", self.ui.base_container)
+			pygbase.TextElement((pygbase.UIValue(0.5, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test", self.ui.base_container)
 		)
 
 	def update(self, delta: float):
