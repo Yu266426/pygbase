@@ -1,1 +1,1 @@
-{"button": {"scale": 1, "rotatable": false}, "left": {"scale": 1, "rotatable": false}, "right": {"scale": 1, "rotatable": false}}
+{"button": {"scale": 1, "rotatable": false}, "left": {"scale": 5, "rotatable": true}, "right": {"scale": 1, "rotatable": false}}

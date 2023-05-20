@@ -52,6 +52,8 @@ class Game(pygbase.GameState, name="game"):
 			pygbase.TextElement((pygbase.UIValue(0.5, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test", self.ui.base_container)
 		)
 
+		self.left_image: pygbase.Image = pygbase.ResourceManager.get_resource(pygbase.Common.get_resource_type("image"), "left")
+
 	def update(self, delta: float):
 		self.ui.update(delta)
 
@@ -62,3 +64,8 @@ class Game(pygbase.GameState, name="game"):
 		screen.fill((20, 20, 20))
 
 		self.ui.draw(screen)
+
+		self.left_image.draw(screen, (400, 400), 20, (False, False))
+		self.left_image.draw(screen, (400, 500), 20, (True, False))
+		self.left_image.draw(screen, (400, 600), 20, (False, True))
+		self.left_image.draw(screen, (400, 700), 20, (True, True))
