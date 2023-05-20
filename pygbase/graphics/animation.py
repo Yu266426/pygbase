@@ -43,20 +43,27 @@ class Animation:
 			else:
 				self.frame = 0
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, flip: bool = False, flag: int = 0, draw_pos: str = "topleft"):
-		image = self.get_current_image()
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: bool = False, flag: int = 0, draw_pos: str = "topleft"):
+		current_image = self.get_current_image()
+		image_surf = current_image.get_image(angle)
 
 		# TODO: Finish all variations
 		if draw_pos == "topleft":
-			rect = image.get_image(angle).get_rect(center=image.get_image().get_rect(topleft=pos).center)
+			origin = current_image.get_image().get_rect(topleft=pos).center
+			rect = image_surf.get_rect(center=current_image.get_image().get_rect(topleft=pos).center)
 		elif draw_pos == "center":
-			rect = image.get_image(angle).get_rect(center=image.get_image().get_rect(center=pos).center)
+			origin = current_image.get_image().get_rect(center=pos).center
+			rect = image_surf.get_rect(center=current_image.get_image().get_rect(center=pos).center)
 		elif draw_pos == "midbottom":
-			rect = image.get_image(angle).get_rect(center=image.get_image().get_rect(midbottom=pos).center)
+			origin = current_image.get_image().get_rect(midbottom=pos).center
+			rect = image_surf.get_rect(center=current_image.get_image().get_rect(midbottom=pos).center)
 		else:
 			raise ValueError(f"{draw_pos} not a valid position.")
 
-		image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, flip=flip, special_flags=flag)
+		offset = (-pygame.Vector2(pivot_point)).rotate(-angle) + pivot_point
+		rect.center = offset + origin
+
+		current_image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, flip=flip, special_flags=flag)
 
 
 class AnimationManager:
@@ -84,5 +91,5 @@ class AnimationManager:
 	def update(self, delta: float):
 		self.states[self.current_state].change_frame(self.animation_info[self.current_state][0] * delta)
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, flip: bool = False, flag=0, draw_pos: str = "topleft"):
-		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, flip=flip, flag=flag, draw_pos=draw_pos)
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: bool = False, flag=0, draw_pos: str = "topleft"):
+		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, pivot_point=pivot_point, flip=flip, flag=flag, draw_pos=draw_pos)
