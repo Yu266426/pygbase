@@ -51,11 +51,11 @@ class UIElement:
 
 	@property
 	def pos(self) -> pygame.Vector2:
-		return self._pos
+		return self._pos.copy()
 
 	@property
 	def size(self) -> pygame.Vector2:
-		return self._size
+		return self._size.copy()
 
 	@property
 	def rect(self) -> pygame.Rect:
@@ -108,6 +108,10 @@ class UIElement:
 				self._perform_action(UIActionTriggers.ON_CLICK_UP)
 
 				self.time = 0
+
+			scroll_y = InputManager.get_scroll_y()
+			if scroll_y != 0:
+				self._perform_action(UIActionTriggers.ON_SCROLL_Y)
 		else:
 			if self.hovered:
 				self.hovered = False
@@ -120,7 +124,7 @@ class UIElement:
 
 				self.time = 0
 
-	def draw(self, screen: pygame.Surface):
+	def draw(self, surface: pygame.Surface):
 		pass
 
 

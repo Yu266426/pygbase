@@ -55,7 +55,7 @@ class Image:
 		image_index = int(angle / self.rotate_angle)
 		return self.angled_images[image_index]
 
-	def draw(self, screen: pygame.Surface, rect: pygame.Rect | tuple[int | float, int | float], angle: float = 0, flip: tuple[bool, bool] = (False, False), special_flags: int = 0):
+	def draw(self, screen: pygame.Surface, rect: pygame.Rect | tuple[float, float] | pygame.Vector2, angle: float = 0, flip: tuple[bool, bool] = (False, False), special_flags: int = 0):
 		if angle != 0:
 			factor = -1 if flip[0] ^ flip[1] else 1  # Exclusive or
 

@@ -3,9 +3,10 @@ from typing import Optional, Callable
 
 import pygame
 
-from .values import UIActionTriggers, UIValue
 from .ui_element import UIElement, UIElementType
+from .values import UIActionTriggers, UIValue
 from ..graphics.image import Image
+from ..inputs import InputManager
 from ..resources import ResourceManager
 from ..ui.text import Text
 
@@ -15,6 +16,8 @@ class Frame(UIElement):
 		super().__init__(pos, size, container)
 
 		self.active: bool = True
+
+		self.surface = pygame.Surface(self._size, flags=pygame.SRCALPHA)
 
 		self.bg_colour = bg_colour
 		self.bg: Optional[pygame.Surface] = None
@@ -80,13 +83,67 @@ class Frame(UIElement):
 			for element in self.elements:
 				element.update(delta)
 
-	def draw(self, screen: pygame.Surface):
+	def draw(self, surface: pygame.Surface):
 		if self.active:
+			self.surface.fill((0, 0, 0, 0))
+
 			if self.bg is not None:
-				screen.blit(self.bg, self._rect)
+				self.surface.blit(self.bg, (0, 0))
 
 			for element in self.elements:
-				element.draw(screen)
+				element.draw(self.surface)
+
+			surface.blit(self.surface, self.pos)
+
+
+class VerticalScrollingFrame(Frame):
+	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], scroll_speed, container: Optional["Frame"] = None, bg_colour=None):
+		super().__init__(pos, size, container=container, bg_colour=bg_colour)
+
+		self.scroll_speed = scroll_speed
+
+		self.scroll_offset = 0
+
+		self.top_element: Optional[UIElement] = None
+		self.bottom_element: Optional[UIElement] = None
+
+		self.add_action(UIActionTriggers.ON_SCROLL_Y, self.on_scroll)
+
+	def add_element(self, element: UIElementType, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElementType:
+		super().add_element(element, align_with_previous, add_on_to_previous)
+
+		if self.top_element is None:
+			self.top_element = element
+			self.bottom_element = element
+		else:
+			if element.pos.y < self.top_element.pos.y:
+				self.top_element = element
+			if element.pos.y > self.bottom_element.pos.y:
+				self.bottom_element = element
+
+		return element
+
+	def on_scroll(self):
+		if self.top_element is not None and self.bottom_element is not None:
+			scroll = InputManager.get_scroll_y()
+
+			for element in self.elements:
+				element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) + scroll * self.scroll_speed)
+				element.reposition()
+
+			if self.top_element.pos.y > 0:
+				offset = self.top_element.pos.y
+
+				for element in self.elements:
+					element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) - offset)
+					element.reposition()
+
+			if self.bottom_element.pos.y < 0:
+				offset = self.bottom_element.pos.y
+
+				for element in self.elements:
+					element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) - offset)
+					element.reposition()
 
 
 class ImageElement(UIElement):
@@ -141,8 +198,8 @@ class ImageElement(UIElement):
 
 		super().__init__(new_pos, new_size, container)
 
-	def draw(self, screen: pygame.Surface):
-		self.image.draw(screen, self._rect)
+	def draw(self, surface: pygame.Surface):
+		self.image.draw(surface, self.pos)
 
 
 class Button(ImageElement):
@@ -170,21 +227,21 @@ class Button(ImageElement):
 		self.clicked_highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.clicked_highlight.fill((255, 255, 255, 70))
 
-		self.text: Text = Text((self.rect.centerx, self.rect.top + self.rect.height * 0.2), font, self.size[1] * 0.7, text_colour, text, use_sys=True)
+		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.2), font, self.size[1] * 0.7, text_colour, text, use_sys=True)
 
 	def reposition(self):
 		super().reposition()
 
-		self.text.pos = (self.rect.centerx, self.rect.top + self.rect.height * 0.2)
+		self.text.pos = (self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.2)
 
-	def draw(self, screen: pygame.Surface):
-		super().draw(screen)
-		self.text.draw(screen, "c")
+	def draw(self, surface: pygame.Surface):
+		super().draw(surface)
+		self.text.draw(surface, "c")
 
 		if self.clicked:
-			screen.blit(self.clicked_highlight, self.rect)
+			surface.blit(self.clicked_highlight, self.pos)
 		elif self.hovered:
-			screen.blit(self.hover_highlight, self.rect)
+			surface.blit(self.hover_highlight, self.pos)
 
 
 class TextElement(UIElement):
@@ -219,7 +276,7 @@ class TextElement(UIElement):
 	def set_text(self, new_text: str):
 		self.text.set_text(new_text)
 
-		self._size = self.text.rendered_text[1].size
+		self._size = pygame.Vector2(self.text.rendered_text[1].size)
 		self.ui_size = (
 			UIValue(self.size[0], True),
 			UIValue(self.size[1], True)
@@ -227,7 +284,7 @@ class TextElement(UIElement):
 
 		self.rect.size = self.text.rendered_text[0].get_size()
 
-	def draw(self, screen: pygame.Surface):
+	def draw(self, surface: pygame.Surface):
 		render_surface = pygame.Surface(self.text.rendered_text[1].size).convert_alpha()
 		render_surface.fill((0, 0, 0, 0))
 		self.text.draw(render_surface, pos=(0, 0))
@@ -236,7 +293,7 @@ class TextElement(UIElement):
 		offset = 0
 		if self.centered:
 			offset = self._rect.width / 2
-		screen.blit(render_surface, (self._rect.x - offset, self._rect.y))
+		surface.blit(render_surface, (self.pos.x - offset, self.pos.y))
 
 
 class TextSelectionMenu(Frame):

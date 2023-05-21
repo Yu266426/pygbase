@@ -10,6 +10,8 @@ class UIActionTriggers(enum.Enum):
 	ON_HOVER_EXIT = enum.auto()
 	ON_HOVER_TIME = enum.auto()
 
+	ON_SCROLL_Y = enum.auto()
+
 
 class UIAnchors(enum.Enum):
 	TOP_LEFT = enum.auto()
@@ -29,9 +31,9 @@ class UIValue:
 	def __init__(self, value: float, is_pixels: bool = True):
 		self.is_pixels = is_pixels
 
-		if not self.is_pixels:
-			if not (0 <= value <= 1):
-				raise ValueError("Percent value has to be between 0 and 1")
+		# if not self.is_pixels:
+		# 	if not (0 <= value <= 1):
+		# 		raise ValueError("Percent value has to be between 0 and 1")
 
 		self._value = value
 

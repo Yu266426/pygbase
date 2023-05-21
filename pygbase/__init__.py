@@ -19,7 +19,7 @@ from .particles.particle_spawners import ParticleSpawner, PointSpawner, CircleSp
 from .resources import ResourceType, ResourceManager
 from .timer import Timer
 from .transition_states import FadeTransition
-from .ui import Frame, ImageElement, TextElement, TextSelectionMenu, Button
+from .ui import Frame, VerticalScrollingFrame, ImageElement, TextElement, TextSelectionMenu, Button
 from .ui import UIActionTriggers, UIAnchors, UIValue
 from .ui import UIManager
 

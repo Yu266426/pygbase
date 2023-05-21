@@ -8,7 +8,12 @@ class Game(pygbase.GameState, name="game"):
 		super().__init__()
 
 		self.ui = pygbase.UIManager()
-		self.button_frame = self.ui.add_frame(pygbase.Frame((pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)), (pygbase.UIValue(0.4, False), pygbase.UIValue(0.96, False)), bg_colour=(50, 50, 50, 100)))
+		self.button_frame = self.ui.add_frame(pygbase.VerticalScrollingFrame(
+			(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)),
+			(pygbase.UIValue(0.4, False), pygbase.UIValue(0.96, False)),
+			5,
+			bg_colour=(50, 50, 50, 100)
+		))
 
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
@@ -45,6 +50,18 @@ class Game(pygbase.GameState, name="game"):
 				self.button_frame
 			),
 			align_with_previous=(True, False),
+			add_on_to_previous=(False, True)
+		)
+
+		self.button_frame.add_element(
+			pygbase.TextSelectionMenu(
+				(pygbase.UIValue(0.1, False), pygbase.UIValue(0.01, False)),
+				(pygbase.UIValue(0.8, False), pygbase.UIValue(0.1, False)),
+				pygbase.Common.get_resource_type("image"),
+				["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+				self.button_frame
+			),
+			align_with_previous=(False, False),
 			add_on_to_previous=(False, True)
 		)
 
