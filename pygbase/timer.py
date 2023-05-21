@@ -1,11 +1,11 @@
 class Timer:
-	def __init__(self, cooldown: float, start_on: bool, repeating: bool):
+	def __init__(self, cooldown: float, start_done: bool, repeating: bool):
 		self._cooldown = cooldown
 		self._repeating = repeating
 
-		self._time = 0 if start_on else cooldown
+		self._time = 0 if start_done else cooldown
 
-		self._is_done = start_on
+		self._is_done = start_done
 
 	def set_cooldown(self, cooldown: float):
 		self._cooldown = cooldown
