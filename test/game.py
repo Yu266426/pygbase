@@ -18,7 +18,7 @@ class Game(pygbase.GameState, name="game"):
 		self.button_frame.add_element(pygbase.Button(
 			(pygbase.UIValue(0, False), pygbase.UIValue(0, False)),
 			(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-			pygbase.Common.get_resource_type("image"),
+			"image",
 			"button",
 			self.button_frame,
 			print, callback_args=("Button Pressed!",),
@@ -30,7 +30,7 @@ class Game(pygbase.GameState, name="game"):
 			pygbase.Button(
 				(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
 				(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
-				pygbase.Common.get_resource_type("image"),
+				"image",
 				"button",
 				self.button_frame,
 				self.set_next_state_type,
@@ -45,7 +45,7 @@ class Game(pygbase.GameState, name="game"):
 			pygbase.TextSelectionMenu(
 				(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
 				(pygbase.UIValue(1, False), pygbase.UIValue(0.1, False)),
-				pygbase.Common.get_resource_type("image"),
+				"image",
 				["1", "2", "3", "4", "5", "6", "7", "8", "9"],
 				self.button_frame
 			),
@@ -57,7 +57,7 @@ class Game(pygbase.GameState, name="game"):
 			pygbase.TextSelectionMenu(
 				(pygbase.UIValue(0.1, False), pygbase.UIValue(0.01, False)),
 				(pygbase.UIValue(0.8, False), pygbase.UIValue(0.1, False)),
-				pygbase.Common.get_resource_type("image"),
+				"image",
 				["1", "2", "3", "4", "5", "6", "7", "8", "9"],
 				self.button_frame
 			),

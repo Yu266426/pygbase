@@ -1,8 +1,8 @@
 import logging
 
 import pygame
-
 import pygbase.utils
+
 from .app import App
 from .camera import Camera
 from .common import Common

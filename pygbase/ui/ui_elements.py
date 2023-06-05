@@ -5,6 +5,7 @@ import pygame
 
 from .ui_element import UIElement, UIElementType
 from .values import UIActionTriggers, UIValue
+from ..common import Common
 from ..graphics.image import Image
 from ..inputs import InputManager
 from ..resources import ResourceManager
@@ -151,12 +152,12 @@ class ImageElement(UIElement):
 			self,
 			pos: tuple[UIValue, UIValue],
 			size: tuple[UIValue, UIValue],
-			resource_type: int,
+			resource_type_name: str,
 			resource_name: str,
 			container: Frame,
 			alignment: str = "l",
 	):
-		self.image: Image = ResourceManager.get_resource(resource_type, resource_name)
+		self.image: Image = ResourceManager.get_resource(Common.get_resource_type(resource_type_name), resource_name)
 		image_size = self.image.get_image().get_size()
 
 		if size[0].value != 0 and size[1].value != 0:
@@ -207,7 +208,7 @@ class Button(ImageElement):
 			self,
 			pos: tuple[UIValue, UIValue],
 			size: tuple[UIValue, UIValue],
-			resource_type: int,
+			resource_type_name: str,
 			resource_name: str,
 			container: Frame,
 			callback: Callable[..., None],
@@ -217,7 +218,7 @@ class Button(ImageElement):
 			font: str = "arial",
 			alignment: str = "l"
 	):
-		super().__init__(pos, size, resource_type, resource_name, container, alignment=alignment)
+		super().__init__(pos, size, resource_type_name, resource_name, container, alignment=alignment)
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
 
@@ -301,13 +302,11 @@ class TextSelectionMenu(Frame):
 			self,
 			pos: tuple[UIValue, UIValue],
 			size: tuple[UIValue, UIValue],
-			image_resource_type: int,
+			image_resource_type_name: str,
 			options: list,
 			container: Optional[Frame] = None
 	):
 		super().__init__(pos, size, container=container, bg_colour=(0, 0, 0, 150))
-
-		self.image_resource_type = image_resource_type
 
 		self.options = options
 
@@ -316,8 +315,8 @@ class TextSelectionMenu(Frame):
 
 		self.text: Optional[TextElement] = None
 
-		self.add_element(Button((UIValue(0, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), self.image_resource_type, "left", self, self._change_option, callback_args=(-1,)))
-		self.add_element(Button((UIValue(1, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), self.image_resource_type, "right", self, self._change_option, callback_args=(1,), alignment="r"))
+		self.add_element(Button((UIValue(0, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "left", self, self._change_option, callback_args=(-1,)))
+		self.add_element(Button((UIValue(1, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "right", self, self._change_option, callback_args=(1,), alignment="r"))
 
 		self.text = TextElement((UIValue(0.5, False), UIValue(0.15, False)), "arial", UIValue(0.7, False), (255, 255, 255), self.current_option, self, centered=True)
 		self.add_element(self.text)
