@@ -46,7 +46,7 @@ class Animation:
 			else:
 				self.frame = 0
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: tuple[bool, bool] = (False, False), flag: int = 0, draw_pos: str = "topleft"):
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: tuple[bool, bool] = (False, False), flags: int = 0, draw_pos: str = "topleft"):
 		current_image = self.get_current_image()
 		image_surf = current_image.get_image(angle)
 
@@ -66,7 +66,7 @@ class Animation:
 		offset = (-pygame.Vector2(pivot_point)).rotate(-angle) + pivot_point
 		rect.center = offset + origin
 
-		current_image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, flip=flip, special_flags=flag)
+		current_image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, flip=flip, flags=flags)
 
 
 class AnimationManager:
@@ -94,5 +94,5 @@ class AnimationManager:
 	def update(self, delta: float):
 		self.states[self.current_state].change_frame(self.animation_info[self.current_state][0] * delta)
 
-	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: tuple[bool, bool] = (False, False), flag=0, draw_pos: str = "topleft"):
-		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, pivot_point=pivot_point, flip=flip, flag=flag, draw_pos=draw_pos)
+	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: tuple[bool, bool] = (False, False), flags=0, draw_pos: str = "topleft"):
+		self.states[self.current_state].draw_at_pos(screen, pos, camera, angle=angle, pivot_point=pivot_point, flip=flip, flags=flags, draw_pos=draw_pos)
