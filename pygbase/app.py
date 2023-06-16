@@ -1,4 +1,4 @@
-from typing import Type, Union, Optional
+from typing import Type, Union, Optional, Callable
 
 import pygame
 
@@ -16,7 +16,8 @@ class App:
 			title: Optional[str] = None,
 			flags=0,
 			vsync=True,
-			fixed_time_fps: int = 60
+			fixed_time_fps: int = 60,
+			run_on_load_complete: tuple[Callable] = ()
 	):
 		self.is_running: bool = True
 
@@ -27,7 +28,7 @@ class App:
 		if self.title is not None:
 			pygame.display.set_caption(self.title)
 
-		self.game_state: Union[Loading, GameState] = Loading(after_load_state)
+		self.game_state: Union[Loading, GameState] = Loading(after_load_state, run_on_load_complete)
 
 		self.fixed_time_rate = 1 / fixed_time_fps
 
