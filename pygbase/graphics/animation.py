@@ -1,14 +1,14 @@
 import pygame
 
 from .image import Image
-from .. import Common
 from ..camera import Camera
 from ..resources import ResourceManager
 
 
 class Animation:
-	def __init__(self, sprite_sheet_name: str, anim_start_index: int, length: int, looping=True):
-		self.sprite_sheet_id = sprite_sheet_name
+	def __init__(self, type_name: str, sprite_sheet_name: str, anim_start_index: int, length: int, looping=True):
+		self.type_name = type_name
+		self.sprite_sheet_name = sprite_sheet_name
 		self.anim_start_index = anim_start_index
 		self.length = length
 
@@ -22,8 +22,8 @@ class Animation:
 	def _load_animation(self):
 		for index in range(self.anim_start_index, self.anim_start_index + self.length):
 			self.images.append(ResourceManager.get_resource(
-				Common.get_resource_type("sprite_sheet"),
-				self.sprite_sheet_id
+				self.type_name,
+				self.sprite_sheet_name
 			).get_image(index))
 
 	def done(self):

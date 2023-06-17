@@ -4,6 +4,8 @@ import os
 from collections import deque
 from typing import Any, Callable, Optional
 
+from .common import Common
+
 
 class ResourceType:
 	def __init__(self, name: str, container_path: str, file_ending: str, default_data: dict, init_check: Optional[Callable[[dict], bool]], load_resource: Callable[[dict, str], Any]):
@@ -129,9 +131,9 @@ class ResourceManager:
 			return False
 
 	@classmethod
-	def get_resource(cls, type_id: int, resource_name) -> Any:
-		return cls._loaded_resources[type_id][resource_name]
+	def get_resource(cls, type_name: str, resource_name) -> Any:
+		return cls._loaded_resources[Common.get_resource_type(type_name)][resource_name]
 
 	@classmethod
-	def get_resources_of_type(cls, type_id: int):
-		return cls._loaded_resources[type_id]
+	def get_resources_of_type(cls, type_name: str):
+		return cls._loaded_resources[Common.get_resource_type(type_name)]

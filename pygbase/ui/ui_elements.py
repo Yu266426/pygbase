@@ -157,7 +157,7 @@ class ImageElement(UIElement):
 			container: Frame,
 			alignment: str = "l",
 	):
-		self.image: Image = ResourceManager.get_resource(Common.get_resource_type(resource_type_name), resource_name)
+		self.image: Image = ResourceManager.get_resource(resource_type_name, resource_name)
 		image_size = self.image.get_image().get_size()
 
 		if size[0].value != 0 and size[1].value != 0:

@@ -69,7 +69,7 @@ class Game(pygbase.GameState, name="game"):
 			pygbase.TextElement((pygbase.UIValue(0.5, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test", self.ui.base_container)
 		)
 
-		self.left_image: pygbase.Image = pygbase.ResourceManager.get_resource(pygbase.Common.get_resource_type("image"), "left")
+		self.left_image: pygbase.Image = pygbase.ResourceManager.get_resource("image", "left")
 
 	def update(self, delta: float):
 		self.ui.update(delta)
