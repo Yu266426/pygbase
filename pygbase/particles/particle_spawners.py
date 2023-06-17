@@ -59,7 +59,7 @@ class PointSpawner(ParticleSpawner):
 
 
 class CircleSpawner(ParticleSpawner):
-	def __init__(self, pos, cooldown: float, amount: int, radius: float, start_active: bool, particle_type: str, manager: "ParticleManager"):
+	def __init__(self, pos, cooldown: float, amount: int, radius: float, start_active: bool, particle_type: str, manager: "ParticleManager", linear_velocity_range: tuple[tuple[float, float], tuple[float, float]] = ((0, 0), (0, 0)), radial_velocity_range: tuple[float, float] = (0, 0)):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
 		self.pos = pygame.Vector2(pos)
 		self.radius = radius
@@ -71,10 +71,15 @@ class CircleSpawner(ParticleSpawner):
 
 		self.manager = manager
 
+		self.linear_velocity_range = linear_velocity_range
+		self.radial_velocity_range = radial_velocity_range
+
 	def spawn(self):
+		offset = get_angled_vector(random.uniform(0, 360), random.uniform(0, self.radius ** 2) ** 0.5)
 		self.manager.add_particle(
-			self.pos + get_angled_vector(random.uniform(0, 360), random.uniform(0, self.radius ** 2) ** 0.5),
-			self.particle_settings
+			self.pos + offset,
+			self.particle_settings,
+			initial_velocity=offset.normalize() * random.uniform(*self.radial_velocity_range) + pygame.Vector2(random.uniform(*self.linear_velocity_range[0]), random.uniform(*self.linear_velocity_range[1]))
 		)
 
 

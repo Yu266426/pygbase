@@ -1,7 +1,15 @@
+import enum
 import logging
 from typing import Any
 
-from .particles.particle_settings import ParticleOptions
+
+class ParticleOptions(enum.Enum):
+	COLOUR = enum.auto()
+	SIZE = enum.auto()
+	SIZE_DECAY = enum.auto()
+	VELOCITY_DECAY = enum.auto()
+	GRAVITY = enum.auto()
+	EFFECTOR = enum.auto()
 
 
 class Common:
@@ -11,7 +19,7 @@ class Common:
 
 	_resource_types: dict[str, int] = {}
 
-	_particle_settings: dict[str, dict[ParticleOptions, list[str] | tuple[float] | bool]] = {
+	_particle_settings: dict[str, dict["ParticleOptions", list[str] | tuple[float] | bool]] = {
 		"default": {
 			ParticleOptions.COLOUR: ["white"],
 			ParticleOptions.SIZE: (4.0, 7.0),
