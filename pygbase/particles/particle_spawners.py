@@ -1,16 +1,19 @@
 import random
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 import pygame
 
 from ..common import Common
-from ..particles.particle_manager import ParticleManager
 from ..timer import Timer
 from ..utils import get_angled_vector
 
+if TYPE_CHECKING:
+	from ..particles.particle_manager import ParticleManager
+
 
 class ParticleSpawner:
-	def __init__(self, pos, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: ParticleManager):
+	def __init__(self, pos, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: "ParticleManager"):
 		self.active = start_active
 
 		self.pos = pygame.Vector2(pos)
@@ -44,7 +47,7 @@ class ParticleSpawner:
 
 
 class PointSpawner(ParticleSpawner):
-	def __init__(self, pos, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: ParticleManager):
+	def __init__(self, pos, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: "ParticleManager"):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
 
 	def spawn(self):
@@ -56,7 +59,7 @@ class PointSpawner(ParticleSpawner):
 
 
 class CircleSpawner(ParticleSpawner):
-	def __init__(self, pos, cooldown: float, amount: int, radius: float, start_active: bool, particle_type: str, manager: ParticleManager):
+	def __init__(self, pos, cooldown: float, amount: int, radius: float, start_active: bool, particle_type: str, manager: "ParticleManager"):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
 		self.pos = pygame.Vector2(pos)
 		self.radius = radius
@@ -76,7 +79,7 @@ class CircleSpawner(ParticleSpawner):
 
 
 class RectSpawner(ParticleSpawner):
-	def __init__(self, pos, cooldown: float, amount: int, size: tuple, start_active: bool, particle_type: str, manager: ParticleManager):
+	def __init__(self, pos, cooldown: float, amount: int, size: tuple, start_active: bool, particle_type: str, manager: "ParticleManager"):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
 
 		self.size = size
