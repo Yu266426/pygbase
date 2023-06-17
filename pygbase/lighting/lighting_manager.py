@@ -30,5 +30,4 @@ class LightingManager:
 		for light in self.lights:
 			light.draw(lighting_surf, camera)
 
-		# surface.blit(cls.lighting_surf, (0, 0))
 		surface.blit(lighting_surf, (0, 0), special_flags=pygame.BLEND_MULT)
