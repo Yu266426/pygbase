@@ -4,7 +4,7 @@ import pygame
 
 from ..camera import Camera
 from ..particles.particle_affectors import ParticleAttractor, AffectorTypes
-from ..particles.particle_settings import ParticleOptions as Options
+from ..common import ParticleOptions as Options
 
 
 class Particle:
