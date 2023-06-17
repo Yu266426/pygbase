@@ -54,4 +54,4 @@ class Particle:
 		self.size -= delta * self.size_decay
 
 	def draw(self, screen: pygame.Surface, camera: Camera):
-		pygame.draw.rect(screen, self.colour, (camera.world_to_screen(self.pos), (self.size, self.size)))
+		pygame.draw.rect(screen, self.colour, (camera.world_to_screen(self.pos - pygame.Vector2(round(self.size / 2))), (self.size, self.size)))

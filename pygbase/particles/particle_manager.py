@@ -14,9 +14,9 @@ if TYPE_CHECKING:
 
 class ParticleManager:
 	def __init__(self):
-		self.particles = []
+		self.particles: list[Particle] = []
 
-		self.spawners = []
+		self.spawners: list[ParticleSpawner] = []
 
 		self.affectors: dict[AffectorTypes, list] = {
 			AffectorTypes.ATTRACTOR: []
