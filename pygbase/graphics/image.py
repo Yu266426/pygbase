@@ -7,11 +7,14 @@ from ..common import Common
 
 
 class Image:
-	def __init__(self, image: str | pygame.SurfaceType, scale: float, rotatable: bool):
+	def __init__(self, image: str | pygame.SurfaceType, scale: float | tuple[float, float], rotatable: bool, scale_by: bool = True):
 		if isinstance(image, str):
-			self.image = pygame.transform.scale_by(pygame.image.load(image).convert_alpha(), scale)
-		else:
+			image: pygame.SurfaceType = pygame.image.load(image).convert_alpha()
+
+		if scale_by:
 			self.image = pygame.transform.scale_by(image.convert_alpha(), scale)
+		else:
+			self.image = pygame.transform.scale(image.convert_alpha(), scale)
 
 		self.rotatable = rotatable
 
@@ -30,10 +33,17 @@ class Image:
 			self.angled_images.append(pygame.transform.rotate(self.image, current_angle))
 			current_angle += self.rotate_angle
 
-	def scale(self, scale: tuple[float, float]):
-		self.image = pygame.transform.scale(self.image, scale)
-		if self.rotatable:
-			self._generate_rotations()
+	def scale(self, scale: tuple[float, float]) -> "Image":
+		return Image(self.image, scale, self.rotatable, scale_by=False)
+
+	def scale_by(self, scale: tuple[float, float]) -> "Image":
+		return Image(self.image, scale, self.rotatable, scale_by=True)
+
+	def get_image(self, angle: float = 0) -> pygame.Surface:
+		if angle != 0:
+			return self._get_angled_image(angle)
+		else:
+			return self.image
 
 	def _get_angled_image(self, angle: float):
 		if not self.rotatable:
@@ -45,19 +55,15 @@ class Image:
 		image_index = int(angle / self.rotate_angle)
 		return self.angled_images[image_index]
 
-	def get_image(self, angle: float = 0):
+	def draw(self, screen: pygame.Surface, rect: pygame.Rect | tuple[float, float] | pygame.Vector2, angle: float = 0, flip: tuple[bool, bool] = (False, False), flags: int = 0):
 		if angle != 0:
-			return self._get_angled_image(angle)
-		else:
-			return self.image
+			factor = -1 if flip[0] ^ flip[1] else 1  # Exclusive or
 
-	def draw(self, screen: pygame.Surface, rect: pygame.Rect | tuple[int | float, int | float], angle: float = 0, flip: bool = False, special_flags: int = 0):
-		if angle != 0:
-			image = self._get_angled_image(angle)
+			image = self._get_angled_image(angle * factor)
 		else:
 			image = self.image
 
 		if flip:
-			image = pygame.transform.flip(image, True, False)
+			image = pygame.transform.flip(image, *flip)
 
-		screen.blit(image, rect, special_flags=special_flags)
+		screen.blit(image, rect, special_flags=flags)

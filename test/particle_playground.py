@@ -7,16 +7,16 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 	def __init__(self):
 		super().__init__()
 
-		self.ui = pygbase.UIScreen()
-		self.button_frame = self.ui.add_frame(pygbase.Frame((20, 20), (100, 50), bg_colour=(50, 50, 50, 100)))
+		self.ui = pygbase.UIManager()
 
 		from game import Game
-		self.button_frame.add_element(
+		self.ui.add_element(
 			pygbase.Button(
-				(0, 0), pygbase.Common.get_resource_type("image"), "button",
-				self.set_next_state_type, (Game, ()),
-				size=(100, 50),
-				text="Back"
+				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)), (pygbase.UIValue(0.2, False), pygbase.UIValue(0, False)),
+				"image", "button",
+				self.ui.base_container,
+				self.set_next_state_type, callback_args=(Game, ()),
+				text="Back",
 			)
 		)
 
@@ -40,6 +40,7 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill((20, 20, 20))
-		self.ui.draw(screen)
 
 		self.particles.draw(screen, self.camera)
+
+		self.ui.draw(screen)

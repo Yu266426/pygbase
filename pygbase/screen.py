@@ -1,9 +1,8 @@
 import pygame
 
-from .. import Common
-from ..camera import Camera
-from ..inputs import InputManager
-from .element import Frame, UIElement
+from . import Common
+from .camera import Camera
+from .inputs import InputManager
 
 
 class ControlledScreen:
@@ -54,18 +53,18 @@ class ControlledScreen:
 		self._world_mouse_pos = self._camera.screen_to_world(self._mouse_pos)
 
 	def _mouse_control(self, mouse_button: int = 1):
-		if InputManager.mouse_down[mouse_button]:
+		if InputManager.get_mouse_just_pressed(mouse_button):
 			self._prev_mouse_pos = self._mouse_pos.copy()
 			self._prev_target = self._camera.pos.copy()
-		if InputManager.mouse_pressed[mouse_button]:
+		if InputManager.get_mouse_pressed(mouse_button):
 			self._camera.set_pos(self._prev_target + (self._prev_mouse_pos - self._mouse_pos))
 
 		self._handle_bounds()
 
 	def _keyboard_control(self, delta: float, speed: float = 600):
-		if not InputManager.mods & pygame.KMOD_LCTRL:
-			x_input = InputManager.keys_pressed[pygame.K_d] - InputManager.keys_pressed[pygame.K_a]
-			y_input = InputManager.keys_pressed[pygame.K_s] - InputManager.keys_pressed[pygame.K_w]
+		if not InputManager.check_modifiers(pygame.KMOD_LCTRL):
+			x_input = InputManager.get_key_pressed(pygame.K_d) - InputManager.get_key_pressed(pygame.K_a)
+			y_input = InputManager.get_key_pressed(pygame.K_s) - InputManager.get_key_pressed(pygame.K_w)
 
 			self._camera.set_pos(self._camera.pos + pygame.Vector2(x_input, y_input) * speed * delta)
 
@@ -79,31 +78,3 @@ class ControlledScreen:
 	@property
 	def world_mouse_pos(self):
 		return self._world_mouse_pos
-
-
-class UIScreen:
-	def __init__(self):
-		self._frames: list[Frame] = [Frame((0, 0), (Common.get_value("screen_width"), Common.get_value("screen_height")))]
-
-	def add_frame(self, frame: Frame):
-		self._frames.append(frame)
-		return frame
-
-	def add_element(self, element: UIElement, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> Frame:
-		return self._frames[0].add_element(element, align_with_previous=align_with_previous, add_on_to_previous=add_on_to_previous)
-
-	def on_ui(self) -> bool:
-		for frame in self._frames:
-			if frame.active:
-				if frame.rect.collidepoint(*pygame.mouse.get_pos()):
-					return True
-
-		return False
-
-	def update(self, delta: float):
-		for frame in self._frames:
-			frame.update(delta)
-
-	def draw(self, screen: pygame.Surface):
-		for frame in self._frames:
-			frame.draw(screen)
