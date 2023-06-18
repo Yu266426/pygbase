@@ -5,7 +5,7 @@ from .light import Light
 from .lighting_manager import LightingManager
 
 
-def init(max_radius: int, interval: int):
+def init_lighting(max_radius: int, interval: int):
 	pygbase.Common.set_value("max_light_radius", max_radius)
 	pygbase.Common.set_value("light_radius_interval", interval)
 
