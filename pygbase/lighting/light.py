@@ -42,8 +42,6 @@ class Light:
 		radius = int(self.radius + variation)
 		colour = int(max(0.0, min(1.0, self.brightness + variation / 20)))
 
-		print(radius)
-
 		light_surface = self.cached_lights[radius].copy()
 
 		light_surface.blit(self.brightness_surface, (0, 0), special_flags=pygame.BLEND_MULT)
