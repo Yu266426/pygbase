@@ -33,6 +33,8 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 	EventManager.init()
 	InputManager.register_handlers()
 
+	lighting.init()
+
 
 def add_resource_type(type_id: int, resource_type: ResourceType):
 	Common.add_resource_type(resource_type.name, type_id)
