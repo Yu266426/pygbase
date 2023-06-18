@@ -2,6 +2,7 @@ import math
 
 import pygame
 
+import pygbase
 from ..camera import Camera
 
 
@@ -28,6 +29,8 @@ class Light:
 
 		self.camera_affected = camera_affected
 
+		self.radius_interval = pygbase.Common.get_value("light_radius_interval")
+
 	def link_pos(self, pos: pygame.Vector2) -> "Light":
 		self.pos = pos
 		return self
@@ -40,9 +43,9 @@ class Light:
 		variation = math.sin((current_time - self.start_time) * self.variation_speed) * self.variation
 
 		radius = int(self.radius + variation)
-		colour = int(max(0.0, min(1.0, self.brightness + variation / 20)))
+		# colour = int(max(0.0, min(1.0, self.brightness + variation / 20)))
 
-		light_surface = self.cached_lights[radius].copy()
+		light_surface = self.cached_lights[int(radius / self.radius_interval) - 1].copy()
 
 		light_surface.blit(self.brightness_surface, (0, 0), special_flags=pygame.BLEND_MULT)
 		light_surface.blit(self.tint_surface, (0, 0), special_flags=pygame.BLEND_MULT)

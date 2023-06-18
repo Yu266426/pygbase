@@ -20,7 +20,7 @@ from .transition_states import FadeTransition
 from .ui import *
 
 
-def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5):
+def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5, max_light_radius: int = 600, interval: int = 2):
 	logging.basicConfig(level=logging_level, format="%(asctime)s - %(levelname)s - %(message)s")
 
 	pygame.init()
@@ -33,7 +33,7 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 	EventManager.init()
 	InputManager.register_handlers()
 
-	lighting.init()
+	lighting.init(max_light_radius, interval)
 
 
 def add_resource_type(type_id: int, resource_type: ResourceType):

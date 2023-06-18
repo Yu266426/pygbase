@@ -17,7 +17,7 @@ class App:
 			flags=0,
 			vsync=True,
 			fixed_time_fps: int = 60,
-			run_on_load_complete: tuple[Callable] = ()
+			run_on_load_complete: tuple[Callable, ...] = ()
 	):
 		self.is_running: bool = True
 
@@ -59,6 +59,8 @@ class App:
 		self.game_state = self.game_state.get_next_state()
 
 	def run(self):
+		self.is_running = True
+
 		update_timer = 0.0
 
 		while self.is_running:
