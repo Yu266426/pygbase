@@ -31,7 +31,7 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 	EventManager.init()
 	InputManager.register_handlers()
 
-	lighting.init_lighting(max_light_radius, light_radius_interval)
+	lighting._init_lighting(max_light_radius, light_radius_interval)
 
 
 def add_resource_type(type_id: int, resource_type: ResourceType):

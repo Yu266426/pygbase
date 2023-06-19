@@ -55,15 +55,24 @@ class Image:
 		image_index = int(angle / self.rotate_angle)
 		return self.angled_images[image_index]
 
-	def draw(self, screen: pygame.Surface, rect: pygame.Rect | tuple[float, float] | pygame.Vector2, angle: float = 0, flip: tuple[bool, bool] = (False, False), flags: int = 0):
-		if angle != 0:
-			factor = -1 if flip[0] ^ flip[1] else 1  # Exclusive or
-
-			image = self._get_angled_image(angle * factor)
-		else:
-			image = self.image
+	def draw(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple[float, float], angle: float = 0, flip: tuple[bool, bool] = (False, False), draw_pos: str = "topleft", flags: int = 0):
+		factor = -1 if flip[0] ^ flip[1] else 1  # Exclusive or
+		image = self.get_image(angle * factor)
 
 		if flip:
 			image = pygame.transform.flip(image, *flip)
+
+		origin = self.get_image()
+		if draw_pos == "topleft":
+			center = origin.get_rect(topleft=pos).center
+			rect = image.get_rect(center=center)
+		elif draw_pos == "center":
+			center = origin.get_rect(center=pos).center
+			rect = image.get_rect(center=center)
+		elif draw_pos == "midbottom":
+			center = origin.get_rect(midbottom=pos).center
+			rect = image.get_rect(center=center)
+		else:
+			raise ValueError(f"{draw_pos} not a valid position.")
 
 		screen.blit(image, rect, special_flags=flags)
