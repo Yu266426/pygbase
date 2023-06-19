@@ -72,22 +72,14 @@ class ResourceManager:
 
 					names.add(file_name[:-4])
 
-		# Sort the json in alphabetical order
+		# Reorganise config json
 		with open(config_path, "r") as config_file:
 			config_data: dict = json.load(config_file)
 
-		data = {}
-		for key, value in config_data.items():
-			if key in names:
-				data[key] = value
-
-		keys = list(data.keys())
-		keys.sort()
-
-		sorted_data = {key: data[key] for key in keys}
+		data = {key: value for key, value in config_data.items() if key in names}  # Make sure only available files are in config
 
 		with open(config_path, "w") as config_file:
-			config_file.write(json.dumps(sorted_data))
+			config_file.write(json.dumps(data, indent=2, sort_keys=True))
 
 		cls._loaded_resources[type_id] = {}
 
