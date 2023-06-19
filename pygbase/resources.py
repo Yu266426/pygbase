@@ -78,8 +78,13 @@ class ResourceManager:
 
 		data = {key: value for key, value in config_data.items() if key in names}  # Make sure only available files are in config
 
+		keys = list(data.keys())
+		keys.sort()
+
+		sorted_data = {key: data[key] for key in keys}
+
 		with open(config_path, "w") as config_file:
-			config_file.write(json.dumps(data, indent=2, sort_keys=True))
+			config_file.write(json.dumps(sorted_data, indent=2))
 
 		cls._loaded_resources[type_id] = {}
 
