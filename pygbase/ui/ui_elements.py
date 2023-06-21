@@ -3,13 +3,12 @@ from typing import Optional, Callable
 
 import pygame
 
+from .text import Text
 from .ui_element import UIElement, UIElementType
-from .values import UIActionTriggers, UIValue
-from ..common import Common
+from .values import UIActionTriggers, UIValue, UIAnchors
 from ..graphics.image import Image
 from ..inputs import InputManager
 from ..resources import ResourceManager
-from ..ui.text import Text
 
 
 class Frame(UIElement):
@@ -228,16 +227,17 @@ class Button(ImageElement):
 		self.clicked_highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.clicked_highlight.fill((255, 255, 255, 70))
 
-		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.2), font, self.size[1] * 0.7, text_colour, text, use_sys=True)
+		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height / 2), font, int(self.size[1] * 0.7), text_colour, text, use_sys=True, max_width=self.rect.width * 0.9, anchor=UIAnchors.CENTER)
 
 	def reposition(self):
 		super().reposition()
 
-		self.text.pos = (self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.2)
+		self.text.pos = (self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height / 2)
+		self.text.reposition()
 
 	def draw(self, surface: pygame.Surface):
 		super().draw(surface)
-		self.text.draw(surface, "c")
+		self.text.draw(surface)
 
 		if self.clicked:
 			surface.blit(self.clicked_highlight, self.pos)
@@ -253,48 +253,50 @@ class TextElement(UIElement):
 			height: UIValue,
 			colour, text: str,
 			container: Frame,
-			centered=False,
-			use_sys=True
+			use_sys: bool = True,
+			anchor: UIAnchors = UIAnchors.TOP_LEFT
 	):
 		self.text = Text(
 			(pos[0].get_pixels(container.size.x), pos[1].get_pixels(container.size.y)),
 			font_name,
-			height.get_pixels(container.size.y) * 1.25,
+			int(height.get_pixels(container.size.y) * 1.2),
 			colour,
 			text,
-			use_sys=use_sys
+			use_sys=use_sys,
+			anchor=anchor
 		)
 
-		super().__init__(pos, (UIValue(self.text.rendered_text[1].width, True), height), container)
-
-		self.centered = centered
+		super().__init__((
+			UIValue(self.text.text_rect.x).add(pos[0], container.size[0]),
+			UIValue(self.text.text_rect.y).add(pos[1], container.size[1])),
+			(UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)), container)
 
 	def reposition(self):
 		super().reposition()
 
-		self.text.pos = self.rect.topleft
+		self.text.reposition()
+
+		self._pos.update(self.text.text_rect.topleft)
+		self.ui_pos = (
+			UIValue(self.text.text_rect.x).add(self.ui_pos[0], self.container_size[0]),
+			UIValue(self.text.text_rect.y).add(self.ui_pos[1], self.container_size[1])
+		)
 
 	def set_text(self, new_text: str):
 		self.text.set_text(new_text)
 
-		self._size = pygame.Vector2(self.text.rendered_text[1].size)
+		self._size = pygame.Vector2(self.text.text_rect.size)
 		self.ui_size = (
-			UIValue(self.size[0], True),
-			UIValue(self.size[1], True)
+			UIValue(self.size[0]),
+			UIValue(self.size[1])
 		)
 
-		self.rect.size = self.text.rendered_text[0].get_size()
+		self.rect.size = self.text.text_rect.size
+
+		self.reposition()
 
 	def draw(self, surface: pygame.Surface):
-		render_surface = pygame.Surface(self.text.rendered_text[1].size).convert_alpha()
-		render_surface.fill((0, 0, 0, 0))
-		self.text.draw(render_surface, pos=(0, 0))
-		self._rect.width = render_surface.get_width()
-
-		offset = 0
-		if self.centered:
-			offset = self._rect.width / 2
-		surface.blit(render_surface, (self.pos.x - offset, self.pos.y))
+		self.text.draw(surface)
 
 
 class TextSelectionMenu(Frame):
@@ -304,7 +306,7 @@ class TextSelectionMenu(Frame):
 			size: tuple[UIValue, UIValue],
 			image_resource_type_name: str,
 			options: list,
-			container: Optional[Frame] = None
+			container: Frame
 	):
 		super().__init__(pos, size, container=container, bg_colour=(0, 0, 0, 150))
 
@@ -318,7 +320,7 @@ class TextSelectionMenu(Frame):
 		self.add_element(Button((UIValue(0, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "left", self, self._change_option, callback_args=(-1,)))
 		self.add_element(Button((UIValue(1, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "right", self, self._change_option, callback_args=(1,), alignment="r"))
 
-		self.text = TextElement((UIValue(0.5, False), UIValue(0.15, False)), "arial", UIValue(0.7, False), (255, 255, 255), self.current_option, self, centered=True)
+		self.text = TextElement((UIValue(0.5, False), UIValue(0.5, False)), "arial", UIValue(0.7, False), (255, 255, 255), self.current_option, self, anchor=UIAnchors.CENTER)
 		self.add_element(self.text)
 
 	def _change_option(self, direction):

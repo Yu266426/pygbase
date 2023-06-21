@@ -49,4 +49,6 @@ class SpriteSheet:
 		text = Text((0, 0), "arial", 100, "white", use_sys=True)
 		for row in range(self.n_rows):
 			for col in range(self.n_cols):
-				text.draw(display, pos=(col * self.tile_width - camera.pos.x, row * self.tile_height - camera.pos.y))
+				text.pos = (col * self.tile_width - camera.pos.x, row * self.tile_height - camera.pos.y)
+				text.reposition()
+				text.draw(display)

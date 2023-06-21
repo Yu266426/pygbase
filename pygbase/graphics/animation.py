@@ -50,23 +50,21 @@ class Animation:
 		current_image = self.get_current_image()
 		image_surf = current_image.get_image(angle)
 
-		# TODO: Finish all variations
+		# # TODO: Finish all variations
 		if draw_pos == "topleft":
 			origin = current_image.get_image().get_rect(topleft=pos).center
-			rect = image_surf.get_rect(center=current_image.get_image().get_rect(topleft=pos).center)
 		elif draw_pos == "center":
 			origin = current_image.get_image().get_rect(center=pos).center
-			rect = image_surf.get_rect(center=current_image.get_image().get_rect(center=pos).center)
 		elif draw_pos == "midbottom":
 			origin = current_image.get_image().get_rect(midbottom=pos).center
-			rect = image_surf.get_rect(center=current_image.get_image().get_rect(midbottom=pos).center)
 		else:
 			raise ValueError(f"{draw_pos} not a valid position.")
 
+		rect = image_surf.get_rect(center=origin)
 		offset = (-pygame.Vector2(pivot_point)).rotate(-angle) + pivot_point
 		rect.center = offset + origin
 
-		current_image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, flip=flip, flags=flags)
+		current_image.draw(screen, camera.world_to_screen(rect.topleft), angle=angle, flip=flip, draw_pos="none", flags=flags)
 
 
 class AnimationManager:

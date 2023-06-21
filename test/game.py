@@ -35,7 +35,7 @@ class Game(pygbase.GameState, name="game"):
 				self.button_frame,
 				self.set_next_state_type,
 				callback_args=(ParticlePlayground, ()),
-				text="Particle"
+				text="Particle Testing"
 			),
 			align_with_previous=(True, False),
 			add_on_to_previous=(False, True)
@@ -65,9 +65,9 @@ class Game(pygbase.GameState, name="game"):
 			add_on_to_previous=(False, True)
 		)
 
-		self.ui.add_element(
-			pygbase.TextElement((pygbase.UIValue(0.5, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test", self.ui.base_container)
-		)
+		# self.ui.add_element(
+		# 	pygbase.TextElement((pygbase.UIValue(0.5, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test", self.ui.base_container)
+		# )
 
 		self.left_image: pygbase.Image = pygbase.ResourceManager.get_resource("image", "left")
 

@@ -1,5 +1,7 @@
 import enum
 
+import pygame
+
 
 class UIActionTriggers(enum.Enum):
 	ON_CLICK_DOWN = enum.auto()
@@ -25,6 +27,29 @@ class UIAnchors(enum.Enum):
 	BOTTOM_LEFT = enum.auto()
 	BOTTOM_MID = enum.auto()
 	BOTTOM_RIGHT = enum.auto()
+
+	@classmethod
+	def set_rect(cls, rect: pygame.Rect | pygame.FRect, anchor: "UIAnchors", pos: tuple | pygame.Vector2):
+		if anchor == cls.TOP_LEFT:
+			rect.topleft = pos
+		elif anchor == cls.TOP_MID:
+			rect.midtop = pos
+		elif anchor == cls.TOP_RIGHT:
+			rect.topright = pos
+
+		elif anchor == cls.MID_LEFT:
+			rect.midleft = pos
+		elif anchor == cls.CENTER:
+			rect.center = pos
+		elif anchor == cls.MID_RIGHT:
+			rect.midright = pos
+
+		elif anchor == cls.BOTTOM_LEFT:
+			rect.bottomleft = pos
+		elif anchor == cls.BOTTOM_MID:
+			rect.midbottom = pos
+		elif anchor == cls.BOTTOM_RIGHT:
+			rect.bottomright = pos
 
 
 class UIValue:
