@@ -3,7 +3,7 @@ import pathlib
 import pygame
 
 import pygbase
-from game import Game
+from menu import Menu
 
 if __name__ == '__main__':
 	CURRENT_DIR = pathlib.Path.cwd()
@@ -18,7 +18,7 @@ if __name__ == '__main__':
 		handler=lambda e: pygbase.EventManager.post_event(pygame.QUIT) if e.key == pygame.K_ESCAPE else None
 	)
 
-	app = pygbase.App(Game)
+	app = pygbase.App(Menu)
 	app.run()
 
 	pygbase.quit()

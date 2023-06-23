@@ -21,7 +21,7 @@ class Text:
 
 		self.colour = colour
 
-		self.pos = pygame.Vector2(pos)
+		self.pos: pygame.Vector2 = pygame.Vector2(pos)
 
 		self.anchor = anchor
 		self.overflow_behaviour = overflow_behaviour

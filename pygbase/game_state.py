@@ -31,6 +31,12 @@ class GameState:
 	def __init__(self):
 		self._next_state = self
 
+	def enter(self):
+		pass
+
+	def exit(self):
+		pass
+
 	def set_next_state(self, next_state: "GameState"):
 		self._next_state = next_state
 
@@ -49,5 +55,5 @@ class GameState:
 	def fixed_update(self, delta: float):
 		pass
 
-	def draw(self, screen: pygame.Surface):
+	def draw(self, surface: pygame.Surface):
 		pass

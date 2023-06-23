@@ -26,7 +26,7 @@ class Frame(UIElement):
 			self.bg = pygame.Surface(self._size, flags=pygame.SRCALPHA)
 			self.bg.fill(self.bg_colour)
 
-		self.elements: list[UIElement] = []
+		self.elements: list[UIElementType] = []
 
 	def reposition(self):
 		super().reposition()
@@ -75,6 +75,12 @@ class Frame(UIElement):
 
 		# return self
 		return element
+
+	def remove_element(self, element: UIElementType):
+		self.elements.remove(element)
+
+	def clear(self):
+		self.elements.clear()
 
 	def update(self, delta: float):
 		super().update(delta)

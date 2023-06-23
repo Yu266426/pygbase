@@ -1,3 +1,5 @@
+import gc
+import logging
 from typing import Type, Union, Optional, Callable
 
 import pygame
@@ -56,7 +58,15 @@ class App:
 		pygame.display.flip()
 
 	def switch_state(self):
-		self.game_state = self.game_state.get_next_state()
+		next_state = self.game_state.get_next_state()
+		if self.game_state is not next_state:
+			self.game_state.exit()
+
+			self.game_state = self.game_state.get_next_state()
+			self.game_state.enter()
+
+			logging.debug("Switching states, running garbage collector...")
+			gc.collect()
 
 	def run(self):
 		self.is_running = True

@@ -15,7 +15,7 @@ class Transition(GameState, name="transition"):
 	def update(self, delta: float):
 		pass
 
-	def draw(self, screen: pygame.Surface):
+	def draw(self, surface: pygame.Surface):
 		pass
 
 
@@ -52,9 +52,9 @@ class FadeTransition(Transition, name="fade_transition"):
 
 			self.to_state.update(delta)
 
-	def draw(self, screen: pygame.Surface):
+	def draw(self, surface: pygame.Surface):
 		if self.fade_in:
-			self.current_state.draw(screen)
+			self.current_state.draw(surface)
 		else:
-			self.to_state.draw(screen)
-		screen.blit(self.fade_surface, (0, 0))
+			self.to_state.draw(surface)
+		surface.blit(self.fade_surface, (0, 0))

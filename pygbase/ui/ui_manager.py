@@ -1,11 +1,8 @@
-from typing import TypeVar
-
 import pygame
 
-from .ui_elements import UIElement, Frame
+from .ui_element import UIElementType
+from .ui_elements import Frame
 from .values import UIValue
-
-T = TypeVar('T', bound=UIElement)
 
 
 class UIManager:
@@ -20,8 +17,11 @@ class UIManager:
 		self._frames.append(frame)
 		return frame
 
-	def add_element(self, element: T, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> T:
+	def add_element(self, element: UIElementType, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElementType:
 		return self._frames[0].add_element(element, align_with_previous=align_with_previous, add_on_to_previous=add_on_to_previous)
+
+	def remove_element(self, element: UIElementType):
+		self._frames[0].remove_element(element)
 
 	def on_ui(self) -> bool:
 		for frame in self._frames[1:]:
@@ -39,6 +39,6 @@ class UIManager:
 		for frame in self._frames:
 			frame.update(delta)
 
-	def draw(self, screen: pygame.Surface):
+	def draw(self, surface: pygame.Surface):
 		for frame in self._frames:
-			frame.draw(screen)
+			frame.draw(surface)

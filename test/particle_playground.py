@@ -9,13 +9,13 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 
 		self.ui = pygbase.UIManager()
 
-		from game import Game
+		from menu import Menu
 		self.ui.add_element(
 			pygbase.Button(
 				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)), (pygbase.UIValue(0.2, False), pygbase.UIValue(0, False)),
 				"image", "button",
 				self.ui.base_container,
-				self.set_next_state_type, callback_args=(Game, ()),
+				self.set_next_state_type, callback_args=(Menu, ()),
 				text="Back",
 			)
 		)
@@ -38,9 +38,9 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 
 		self.particles.update(delta)
 
-	def draw(self, screen: pygame.Surface):
-		screen.fill((20, 20, 20))
+	def draw(self, surface: pygame.Surface):
+		surface.fill((20, 20, 20))
 
-		self.particles.draw(screen, self.camera)
+		self.particles.draw(surface, self.camera)
 
-		self.ui.draw(screen)
+		self.ui.draw(surface)
