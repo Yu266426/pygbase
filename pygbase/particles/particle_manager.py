@@ -30,7 +30,8 @@ class ParticleManager:
 		return spawner
 
 	def remove_spawner(self, spawner: "T"):
-		self.spawners.remove(spawner)
+		if spawner in self.spawners:
+			self.spawners.remove(spawner)
 
 	def add_affector(self, affector_type: AffectorTypes, affector):
 		self.affectors[affector_type].append(affector)

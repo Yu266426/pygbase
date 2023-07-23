@@ -18,7 +18,8 @@ class LightingManager:
 		return light_source
 
 	def remove_light(self, light_source):
-		self.lights.remove(light_source)
+		if light_source in self.lights:
+			self.lights.remove(light_source)
 
 	def update(self, delta):
 		for light in self.lights:
