@@ -103,11 +103,18 @@ class DialogueManager:
 		self.char_timer = Timer(char_timing, False, True)
 
 		self.ui_manager = UIManager()
+		self.text_background = self.ui_manager.add_frame(Frame(
+			(UIValue(0), UIValue(0.6, False)),
+			(UIValue(1, False), UIValue(0.4, False)),
+			self.ui_manager.base_container,
+			bg_colour=(20, 20, 20, 50)
+		))
+
 		self.option_frame = self.ui_manager.add_frame(Frame(
 			(UIValue(0.75, False), UIValue(0.6, False)),
 			(UIValue(0.25, False), UIValue(0.4, False)),
 			self.ui_manager.base_container,
-			bg_colour=(50, 50, 50, 50)
+			bg_colour=(50, 50, 50, 100)
 		))
 
 	def get_current_node(self) -> DialogueNode | None:
@@ -179,6 +186,6 @@ class DialogueManager:
 
 	def draw(self, surface: pygame.Surface):
 		if self.get_current_node() is not None:
-			self.get_current_node().draw(surface)
-
 			self.ui_manager.draw(surface)
+
+			self.get_current_node().draw(surface)

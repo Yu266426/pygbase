@@ -2,7 +2,7 @@ import logging
 
 import pygbase.utils
 from .app import App
-from .camera import Camera
+from .camera import Camera, CameraController
 from .common import Common
 from .events import EventManager
 from .game_state import GameState

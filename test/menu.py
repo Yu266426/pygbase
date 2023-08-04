@@ -84,6 +84,18 @@ class Menu(pygbase.GameState, name="menu"):
 			add_on_to_previous=(False, True)
 		)
 
+		self.progress_bar = self.button_frame.add_element(
+			pygbase.ProgressBar(
+				(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
+				(pygbase.UIValue(1, False), pygbase.UIValue(0.1, False)),
+				int(self.text_selection_menu.current_option) / 9,
+				pygbase.UIValue(5),
+				"green",
+				(0, 0, 0, 100),
+				self.button_frame,
+			), add_on_to_previous=(False, True)
+		)
+
 		self.ui.add_element(
 			pygbase.TextElement((pygbase.UIValue(0.5, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test", self.ui.base_container)
 		)
@@ -92,6 +104,8 @@ class Menu(pygbase.GameState, name="menu"):
 
 	def update(self, delta: float):
 		self.ui.update(delta)
+
+		self.progress_bar.set_fill_percent(int(self.text_selection_menu.current_option) / 9)
 
 		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
 			self.button_frame.ui_pos = (

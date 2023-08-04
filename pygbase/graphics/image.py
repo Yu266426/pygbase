@@ -7,14 +7,14 @@ from ..common import Common
 
 
 class Image:
-	def __init__(self, image: str | pygame.SurfaceType, scale: float | tuple[float, float], rotatable: bool, scale_by: bool = True):
+	def __init__(self, image: str | pygame.Surface, scale: float | tuple[float, float], rotatable: bool, scale_by: bool = True):
 		if isinstance(image, str):
-			image: pygame.SurfaceType = pygame.image.load(image).convert_alpha()
+			image: pygame.Surface = pygame.image.load(image).convert_alpha()
 
 		if scale_by:
-			self.image = pygame.transform.scale_by(image.convert_alpha(), scale)
+			self.image = pygame.transform.scale_by(image, scale).convert_alpha()
 		else:
-			self.image = pygame.transform.scale(image.convert_alpha(), scale)
+			self.image = pygame.transform.scale(image, scale).convert_alpha()
 
 		self.rotatable = rotatable
 
@@ -30,7 +30,7 @@ class Image:
 		num_rotations = math.ceil(360 / self.rotate_angle)
 		current_angle: float = 0.0
 		for angle in range(num_rotations):
-			self.angled_images.append(pygame.transform.rotate(self.image, current_angle))
+			self.angled_images.append(pygame.transform.rotate(self.image, current_angle).convert_alpha())
 			current_angle += self.rotate_angle
 
 	def scale(self, scale: tuple[float, float]) -> "Image":

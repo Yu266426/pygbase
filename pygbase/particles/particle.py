@@ -8,7 +8,7 @@ from ..common import ParticleOptions as Options
 
 
 class Particle:
-	def __init__(self, pos, settings: dict, initial_velocity=(0, 0)):
+	def __init__(self, pos: tuple | pygame.Vector2, settings: dict, initial_velocity=(0, 0)):
 		self.pos = pygame.Vector2(pos)
 
 		self.size = random.uniform(
@@ -31,21 +31,15 @@ class Particle:
 		self.gravity = settings[Options.GRAVITY]
 		self.effector = settings[Options.EFFECTOR]
 
+		self.has_moved_chunk = False
+
+	def moved_chunk(self):
+		self.has_moved_chunk = True
+
 	def alive(self):
-		return self.size > 0.2
+		return self.size > 0.2 and not self.has_moved_chunk
 
-	def update(self, delta, affectors: dict[AffectorTypes, list]):
-		if self.effector:
-			for attractor in affectors[AffectorTypes.ATTRACTOR]:
-				attractor: ParticleAttractor
-
-				direction_vector, distance = attractor.get_towards(self.pos)
-				if distance < 6:
-					self.size = 0
-					return
-
-				self.velocity += direction_vector * attractor.strength * min(attractor.strength * 40 / distance, 10)
-
+	def update(self, delta):
 		self.velocity += self.gravity
 		self.velocity -= self.velocity * delta * self.velocity_decay
 

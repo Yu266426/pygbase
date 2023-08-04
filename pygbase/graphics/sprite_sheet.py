@@ -16,7 +16,7 @@ class SpriteSheet:
 		self.tile_height: int = data["tile_height"] * self.scale
 
 		# Sprite Sheet
-		self.image: pygame.surface = pygame.image.load(resource_path).convert_alpha()
+		self.image: pygame.Surface = pygame.image.load(resource_path).convert_alpha()
 		self.image.set_colorkey((0, 0, 0))
 		self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.scale, self.image.get_height() * self.scale))
 
@@ -29,8 +29,10 @@ class SpriteSheet:
 	def _load_image(self, row, col):
 		rect = pygame.Rect(col * self.tile_width, row * self.tile_height, self.tile_width, self.tile_height)
 		# image = self.image.subsurface(rect)  # Unusable due to transparency issue
-		image = pygame.Surface(size=rect.size, flags=pygame.SRCALPHA).convert_alpha()
-		image.blit(self.image, (0, 0), rect)
+		# image = pygame.Surface(rect.size, flags=pygame.SRCALPHA)
+		# image.blit(self.image, (0, 0), rect)
+		# print(image)
+		image = self.image.subsurface(rect)
 
 		self._images.append(Image(image, 1, self.rotatable))
 
