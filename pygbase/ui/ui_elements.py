@@ -340,3 +340,38 @@ class TextSelectionMenu(Frame):
 		self.current_option = self.options[self.index]
 
 		self.text.set_text(self.current_option)
+
+
+class ProgressBar(Frame):
+	def __init__(
+			self,
+			pos: tuple[UIValue, UIValue],
+			size: tuple[UIValue, UIValue],
+			starting_fill: float,
+			border_size: UIValue,
+			bar_colour: tuple | str,
+			background_colour: tuple | str,
+			container: Frame
+	):
+		super().__init__(pos, size, container=container, bg_colour=background_colour)
+
+		self.border_size = border_size
+
+		self.fill_percent = starting_fill
+
+		self.bar_colour = bar_colour
+
+	def set_fill_percent(self, new_fill_percent: float):
+		self.fill_percent = new_fill_percent
+
+	def draw(self, surface: pygame.Surface):
+		super().draw(surface)
+
+		fill_rect = pygame.Rect(
+			self.pos.x + self.border_size.get_pixels(self.size[0]),
+			self.pos.y + self.border_size.get_pixels(self.size[1]),
+			(self.size.x - self.border_size.get_pixels(self.size[0]) * 2) * self.fill_percent,
+			self.size.y - self.border_size.get_pixels(self.size[1]) * 2
+		)
+
+		pygame.draw.rect(surface, self.bar_colour, fill_rect)
