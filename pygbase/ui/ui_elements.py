@@ -221,6 +221,7 @@ class Button(ImageElement):
 			text: str = "",
 			text_colour="white",
 			font: str = "arial",
+			use_sys: bool = True,
 			alignment: str = "l"
 	):
 		super().__init__(pos, size, resource_type_name, resource_name, container, alignment=alignment)
@@ -233,12 +234,12 @@ class Button(ImageElement):
 		self.clicked_highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.clicked_highlight.fill((255, 255, 255, 70))
 
-		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height / 2), font, int(self.size[1] * 0.7), text_colour, text, use_sys=True, max_width=self.rect.width * 0.9, anchor=UIAnchors.CENTER)
+		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5), font, int(self.size[1] * 0.7), text_colour, text, use_sys=use_sys, max_width=int(self.rect.width * 0.9), anchor=UIAnchors.CENTER)
 
 	def reposition(self):
 		super().reposition()
 
-		self.text.pos = (self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height / 2)
+		self.text.pos = (self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5)
 		self.text.reposition()
 
 	def draw(self, surface: pygame.Surface):
@@ -272,10 +273,13 @@ class TextElement(UIElement):
 			anchor=anchor
 		)
 
-		super().__init__((
-			UIValue(self.text.text_rect.x).add(pos[0], container.size[0]),
-			UIValue(self.text.text_rect.y).add(pos[1], container.size[1])),
-			(UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)), container)
+		super().__init__(
+			(
+				UIValue(self.text.text_rect.x).add(pos[0], container.size[0]),
+				UIValue(self.text.text_rect.y).add(pos[1], container.size[1])
+			), (
+				UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)
+			), container)
 
 	def reposition(self):
 		super().reposition()
