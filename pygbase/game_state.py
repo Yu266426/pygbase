@@ -32,9 +32,11 @@ class GameState:
 		self._next_state = self
 
 	def enter(self):
+		"""Called when entering state"""
 		pass
 
 	def exit(self):
+		"""Called when exiting state"""
 		pass
 
 	def set_next_state(self, next_state: "GameState"):

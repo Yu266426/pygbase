@@ -23,12 +23,12 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 		self.camera_controller = pygbase.CameraController()
 		self.mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
 
-		self.particle_manager = pygbase.ParticleManager(chunk_size=30, show_debug=True)
+		self.particle_manager = pygbase.ParticleManager(chunk_size=100)
 		self.circle_spawner = self.particle_manager.add_spawner(
 			pygbase.CircleSpawner(
 				(400, 400),
-				0.05, 100,
-				200,
+				0.05, 200,
+				400,
 				True, "default",
 				self.particle_manager
 			)

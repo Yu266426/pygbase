@@ -4,6 +4,7 @@ from typing import Type, Union, Optional, Callable
 
 import pygame
 
+from .debug import DebugDisplay
 from .common import Common
 from .events import EventManager
 from .game_state import GameState
@@ -23,7 +24,7 @@ class App:
 	):
 		self.is_running: bool = True
 
-		self.window: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=flags, vsync=vsync)
+		self.screen: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=flags, vsync=vsync)
 		self.clock: pygame.time.Clock = pygame.time.Clock()
 
 		self.title = title
@@ -53,9 +54,7 @@ class App:
 		self.game_state.fixed_update(self.fixed_time_rate)
 
 	def draw(self):
-		self.game_state.draw(self.window)
-
-		pygame.display.flip()
+		self.game_state.draw(self.screen)
 
 	def switch_state(self):
 		next_state = self.game_state.get_next_state()
@@ -74,16 +73,26 @@ class App:
 		update_timer = 0.0
 
 		while self.is_running:
+			# Timing
 			delta = min(self.clock.tick() / 1000, 0.12)
-
 			update_timer += delta
 
+			# Events
 			self.handle_events()
-			self.update(delta)
 
+			# Debug
+			DebugDisplay.clear()
+
+			# Update
+			self.update(delta)
 			while update_timer >= self.fixed_time_rate:
 				self.fixed_update()
 				update_timer -= self.fixed_time_rate
 
+			# Drawing
 			self.draw()
+			DebugDisplay.draw(self.screen)
+			pygame.display.flip()
+
+			# State check
 			self.switch_state()

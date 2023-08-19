@@ -4,6 +4,7 @@ import pygame
 
 from .particle_affectors import AffectorTypes, ParticleAttractor
 from ..camera import Camera
+from ..debug import DebugDisplay
 from ..particles.particle import Particle
 
 if TYPE_CHECKING:
@@ -14,9 +15,8 @@ if TYPE_CHECKING:
 
 
 class ParticleManager:
-	def __init__(self, chunk_size: int = 400, show_debug: bool = False):
+	def __init__(self, chunk_size: int = 400):
 		self.chunk_size = chunk_size
-		self.show_debug = show_debug
 
 		self.particles: dict[int, dict[int, list[Particle]]] = {}
 
@@ -114,13 +114,13 @@ class ParticleManager:
 		]
 
 		# Debug
-		if self.show_debug:
+		if DebugDisplay.is_active():
 			for row in self.particles.keys():
 				for col in self.particles[row].keys():
-					pygame.draw.rect(surface, "blue", pygame.Rect(
+					DebugDisplay.draw_rect(pygame.Rect(
 						camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
 						(self.chunk_size, self.chunk_size)
-					), width=2)
+					), "blue", width=2)
 
 			for affector_type, affectors in self.affectors.items():
 				for affector in affectors:
@@ -129,13 +129,9 @@ class ParticleManager:
 
 					for row in range(top_chunk_row, bottom_chunk_row + 1):
 						for col in range(left_chunk_col, right_chunk_col + 1):
-							pygame.draw.circle(surface, "yellow", camera.world_to_screen(affector.pos), affector.radius, width=1)
+							DebugDisplay.draw_circle(camera.world_to_screen(affector.pos), affector.radius, "yellow")
 
-							pygame.draw.rect(
-								surface, "yellow",
-								pygame.Rect(
-									camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
-									(self.chunk_size, self.chunk_size)
-								),
-								width=1
-							)
+							DebugDisplay.draw_rect(pygame.Rect(
+								camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
+								(self.chunk_size, self.chunk_size)
+							), "yellow")

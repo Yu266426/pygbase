@@ -1,9 +1,11 @@
 import logging
 
 import pygbase.utils
+
 from .app import App
 from .camera import Camera, CameraController
 from .common import Common
+from .debug import DebugDisplay
 from .events import EventManager
 from .game_state import GameState
 from .graphics.animation import Animation, AnimationManager
@@ -25,13 +27,17 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 
 	Common.set_value("screen_width", screen_size[0])
 	Common.set_value("screen_height", screen_size[1])
+	Common.set_value("screen_size", screen_size)
 
 	Common.set_value("rotate_resolution", rotate_resolution)
 
 	EventManager.init()
 	InputManager.register_handlers()
 
-	lighting._init_lighting(max_light_radius, light_radius_interval)
+	lighting.init_lighting(max_light_radius, light_radius_interval)
+
+	DebugDisplay.init()
+	DebugDisplay.show()
 
 
 def add_resource_type(type_id: int, resource_type: ResourceType):
