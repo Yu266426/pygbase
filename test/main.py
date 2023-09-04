@@ -18,6 +18,16 @@ if __name__ == '__main__':
 		handler=lambda e: pygbase.EventManager.post_event(pygame.QUIT) if e.key == pygame.K_ESCAPE else None
 	)
 
+	pygbase.EventManager.create_custom_event("test")
+
+	pygbase.EventManager.add_handler(
+		"all",
+		"test",
+		lambda e: print("got")
+	)
+
+	pygbase.EventManager.post_event("test")
+
 	app = pygbase.App(Menu)
 	app.run()
 

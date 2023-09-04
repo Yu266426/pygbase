@@ -37,7 +37,6 @@ def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resol
 	lighting.init_lighting(max_light_radius, light_radius_interval)
 
 	DebugDisplay.init()
-	DebugDisplay.show()
 
 
 def add_resource_type(type_id: int, resource_type: ResourceType):
