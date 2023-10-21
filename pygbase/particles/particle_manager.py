@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 	AffectorType = TypeVar("AffectorType", bound=ParticleAttractor)
 
 
+# TODO: Add way to clear all particles
 class ParticleManager:
 	def __init__(self, chunk_size: int = 400):
 		self.chunk_size = chunk_size

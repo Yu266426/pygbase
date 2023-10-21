@@ -15,7 +15,7 @@ class UIActionTriggers(enum.Enum):
 	ON_SCROLL_Y = enum.auto()
 
 
-class UIAnchors(enum.Enum):
+class UIAlignment(enum.Enum):
 	TOP_LEFT = enum.auto()
 	TOP_MID = enum.auto()
 	TOP_RIGHT = enum.auto()
@@ -29,7 +29,7 @@ class UIAnchors(enum.Enum):
 	BOTTOM_RIGHT = enum.auto()
 
 	@classmethod
-	def set_rect(cls, rect: pygame.Rect | pygame.FRect, anchor: "UIAnchors", pos: tuple | pygame.Vector2):
+	def set_rect(cls, rect: pygame.Rect | pygame.FRect, anchor: "UIAlignment", pos: tuple | pygame.Vector2):
 		if anchor == cls.TOP_LEFT:
 			rect.topleft = pos
 		elif anchor == cls.TOP_MID:

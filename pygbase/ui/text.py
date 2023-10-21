@@ -2,7 +2,7 @@ import enum
 
 import pygame
 
-from .values import UIAnchors
+from .values import UIAlignment
 
 
 class TextOverflowBehaviour(enum.Enum):
@@ -11,7 +11,7 @@ class TextOverflowBehaviour(enum.Enum):
 
 
 class Text:
-	def __init__(self, pos: tuple | pygame.Vector2, font_name: str, size: int, colour: pygame.Color | str | tuple, text: str = "", use_sys: bool = False, overflow_behaviour: TextOverflowBehaviour = TextOverflowBehaviour.SHRINK, max_width: int = 0, anchor: UIAnchors = UIAnchors.TOP_LEFT):
+	def __init__(self, pos: tuple | pygame.Vector2, font_name: str, size: int, colour: pygame.Color | str | tuple, text: str = "", use_sys: bool = False, overflow_behaviour: TextOverflowBehaviour = TextOverflowBehaviour.SHRINK, max_width: int = 0, alignment: UIAlignment = UIAlignment.TOP_LEFT):
 		if use_sys:
 			self.font = pygame.font.SysFont(font_name, size)
 		else:
@@ -23,7 +23,7 @@ class Text:
 
 		self.pos: pygame.Vector2 = pygame.Vector2(pos)
 
-		self.anchor = anchor
+		self.anchor = alignment
 		self.overflow_behaviour = overflow_behaviour
 		self.max_width = max_width
 
@@ -50,7 +50,7 @@ class Text:
 
 	def reposition(self):
 		self.text_rect = self.rendered_text.get_rect()
-		UIAnchors.set_rect(self.text_rect, self.anchor, self.pos)
+		UIAlignment.set_rect(self.text_rect, self.anchor, self.pos)
 
 	def draw(self, surface: pygame.Surface) -> None:
 		surface.blit(self.rendered_text, self.text_rect)

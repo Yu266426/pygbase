@@ -5,7 +5,7 @@ import pygame
 
 from .text import Text
 from .ui_element import UIElement, UIElementType
-from .values import UIActionTriggers, UIValue, UIAnchors
+from .values import UIActionTriggers, UIValue, UIAlignment
 from ..graphics.image import Image
 from ..inputs import InputManager
 from ..resources import ResourceManager
@@ -234,7 +234,7 @@ class Button(ImageElement):
 		self.clicked_highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.clicked_highlight.fill((255, 255, 255, 70))
 
-		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5), font, int(self.size[1] * 0.7), text_colour, text, use_sys=use_sys, max_width=int(self.rect.width * 0.9), anchor=UIAnchors.CENTER)
+		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5), font, int(self.size[1] * 0.7), text_colour, text, use_sys=use_sys, max_width=int(self.rect.width * 0.9), alignment=UIAlignment.CENTER)
 
 	def reposition(self):
 		super().reposition()
@@ -261,7 +261,7 @@ class TextElement(UIElement):
 			colour, text: str,
 			container: Frame,
 			use_sys: bool = True,
-			anchor: UIAnchors = UIAnchors.TOP_LEFT
+			alignment: UIAlignment = UIAlignment.TOP_LEFT
 	):
 		self.text = Text(
 			(pos[0].get_pixels(container.size.x), pos[1].get_pixels(container.size.y)),
@@ -270,7 +270,7 @@ class TextElement(UIElement):
 			colour,
 			text,
 			use_sys=use_sys,
-			anchor=anchor
+			alignment=alignment
 		)
 
 		super().__init__(
@@ -330,7 +330,7 @@ class TextSelectionMenu(Frame):
 		self.add_element(Button((UIValue(0, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "left", self, self._change_option, callback_args=(-1,)))
 		self.add_element(Button((UIValue(1, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "right", self, self._change_option, callback_args=(1,), alignment="r"))
 
-		self.text = TextElement((UIValue(0.5, False), UIValue(0.5, False)), "arial", UIValue(0.7, False), (255, 255, 255), self.current_option, self, anchor=UIAnchors.CENTER)
+		self.text = TextElement((UIValue(0.5, False), UIValue(0.5, False)), "arial", UIValue(0.7, False), (255, 255, 255), self.current_option, self, alignment=UIAlignment.CENTER)
 		self.add_element(self.text)
 
 	def _change_option(self, direction):
