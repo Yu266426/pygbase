@@ -1,3 +1,4 @@
+import logging
 import pathlib
 
 import pygame
@@ -9,6 +10,7 @@ if __name__ == '__main__':
 	CURRENT_DIR = pathlib.Path.cwd()
 
 	pygbase.init((800, 800))
+	pygbase.DebugDisplay.show()
 
 	pygbase.add_image_resource("image", 1, str(CURRENT_DIR / "images"))
 
@@ -23,7 +25,7 @@ if __name__ == '__main__':
 	pygbase.EventManager.add_handler(
 		"all",
 		"test",
-		lambda e: print("got")
+		lambda e: logging.info("Received Test Event")
 	)
 
 	pygbase.EventManager.post_event("test")

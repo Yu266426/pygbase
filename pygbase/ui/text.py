@@ -3,6 +3,7 @@ import enum
 import pygame
 
 from .values import UIAlignment
+from ..debug import DebugDisplay
 
 
 class TextOverflowBehaviour(enum.Enum):
@@ -11,7 +12,18 @@ class TextOverflowBehaviour(enum.Enum):
 
 
 class Text:
-	def __init__(self, pos: tuple | pygame.Vector2, font_name: str, size: int, colour: pygame.Color | str | tuple, text: str = "", use_sys: bool = False, overflow_behaviour: TextOverflowBehaviour = TextOverflowBehaviour.SHRINK, max_width: int = 0, alignment: UIAlignment = UIAlignment.TOP_LEFT):
+	def __init__(
+			self,
+			pos: tuple | pygame.Vector2,
+			font_name: str,
+			size: int,
+			colour: pygame.Color | str | tuple,
+			text: str = "",
+			use_sys: bool = False,
+			max_width: int = 0,
+			overflow_behaviour: TextOverflowBehaviour = TextOverflowBehaviour.SHRINK,
+			alignment: UIAlignment = UIAlignment.TOP_LEFT
+	):
 		if use_sys:
 			self.font = pygame.font.SysFont(font_name, size)
 		else:
@@ -23,7 +35,7 @@ class Text:
 
 		self.pos: pygame.Vector2 = pygame.Vector2(pos)
 
-		self.anchor = alignment
+		self.alignment = alignment
 		self.overflow_behaviour = overflow_behaviour
 		self.max_width = max_width
 
@@ -41,6 +53,7 @@ class Text:
 		elif self.overflow_behaviour == TextOverflowBehaviour.SHRINK:
 			self.rendered_text = self.font.render(self.text, True, self.colour).convert_alpha()
 
+			# Scale down to fit surface
 			if self.max_width != 0:
 				if self.rendered_text.get_width() > self.max_width:
 					ratio = self.max_width / self.rendered_text.get_width()
@@ -50,7 +63,8 @@ class Text:
 
 	def reposition(self):
 		self.text_rect = self.rendered_text.get_rect()
-		UIAlignment.set_rect(self.text_rect, self.anchor, self.pos)
+		UIAlignment.set_rect(self.text_rect, self.alignment, self.pos)
 
 	def draw(self, surface: pygame.Surface) -> None:
 		surface.blit(self.rendered_text, self.text_rect)
+		DebugDisplay.draw_rect(self.text_rect, "yellow")

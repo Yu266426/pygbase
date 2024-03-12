@@ -29,27 +29,50 @@ class UIAlignment(enum.Enum):
 	BOTTOM_RIGHT = enum.auto()
 
 	@classmethod
-	def set_rect(cls, rect: pygame.Rect | pygame.FRect, anchor: "UIAlignment", pos: tuple | pygame.Vector2):
-		if anchor == cls.TOP_LEFT:
+	def set_rect(cls, rect: pygame.Rect | pygame.FRect, alignment: "UIAlignment", pos: tuple | pygame.Vector2):
+		if alignment == cls.TOP_LEFT:
 			rect.topleft = pos
-		elif anchor == cls.TOP_MID:
+		elif alignment == cls.TOP_MID:
 			rect.midtop = pos
-		elif anchor == cls.TOP_RIGHT:
+		elif alignment == cls.TOP_RIGHT:
 			rect.topright = pos
 
-		elif anchor == cls.MID_LEFT:
+		elif alignment == cls.MID_LEFT:
 			rect.midleft = pos
-		elif anchor == cls.CENTER:
+		elif alignment == cls.CENTER:
 			rect.center = pos
-		elif anchor == cls.MID_RIGHT:
+		elif alignment == cls.MID_RIGHT:
 			rect.midright = pos
 
-		elif anchor == cls.BOTTOM_LEFT:
+		elif alignment == cls.BOTTOM_LEFT:
 			rect.bottomleft = pos
-		elif anchor == cls.BOTTOM_MID:
+		elif alignment == cls.BOTTOM_MID:
 			rect.midbottom = pos
-		elif anchor == cls.BOTTOM_RIGHT:
+		elif alignment == cls.BOTTOM_RIGHT:
 			rect.bottomright = pos
+
+	@classmethod
+	def get_pos(cls, alignment: "UIAlignment", rect: pygame.Rect | pygame.FRect) -> tuple[float, float]:
+		if alignment == cls.TOP_LEFT:
+			return rect.topleft
+		elif alignment == cls.TOP_MID:
+			return rect.midtop
+		elif alignment == cls.TOP_RIGHT:
+			return rect.topright
+
+		elif alignment == cls.MID_LEFT:
+			return rect.midleft
+		elif alignment == cls.CENTER:
+			return rect.center
+		elif alignment == cls.MID_RIGHT:
+			return rect.midright
+
+		elif alignment == cls.BOTTOM_LEFT:
+			return rect.bottomleft
+		elif alignment == cls.BOTTOM_MID:
+			return rect.midbottom
+		elif alignment == cls.BOTTOM_RIGHT:
+			return rect.bottomright
 
 
 class UIValue:

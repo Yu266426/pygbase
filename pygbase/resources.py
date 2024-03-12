@@ -98,7 +98,7 @@ class ResourceManager:
 		# If all resources are loaded
 		if len(cls._resources_to_load) == 0:
 			for type_id, resource_type in cls._resource_types.items():
-				logging.info(f"Loaded {len(cls._loaded_resources[type_id])} {resource_type.name}s")
+				logging.info(f"Loaded {len(cls._loaded_resources[type_id])} {resource_type.name}")
 			return True
 
 		# Load resources

@@ -96,9 +96,18 @@ class Menu(pygbase.GameState, name="menu"):
 			), add_on_to_previous=(False, True)
 		)
 
-		self.ui.add_element(
-			pygbase.TextElement((pygbase.UIValue(0.5, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test", self.ui.base_container)
+		text_1 = self.ui.add_element(
+			pygbase.TextElement((pygbase.UIValue(0.2, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test1", self.ui.base_container)
 		)
+
+		text_2 = self.ui.add_element(
+			pygbase.TextElement((pygbase.UIValue(0), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test2", self.ui.base_container),
+			align_with_previous=(True, False),
+			add_on_to_previous=(False, True)
+		)
+
+		print(text_1.pos)
+		print(text_2.pos)
 
 		self.left_image: pygbase.Image = pygbase.ResourceManager.get_resource("image", "left")
 

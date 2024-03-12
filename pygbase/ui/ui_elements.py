@@ -59,19 +59,14 @@ class Frame(UIElement):
 
 		element.reposition()
 
-		out_of_bounds: bool = False
-
 		# If element does not go out of frame, add it to the frame
-		if 0 <= element._pos[0] and element._pos[0] + element.size[0] <= self._size[0]:
-			if 0 <= element._pos[1] and element._pos[1] + element.size[1] <= self._size[1]:
-				self.elements.append(element)
-			else:
-				out_of_bounds = True
-		else:
-			out_of_bounds = True
-
-		if out_of_bounds:
+		if not (0 <= element._pos[0] and element._pos[0] + element.size[0] <= self._size[0]):
 			logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element._pos}) is not contained within frame (size: {self._size})")
+
+		if not (0 <= element._pos[1] and element._pos[1] + element.size[1] <= self._size[1]):
+			logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element._pos}) is not contained within frame (size: {self._size})")
+
+		self.elements.append(element)
 
 		# return self
 		return element
@@ -263,6 +258,7 @@ class TextElement(UIElement):
 			use_sys: bool = True,
 			alignment: UIAlignment = UIAlignment.TOP_LEFT
 	):
+		self.alignment = alignment
 		self.text = Text(
 			(pos[0].get_pixels(container.size.x), pos[1].get_pixels(container.size.y)),
 			font_name,
@@ -284,13 +280,24 @@ class TextElement(UIElement):
 	def reposition(self):
 		super().reposition()
 
-		self.text.reposition()
+		# Todo: Set text position
+		# self.pos is topleft? While text.pos depends on alignment
+		# Find a way to work around that...
 
-		self._pos.update(self.text.text_rect.topleft)
-		self.ui_pos = (
-			UIValue(self.text.text_rect.x).add(self.ui_pos[0], self.container_size[0]),
-			UIValue(self.text.text_rect.y).add(self.ui_pos[1], self.container_size[1])
-		)
+		rect = self.rect.copy()
+		logging.debug(f"Offset: {self.text.text}: {self.container_offset}")
+		UIAlignment.set_rect(rect, self.alignment, self.pos)
+
+		self.text.pos = UIAlignment.get_pos(self.alignment, rect)
+		logging.debug(f"Before: {self.text.text}: {self.text.pos}")
+		self.text.reposition()
+		logging.debug(f"After: {self.text.text}: {self.text.pos}")
+
+	# self._pos.update(self.text.text_rect.topleft)
+	# self.ui_pos = (
+	# 	UIValue(self.text.text_rect.x).add(self.ui_pos[0], self.container_size[0]),
+	# 	UIValue(self.text.text_rect.y).add(self.ui_pos[1], self.container_size[1])
+	# )
 
 	def set_text(self, new_text: str):
 		self.text.set_text(new_text)
