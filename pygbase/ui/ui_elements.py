@@ -269,11 +269,15 @@ class TextElement(UIElement):
 			alignment=alignment
 		)
 
+		# super().__init__(
+		# 	(
+		# 		UIValue(self.text.text_rect.x).add(pos[0], container.size[0]),
+		# 		UIValue(self.text.text_rect.y).add(pos[1], container.size[1])
+		# 	), (
+		# 		UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)
+		# 	), container)
 		super().__init__(
-			(
-				UIValue(self.text.text_rect.x).add(pos[0], container.size[0]),
-				UIValue(self.text.text_rect.y).add(pos[1], container.size[1])
-			), (
+			pos, (
 				UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)
 			), container)
 
@@ -285,13 +289,14 @@ class TextElement(UIElement):
 		# Find a way to work around that...
 
 		rect = self.rect.copy()
-		logging.debug(f"Offset: {self.text.text}: {self.container_offset}")
+		# logging.debug(f"Offset: {self.text.text}: {self.container_offset}")
 		UIAlignment.set_rect(rect, self.alignment, self.pos)
 
 		self.text.pos = UIAlignment.get_pos(self.alignment, rect)
-		logging.debug(f"Before: {self.text.text}: {self.text.pos}")
+		# logging.debug(f"Before: {self.text.text}: {self.text.pos}")
 		self.text.reposition()
-		logging.debug(f"After: {self.text.text}: {self.text.pos}")
+
+	# logging.debug(f"After: {self.text.text}: {self.text.pos}")
 
 	# self._pos.update(self.text.text_rect.topleft)
 	# self.ui_pos = (
