@@ -47,14 +47,19 @@ class ParticleSpawner:
 
 
 class PointSpawner(ParticleSpawner):
-	def __init__(self, pos, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: "ParticleManager"):
+	def __init__(self, pos, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: "ParticleManager", angle_range: tuple[float, float] = (0, 360), velocity_range: tuple[float, float] = (100.0, 200.0)):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
 
+		self.angle_range = angle_range
+		self.velocity_range = velocity_range
+
 	def spawn(self):
+		initial_velocity = get_angled_vector(random.uniform(*self.angle_range), random.uniform(*self.velocity_range))
+
 		self.manager.add_particle(
 			self.pos,
 			self.particle_settings,
-			get_angled_vector(random.uniform(0.0, 360.0), random.uniform(100.0, 200.0))
+			initial_velocity
 		)
 
 

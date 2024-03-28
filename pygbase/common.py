@@ -10,6 +10,7 @@ class ParticleOptions(enum.Enum):
 	VELOCITY_DECAY = enum.auto()
 	GRAVITY = enum.auto()
 	EFFECTOR = enum.auto()
+	BOUNCE = enum.auto()
 
 
 class Common:
@@ -26,7 +27,8 @@ class Common:
 			ParticleOptions.SIZE_DECAY: (3.0, 5.0),
 			ParticleOptions.VELOCITY_DECAY: (1.8, 2.2),
 			ParticleOptions.GRAVITY: (0, 0),
-			ParticleOptions.EFFECTOR: True
+			ParticleOptions.EFFECTOR: True,
+			ParticleOptions.BOUNCE: (0.1, 0.1)
 		}
 	}
 
@@ -79,7 +81,8 @@ class Common:
 			size_decay: tuple[float, float],
 			velocity_decay: tuple[float, float],
 			gravity: tuple[float, float],
-			effector: bool
+			effector: bool,
+			bounce: tuple[float, float]
 	):
 		if name not in cls._particle_settings:
 			cls._particle_settings[name] = {
@@ -88,7 +91,8 @@ class Common:
 				ParticleOptions.SIZE_DECAY: size_decay,
 				ParticleOptions.VELOCITY_DECAY: velocity_decay,
 				ParticleOptions.GRAVITY: gravity,
-				ParticleOptions.EFFECTOR: effector
+				ParticleOptions.EFFECTOR: effector,
+				ParticleOptions.BOUNCE: bounce
 			}
 		else:
 			logging.warning(f"Particle setting name: `{name}` already taken")

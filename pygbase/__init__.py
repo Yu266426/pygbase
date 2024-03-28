@@ -101,9 +101,10 @@ def add_particle_setting(
 		size_decay: tuple[float, float],
 		velocity_decay: tuple[float, float],
 		gravity: tuple[float, float],
-		effector: bool
+		effector: bool,
+		bounce: tuple[float, float]
 ):
-	Common.add_particle_setting(name, colour, size, size_decay, velocity_decay, gravity, effector)
+	Common.add_particle_setting(name, colour, size, size_decay, velocity_decay, gravity, effector, bounce)
 
 
 def quit():
