@@ -41,27 +41,47 @@ class Particle:
 		return self.size > 0.2 and not self.has_moved_chunk
 
 	def update(self, delta: float, colliders: list[pygame.Rect]):
-		self.velocity.x += self.gravity[0]
-		self.velocity.x -= self.velocity.x * delta * self.velocity_decay
+		# Pre-calculate some repeated values
+		gravity_x = self.gravity[0]
+		gravity_y = self.gravity[1]
+		decay = delta * self.velocity_decay
+		size_decay = delta * self.size_decay
 
-		self.pos.x += self.velocity.x * delta
+		# Update x velocity
+		vel_x = self.velocity.x
+		vel_x += gravity_x
+		vel_x -= vel_x * decay
 
-		for collider in colliders:
-			if collider.collidepoint(self.pos):
-				self.pos.x -= self.velocity.x * delta
-				self.velocity.x *= -self.bounce[0]
-
-		self.velocity.y += self.gravity[1]
-		self.velocity.y -= self.velocity.y * delta * self.velocity_decay
-
-		self.pos.y += self.velocity.y * delta
+		new_pos_x = self.pos.x + vel_x * delta
 
 		for collider in colliders:
-			if collider.collidepoint(self.pos):
-				self.pos.y -= self.velocity.y * delta
-				self.velocity.y *= -self.bounce[1]
+			if collider.collidepoint(new_pos_x, self.pos.y):
+				new_pos_x -= vel_x * delta
+				vel_x *= -self.bounce[0]
+				break  # TODO: Potentially buggy
 
-		self.size -= delta * self.size_decay
+		# Update y velocity
+		vel_y = self.velocity.y
+		vel_y += gravity_y
+		vel_y -= vel_y * decay
+
+		new_pos_y = self.pos.y + vel_y * delta
+
+		# Check collisions and handle bounces
+		for collider in colliders:
+			if collider.collidepoint(new_pos_x, new_pos_y):
+				new_pos_y -= vel_y * delta
+				vel_y *= -self.bounce[1]
+				break
+
+		# Update position and velocity
+		self.pos.x = new_pos_x
+		self.pos.y = new_pos_y
+		self.velocity.x = vel_x
+		self.velocity.y = vel_y
+
+		# Update size
+		self.size -= size_decay
 
 	def draw(self, screen: pygame.Surface, camera: Camera):
 		pygame.draw.rect(screen, self.colour, (camera.world_to_screen(self.pos - pygame.Vector2(round(self.size / 2))), (self.size, self.size)))

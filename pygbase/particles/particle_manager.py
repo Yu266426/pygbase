@@ -19,7 +19,7 @@ class ParticleManager:
 	def __init__(self, chunk_size: int = 400, colliders: tuple[pygame.Rect] = ()):
 		self.chunk_size = chunk_size
 
-		self.particles: dict[int, dict[int, list[Particle]]] = {}
+		self.particles: dict[tuple[int, int], list[Particle]] = {}
 
 		self.spawners: list[ParticleSpawner] = []
 
@@ -27,9 +27,9 @@ class ParticleManager:
 			AffectorTypes.ATTRACTOR: []
 		}
 
-		self.chunked_colliders: dict[int, dict[int, list[pygame.Rect]]] = self.generate_chunked_colliders(colliders)
+		self.chunked_colliders: dict[tuple[int, int], list[pygame.Rect]] = self.generate_chunked_colliders(colliders)
 
-	def generate_chunked_colliders(self, colliders):
+	def generate_chunked_colliders(self, colliders) -> dict[tuple[int, int], list[pygame.Rect]]:
 		chunked_colliders = {}
 
 		for collider in colliders:
@@ -38,28 +38,29 @@ class ParticleManager:
 					chunk_pos = self.get_chunk((x, y))
 
 					chunked_colliders.setdefault(
-						chunk_pos[1], {}
-					).setdefault(
-						chunk_pos[0], []
+						chunk_pos, []
 					).append(collider)
 
 		return chunked_colliders
 
 	def get_surrounding_colliders(self, chunk_pos: tuple):
-		return [
-			collider
-			for row in range(chunk_pos[1] - 1, chunk_pos[1] + 2)
-			for col in range(chunk_pos[0] - 1, chunk_pos[0] + 2)
-			for collider in self.chunked_colliders.get(row, {}).get(col, [])
-		]
+		min_row = chunk_pos[1] - 1
+		max_row = chunk_pos[1] + 2
+		min_col = chunk_pos[0] - 1
+		max_col = chunk_pos[0] + 2
+
+		colliders = []
+		for row in range(min_row, max_row):
+			for col in range(min_col, max_col):
+				colliders.extend(self.chunked_colliders.get((col, row), []))
+
+		return colliders
 
 	def add_particle(self, pos: tuple | pygame.Vector2, settings: dict, initial_velocity=(0, 0)):
-		chunk_col, chunk_row = self.get_chunk(pos)
+		chunk_pos = self.get_chunk(pos)
 
 		self.particles.setdefault(
-			chunk_row, {}
-		).setdefault(
-			chunk_col, []
+			chunk_pos, []
 		).append(Particle(pos, settings, initial_velocity))
 
 	def get_particles(self, pos: tuple | pygame.Vector2, size: tuple | pygame.Vector2) -> list[Particle]:
@@ -70,7 +71,7 @@ class ParticleManager:
 			particle
 			for row in range(top_chunk_row, bottom_chunk_row + 1)
 			for col in range(left_chunk_col, right_chunk_col + 1)
-			for particle in self.particles.get(row, {}).get(col, [])
+			for particle in self.particles.get((col, row), [])
 		]
 
 	def get_chunk(self, pos: tuple | pygame.Vector2):
@@ -97,65 +98,61 @@ class ParticleManager:
 				affector.affect_particles(
 					delta,
 					self.get_particles(
-						affector.pos - pygame.Vector2(affector.radius)
-						, pygame.Vector2(affector.radius) * 2
+						affector.pos - pygame.Vector2(affector.radius),
+						pygame.Vector2(affector.radius) * 2
 					)
 				)
 
 		particles_to_move: list[Particle] = []
 		chunks_to_delete: list[tuple[int, int]] = []
-		for row, chunk_row in self.particles.items():
-			for col, chunk in chunk_row.items():
-				for particle in chunk:
-					particle.update(delta, self.get_surrounding_colliders((col, row)))
+		for chunk_pos, chunk in self.particles.items():
+			surrounding_colliders = self.get_surrounding_colliders(chunk_pos)
 
-					new_chunk_col, new_chunk_row = self.get_chunk(particle.pos)
+			for particle in chunk:
+				particle.update(delta, surrounding_colliders)
 
-					if new_chunk_col != col or new_chunk_row != row:
-						particles_to_move.append(particle)
-						particle.moved_chunk()
+				new_chunk_pos = self.get_chunk(particle.pos)
 
-				chunk[:] = [particle for particle in chunk if particle.alive()]
-				if len(chunk) == 0:
-					chunks_to_delete.append((col, row))
+				if new_chunk_pos != chunk_pos:
+					particles_to_move.append(particle)
+					particle.moved_chunk()
 
-		for chunk in chunks_to_delete:
-			del self.particles[chunk[1]][chunk[0]]
+			chunk[:] = [particle for particle in chunk if particle.alive()]
+			if len(chunk) == 0:
+				chunks_to_delete.append(chunk_pos)
+
+		for chunk_pos in chunks_to_delete:
+			del self.particles[chunk_pos]
 
 		for particle in particles_to_move:
-			chunk_col, chunk_row = self.get_chunk(particle.pos)
+			chunk_pos = self.get_chunk(particle.pos)
 
 			self.particles.setdefault(
-				chunk_row, {}
-			).setdefault(
-				chunk_col, []
+				chunk_pos, []
 			).append(particle)
 			particle.has_moved_chunk = False
 
 	def draw(self, surface: pygame.Surface, camera: Camera):
 		[
 			particle.draw(surface, camera)
-			for row in self.particles.values()
-			for chunk in row.values()
+			for chunk in self.particles.values()
 			for particle in chunk
 		]
 
 		# Debug
 		if DebugDisplay.is_active():
-			for row in self.particles.keys():
-				for col in self.particles[row].keys():
-					DebugDisplay.draw_rect(pygame.Rect(
-						camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
-						(self.chunk_size, self.chunk_size)
-					), "blue", width=2)
+			for (col, row) in self.particles.keys():
+				DebugDisplay.draw_rect(pygame.Rect(
+					camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
+					(self.chunk_size, self.chunk_size)
+				), "blue", width=2)
 
-			for row_index, row in self.chunked_colliders.items():
-				for col_index, chunk in row.items():
-					for collider in chunk:
-						DebugDisplay.draw_rect(pygame.Rect(
-							camera.world_to_screen(collider.topleft),
-							collider.size
-						), "light blue", width=3)
+			for chunk in self.chunked_colliders.values():
+				for collider in chunk:
+					DebugDisplay.draw_rect(pygame.Rect(
+						camera.world_to_screen(collider.topleft),
+						collider.size
+					), "light blue", width=3)
 
 			for affector_type, affectors in self.affectors.items():
 				for affector in affectors:
