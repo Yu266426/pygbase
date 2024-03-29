@@ -37,6 +37,11 @@ class Timer:
 		self._is_done = False
 		self._is_just_done = False
 
+	def finish(self):
+		self._time = 0
+		self._is_done = True
+		self._is_just_done = True
+
 	def done(self):
 		return self._is_done
 
