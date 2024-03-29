@@ -30,7 +30,7 @@ class Particle:
 		self.gravity: tuple = settings[Options.GRAVITY]
 		self.effector: bool = settings[Options.EFFECTOR]
 
-		self.bounce: tuple = settings[Options.BOUNCE]
+		self.bounce_ranges: tuple[tuple, tuple] = settings[Options.BOUNCE]
 
 		self.has_moved_chunk = False
 
@@ -57,7 +57,7 @@ class Particle:
 		for collider in colliders:
 			if collider.collidepoint(new_pos_x, self.pos.y):
 				new_pos_x -= vel_x * delta
-				vel_x *= -self.bounce[0]
+				vel_x *= -random.uniform(*self.bounce_ranges[0])
 				break  # TODO: Potentially buggy
 
 		# Update y velocity
@@ -71,7 +71,7 @@ class Particle:
 		for collider in colliders:
 			if collider.collidepoint(new_pos_x, new_pos_y):
 				new_pos_y -= vel_y * delta
-				vel_y *= -self.bounce[1]
+				vel_y *= -random.uniform(*self.bounce_ranges[1])
 				break
 
 		# Update position and velocity

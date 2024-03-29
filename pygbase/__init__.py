@@ -1,23 +1,13 @@
 import logging
 
-import pygbase.utils
-
-from .app import App
-from .camera import Camera, CameraController
 from .common import Common
 from .debug import DebugDisplay
 from .events import EventManager
-from .game_state import GameState
-from .graphics.animation import Animation, AnimationManager
 from .graphics.image import Image
 from .graphics.sprite_sheet import SpriteSheet
 from .inputs import InputManager
 from .lighting import *
-from .particles import *
 from .resources import ResourceType, ResourceManager
-from .timer import Timer
-from .transition_states import FadeTransition
-from .ui import *
 
 
 def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5, max_light_radius: int = 600, light_radius_interval: int = 2):
@@ -45,7 +35,7 @@ def add_resource_type(type_id: int, resource_type: ResourceType):
 	ResourceManager.add_resource_type(type_id, resource_type)
 
 
-def add_image_resource(name: str, type_id: int, dir_path: str):
+def add_image_resource(name: str, type_id: int, dir_path: str, default_scale: float = 1):
 	def load_image(data: dict, resource_path: str):
 		scale = data["scale"]
 		rotatable = data["rotatable"]
@@ -54,7 +44,7 @@ def add_image_resource(name: str, type_id: int, dir_path: str):
 
 	add_resource_type(type_id, ResourceType(
 		name, dir_path, ".png",
-		{"scale": 1, "rotatable": False},
+		{"scale": default_scale, "rotatable": False},
 		None,
 		load_image
 	))
@@ -102,7 +92,7 @@ def add_particle_setting(
 		velocity_decay: tuple[float, float],
 		gravity: tuple[float, float],
 		effector: bool,
-		bounce: tuple[float, float]
+		bounce: tuple[tuple[float, float], tuple[float, float]]
 ):
 	Common.add_particle_setting(name, colour, size, size_decay, velocity_decay, gravity, effector, bounce)
 

@@ -28,7 +28,7 @@ class Common:
 			ParticleOptions.VELOCITY_DECAY: (1.8, 2.2),
 			ParticleOptions.GRAVITY: (0, 0),
 			ParticleOptions.EFFECTOR: True,
-			ParticleOptions.BOUNCE: (0.1, 0.1)
+			ParticleOptions.BOUNCE: ((0.0, 0.1), (0.0, 0.1))
 		}
 	}
 
@@ -82,7 +82,7 @@ class Common:
 			velocity_decay: tuple[float, float],
 			gravity: tuple[float, float],
 			effector: bool,
-			bounce: tuple[float, float]
+			bounce: tuple[tuple[float, float], tuple[float, float]]
 	):
 		if name not in cls._particle_settings:
 			cls._particle_settings[name] = {

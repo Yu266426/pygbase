@@ -64,6 +64,7 @@ class ParticleManager:
 		).append(Particle(pos, settings, initial_velocity))
 
 	def get_particles(self, pos: tuple | pygame.Vector2, size: tuple | pygame.Vector2) -> list[Particle]:
+		# TODO: Optimize in same way as `get_surrounding_colliders`
 		left_chunk_col, top_chunk_row = self.get_chunk(pos)
 		right_chunk_col, bottom_chunk_row, = self.get_chunk(pos + size)
 
