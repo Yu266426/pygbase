@@ -146,6 +146,12 @@ class VerticalScrollingFrame(Frame):
 					element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) - offset)
 					element.reposition()
 
+			for element in self.elements:
+				if self.rect.colliderect(element.rect):
+					element.can_interact = True
+				else:
+					element.can_interact = False
+
 
 class ImageElement(UIElement):
 	def __init__(
