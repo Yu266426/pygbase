@@ -12,8 +12,8 @@ from ..resources import ResourceManager
 
 
 class Frame(UIElement):
-	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"] = None, bg_colour=None):
-		super().__init__(pos, size, container)
+	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"] = None, bg_colour=None, blocks_mouse: bool = True):
+		super().__init__(pos, size, container, blocks_mouse=blocks_mouse)
 
 		self.active: bool = True
 
@@ -98,7 +98,7 @@ class Frame(UIElement):
 
 
 class VerticalScrollingFrame(Frame):
-	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], scroll_speed, container: Optional["Frame"] = None, bg_colour=None):
+	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], scroll_speed: float, container: Optional["Frame"] = None, bg_colour=None):
 		super().__init__(pos, size, container=container, bg_colour=bg_colour)
 
 		self.scroll_speed = scroll_speed
@@ -156,8 +156,13 @@ class ImageElement(UIElement):
 			resource_name: str,
 			container: Frame,
 			alignment: str = "l",
+			index: int | None = None
 	):
-		self.image: Image = ResourceManager.get_resource(resource_type_name, resource_name)
+		if index is None:
+			self.image: Image = ResourceManager.get_resource(resource_type_name, resource_name)
+		else:
+			self.image: Image = ResourceManager.get_resource(resource_type_name, resource_name).get_image(index)
+
 		image_size = self.image.get_image().get_size()
 
 		if size[0].value != 0 and size[1].value != 0:
@@ -217,9 +222,10 @@ class Button(ImageElement):
 			text_colour="white",
 			font: str = "arial",
 			use_sys: bool = True,
-			alignment: str = "l"
+			alignment: str = "l",
+			index: int | None = None
 	):
-		super().__init__(pos, size, resource_type_name, resource_name, container, alignment=alignment)
+		super().__init__(pos, size, resource_type_name, resource_name, container, alignment=alignment, index=index)
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
 
@@ -328,22 +334,24 @@ class TextSelectionMenu(Frame):
 			size: tuple[UIValue, UIValue],
 			image_resource_type_name: str,
 			options: list,
-			container: Frame
+			container: Frame,
+			bg_colour: tuple = (0, 0, 0, 150)
 	):
-		super().__init__(pos, size, container=container, bg_colour=(0, 0, 0, 150))
+		super().__init__(pos, size, container=container, bg_colour=bg_colour)
 
 		self.options = options
 
 		self.index: int = 0
 		self.current_option = self.options[self.index]
 
-		self.text: Optional[TextElement] = None
-
 		self.add_element(Button((UIValue(0, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "left", self, self._change_option, callback_args=(-1,)))
 		self.add_element(Button((UIValue(1, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "right", self, self._change_option, callback_args=(1,), alignment="r"))
 
 		self.text = TextElement((UIValue(0.5, False), UIValue(0.5, False)), "arial", UIValue(0.7, False), (255, 255, 255), self.current_option, self, alignment=UIAlignment.CENTER)
 		self.add_element(self.text)
+
+	def get_current_text(self) -> str:
+		return self.text.text.text
 
 	def _change_option(self, direction):
 		self.index += direction

@@ -15,6 +15,7 @@ class UIManager:
 
 	def add_frame(self, frame: Frame) -> Frame:
 		self._frames.append(frame)
+		frame.reposition()
 		return frame
 
 	def add_element(self, element: UIElementType, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElementType:
@@ -26,11 +27,15 @@ class UIManager:
 	def on_ui(self) -> bool:
 		for frame in self._frames[1:]:
 			if frame.active:
-				if frame.rect.collidepoint(*pygame.mouse.get_pos()):
+				if frame.blocks_mouse and frame.rect.collidepoint(*pygame.mouse.get_pos()):
 					return True
 
+				for element in frame.elements:
+					if element.blocks_mouse and element.rect.collidepoint(*pygame.mouse.get_pos()):
+						return True
+
 		for element in self._frames[0].elements:
-			if element.rect.collidepoint(*pygame.mouse.get_pos()):
+			if element.blocks_mouse and element.rect.collidepoint(*pygame.mouse.get_pos()):
 				return True
 
 		return False

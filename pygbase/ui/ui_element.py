@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class UIElement:
-	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"]):
+	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"], blocks_mouse: bool=True):
 		# UI data
 		self.container = container
 		self.container_size: tuple[float, float]
@@ -33,6 +33,8 @@ class UIElement:
 		self._rect: pygame.Rect = pygame.Rect(self._pos + self.container_offset, self.size)
 
 		# Actions data
+		self.blocks_mouse = blocks_mouse
+
 		self.time = 0
 		self.timed_actions: dict[int, list[UIActionTriggers]] = {}  # TODO: Use in some way?
 
