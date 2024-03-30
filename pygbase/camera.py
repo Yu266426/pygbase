@@ -23,7 +23,7 @@ class Camera:
 		return pygame.Vector2(pos[0] + self.pos.x, pos[1] + self.pos.y)
 
 	def world_to_screen(self, pos: pygame.Vector2 | tuple):
-		return pos[0] - self.pos.x, pos[1] - self.pos.y
+		return round(pos[0] - self.pos.x), round(pos[1] - self.pos.y)
 
 	def world_to_screen_rect[RectType](self, rect: RectType) -> RectType:
 		new_rect = rect.copy()
