@@ -28,6 +28,7 @@ class ParticleManager:
 		}
 
 		self.chunked_colliders: dict[tuple[int, int], list[pygame.Rect]] = self.generate_chunked_colliders(colliders)
+		self.dynamic_colliders: list[pygame.Rect] = []
 
 	def generate_chunked_colliders(self, colliders) -> dict[tuple[int, int], list[pygame.Rect]]:
 		chunked_colliders = {}
@@ -42,6 +43,9 @@ class ParticleManager:
 					).append(collider)
 
 		return chunked_colliders
+
+	def pass_dynamic_colliders(self, colliders: list[pygame.Rect]):
+		self.dynamic_colliders[:] = colliders[:]  # Contents of dynamic_colliders gets set to contents of colliders
 
 	def get_surrounding_colliders(self, chunk_pos: tuple):
 		min_row = chunk_pos[1] - 1
@@ -107,7 +111,7 @@ class ParticleManager:
 		particles_to_move: list[Particle] = []
 		chunks_to_delete: list[tuple[int, int]] = []
 		for chunk_pos, chunk in self.particles.items():
-			surrounding_colliders = self.get_surrounding_colliders(chunk_pos)
+			surrounding_colliders = [*self.get_surrounding_colliders(chunk_pos), *self.dynamic_colliders]
 
 			for particle in chunk:
 				particle.update(delta, surrounding_colliders)
