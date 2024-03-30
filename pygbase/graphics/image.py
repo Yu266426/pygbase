@@ -53,7 +53,7 @@ class Image:
 		angle %= 360
 
 		image_index = int(angle / self.rotate_angle)
-		image_index = min(max(image_index, 0), len(self.angled_images))
+		image_index = min(max(image_index, 0), len(self.angled_images) - 1)
 		return self.angled_images[image_index]
 
 	def draw(self, surface: pygame.Surface, pos: pygame.Vector2 | tuple[float, float], angle: float = 0, flip: tuple[bool, bool] = (False, False), draw_pos: str = "topleft", flags: int = 0):
