@@ -25,6 +25,11 @@ class Camera:
 	def world_to_screen(self, pos: pygame.Vector2 | tuple):
 		return pos[0] - self.pos.x, pos[1] - self.pos.y
 
+	def world_to_screen_rect[RectType](self, rect: RectType) -> RectType:
+		new_rect = rect.copy()
+		new_rect.topleft = self.world_to_screen(new_rect.topleft)
+		return new_rect
+
 
 class CameraController:
 	def __init__(self, pos: tuple | pygame.Vector2 = (0, 0), keep_in: tuple | None = None):
