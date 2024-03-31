@@ -27,10 +27,11 @@ class ParticleManager:
 			AffectorTypes.ATTRACTOR: []
 		}
 
-		self.chunked_colliders: dict[tuple[int, int], list[pygame.Rect]] = self.generate_chunked_colliders(colliders)
+		self.chunked_colliders: dict[tuple[int, int], list[pygame.Rect]] = {}
+		self.generate_chunked_colliders(colliders)
 		self.dynamic_colliders: list[pygame.Rect] = []
 
-	def generate_chunked_colliders(self, colliders) -> dict[tuple[int, int], list[pygame.Rect]]:
+	def generate_chunked_colliders(self, colliders):
 		chunked_colliders = {}
 
 		for collider in colliders:
@@ -42,7 +43,7 @@ class ParticleManager:
 						chunk_pos, []
 					).append(collider)
 
-		return chunked_colliders
+		self.chunked_colliders = chunked_colliders
 
 	def pass_dynamic_colliders(self, colliders: list[pygame.Rect]):
 		self.dynamic_colliders[:] = colliders[:]  # Contents of dynamic_colliders gets set to contents of colliders

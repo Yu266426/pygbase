@@ -60,7 +60,7 @@ class Image:
 		factor = -1 if flip[0] ^ flip[1] else 1  # Exclusive or
 		image = self.get_image(angle * factor)
 
-		if flip:
+		if flip[0] or flip[1]:
 			image = pygame.transform.flip(image, *flip)
 
 		origin = self.get_image()

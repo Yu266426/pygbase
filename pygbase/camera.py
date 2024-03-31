@@ -15,6 +15,12 @@ class Camera:
 
 		self._current_shake_offset = pygame.Vector2()
 
+	def copy(self):
+		new_camera = Camera(self.pos, self._shake_amount)
+		new_camera._shake_time = self._shake_time
+		new_camera._current_shake_offset = self._current_shake_offset
+		return new_camera
+
 	def shake_screen(self, time: float):
 		self._shake_time = max(self._shake_time, time)
 
