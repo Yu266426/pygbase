@@ -80,6 +80,12 @@ class ParticleManager:
 			for particle in self.particles.get((col, row), [])
 		]
 
+	def clear(self):
+		for chunk_pos, chunk in self.particles.items():
+			chunk.clear()
+
+		self.particles.clear()
+
 	def get_chunk(self, pos: tuple | pygame.Vector2):
 		return int(pos[0] // self.chunk_size), int(pos[1] // self.chunk_size)
 

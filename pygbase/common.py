@@ -4,6 +4,7 @@ from typing import Any
 
 
 class ParticleOptions(enum.Enum):
+	NAME = enum.auto()
 	COLOUR = enum.auto()
 	SIZE = enum.auto()
 	SIZE_DECAY = enum.auto()
@@ -20,8 +21,9 @@ class Common:
 
 	_resource_types: dict[str, int] = {}
 
-	_particle_settings: dict[str, dict["ParticleOptions", list[str] | tuple[float] | bool]] = {
+	_particle_settings: dict[str, dict["ParticleOptions", str | list[str] | tuple[float] | bool]] = {
 		"default": {
+			ParticleOptions.NAME: "default",
 			ParticleOptions.COLOUR: ["white"],
 			ParticleOptions.SIZE: (4.0, 7.0),
 			ParticleOptions.SIZE_DECAY: (3.0, 5.0),
@@ -86,6 +88,7 @@ class Common:
 	):
 		if name not in cls._particle_settings:
 			cls._particle_settings[name] = {
+				ParticleOptions.NAME: name,
 				ParticleOptions.COLOUR: colour,
 				ParticleOptions.SIZE: size,
 				ParticleOptions.SIZE_DECAY: size_decay,
