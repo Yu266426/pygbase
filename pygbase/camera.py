@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 from .common import Common
@@ -5,8 +7,26 @@ from .inputs import InputManager
 
 
 class Camera:
-	def __init__(self, pos: tuple[int | float, int | float] | pygame.Vector2 = (0, 0)):
+	def __init__(self, pos: tuple[int | float, int | float] | pygame.Vector2 = (0, 0), shake_amount: float = 2):
 		self.pos: pygame.Vector2 = pygame.Vector2(pos)
+
+		self._shake_amount: float = shake_amount
+		self._shake_time: float = 0
+
+		self._current_shake_offset = pygame.Vector2()
+
+	def shake_screen(self, time: float):
+		self._shake_time = max(self._shake_time, time)
+
+	def tick(self, delta: float):
+		self._shake_time = max(self._shake_time - delta, 0)
+
+		if self._shake_time > 0.01:
+			shake_amount = self._shake_amount + self._shake_time  # More shake the longer it is
+			self._current_shake_offset.update(
+				random.uniform(-shake_amount, shake_amount),
+				random.uniform(-shake_amount, shake_amount)
+			)
 
 	def set_pos(self, target: pygame.Vector2):
 		self.pos.update(target.copy())
@@ -20,10 +40,10 @@ class Camera:
 			self.pos.update(self.pos.lerp(target, amount))
 
 	def screen_to_world(self, pos: pygame.Vector2 | tuple):
-		return pygame.Vector2(pos[0] + self.pos.x, pos[1] + self.pos.y)
+		return pygame.Vector2(pos[0] + self.pos.x + self._current_shake_offset.x, pos[1] + self.pos.y + self._current_shake_offset.y)
 
 	def world_to_screen(self, pos: pygame.Vector2 | tuple):
-		return round(pos[0] - self.pos.x), round(pos[1] - self.pos.y)
+		return round(pos[0] - self.pos.x - self._current_shake_offset.x), round(pos[1] - self.pos.y - self._current_shake_offset.y)
 
 	def world_to_screen_rect[RectType](self, rect: RectType) -> RectType:
 		new_rect = rect.copy()
