@@ -1,3 +1,4 @@
+import math
 import random
 
 import pygame
@@ -39,7 +40,7 @@ class Camera:
 
 	def lerp_to_target(self, target: pygame.Vector2, amount: float):
 		amount = max(0.0, min(amount, 1.0))
-		if self.pos.distance_to(target) < 1.0:  # Correct any minor position error
+		if self.pos.distance_to(target) < 0.1:  # Correct any minor position error
 			self.pos.update(target)
 		else:
 			self.pos.update(self.pos.lerp(target, amount))
@@ -48,7 +49,7 @@ class Camera:
 		return pygame.Vector2(pos[0] + self.pos.x + self._current_shake_offset.x, pos[1] + self.pos.y + self._current_shake_offset.y)
 
 	def world_to_screen(self, pos: pygame.Vector2 | tuple):
-		return int(pos[0] - self.pos.x - self._current_shake_offset.x), int(pos[1] - self.pos.y - self._current_shake_offset.y)
+		return math.floor(pos[0] - self.pos.x - self._current_shake_offset.x), math.floor(pos[1] - self.pos.y - self._current_shake_offset.y)
 
 	def world_to_screen_rect[RectType](self, rect: RectType) -> RectType:
 		new_rect = rect.copy()
