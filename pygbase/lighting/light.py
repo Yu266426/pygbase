@@ -40,6 +40,15 @@ class Light:
 		self.pos = pos
 		return self
 
+	def set_brightness(self, brightness: float):
+		self.brightness = pygame.math.clamp(brightness, 0, 1)
+		self.add_brightness = pygame.math.clamp(brightness - 1, 0, 1)
+
+		self.brightness_surface.fill((int(255 * self.brightness), int(255 * self.brightness), int(255 * self.brightness)))
+
+		if self.add_brightness > 0:
+			self.add_brightness_surface.fill((int(255 * self.add_brightness), int(255 * self.add_brightness), int(255 * self.add_brightness)))
+
 	def update(self, delta):
 		pass
 
