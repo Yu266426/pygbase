@@ -89,6 +89,9 @@ class AnimationManager:
 			if self.reset_animation_on_switch:
 				self.states[self.current_state].frame = 0
 
+	def done(self):
+		return self.states[self.current_state].done()
+
 	def update(self, delta: float):
 		self.states[self.current_state].change_frame(self.animation_info[self.current_state][0] * delta)
 
