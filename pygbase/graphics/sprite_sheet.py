@@ -15,10 +15,16 @@ class SpriteSheet:
 		self.tile_width: int = data["tile_width"] * self.scale
 		self.tile_height: int = data["tile_height"] * self.scale
 
-		# Sprite Sheet
+		# Load Sprite Sheet
 		self.image: pygame.Surface = pygame.image.load(resource_path).convert_alpha()
 		self.image.set_colorkey((0, 0, 0))
 		self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.scale, self.image.get_height() * self.scale))
+
+		# Automatically set n_rows and n_cols if needed
+		if self.n_rows == 0:
+			self.n_rows = int(self.image.get_height() / self.tile_height)
+		if self.n_cols == 0:
+			self.n_cols = int(self.image.get_width() / self.tile_width)
 
 		self._images: list[Image] = []
 
