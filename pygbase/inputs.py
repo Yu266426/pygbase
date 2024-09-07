@@ -6,8 +6,8 @@ from .events import EventManager
 class InputManager:
 	# Keyboard
 	_keys_down = [False] * 512
-	_keys_pressed = [False] * 512
 	_keys_up = [False] * 512
+	_keys_pressed = [False] * 512
 
 	# Mouse
 	_mouse_down: list[bool, bool, bool] = [False, False, False]
@@ -27,8 +27,8 @@ class InputManager:
 
 		cls._scroll.update(0)
 
-		cls._keys_down[:] = [False] * 512
-		cls._keys_up[:] = [False] * 512
+		cls._keys_down = pygame.key.get_just_pressed()
+		cls._keys_up = pygame.key.get_just_released()
 		cls._keys_pressed = pygame.key.get_pressed()
 
 		cls._mods = pygame.key.get_mods()
@@ -93,21 +93,9 @@ class InputManager:
 	@classmethod
 	def register_handlers(cls):
 		"""(Called by the engine)"""
-		EventManager.add_handler("all", pygame.KEYDOWN, cls._keydown_handler)
-		EventManager.add_handler("all", pygame.KEYUP, cls._keyup_handler)
 		EventManager.add_handler("all", pygame.MOUSEBUTTONDOWN, cls._mouse_down_handler)
 		EventManager.add_handler("all", pygame.MOUSEBUTTONUP, cls._mouse_up_handler)
 		EventManager.add_handler("all", pygame.MOUSEWHEEL, cls._mouse_wheel_handler)
-
-	@classmethod
-	def _keydown_handler(cls, event: pygame.event.Event):
-		if event.key <= 512:
-			cls._keys_down[event.key] = True
-
-	@classmethod
-	def _keyup_handler(cls, event: pygame.event.Event):
-		if event.key <= 512:
-			cls._keys_up[event.key] = True
 
 	@classmethod
 	def _mouse_down_handler(cls, event: pygame.event.Event):
