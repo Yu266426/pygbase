@@ -21,23 +21,44 @@ class EventManager:
 			raise ValueError(f"Event `{name}` already exists")
 
 	@classmethod
+	def _convert_to_event_type(cls, event: int | str) -> int:
+		if isinstance(event, str):
+			return cls._custom_events[event]
+		elif isinstance(event, int):
+			return event
+		else:
+			raise TypeError("Event must be of type int or str")
+
+	@classmethod
 	def add_handler(cls, state_name: str, event: int | str, handler: Callable[[pygame.event.Event], None]):
 		game_state_id = Common.get_game_state_id(state_name)
 
 		if game_state_id not in cls._handlers:
 			cls._handlers[game_state_id] = {}
 
-		if isinstance(event, str):
-			event_type = cls._custom_events[event]
-		elif isinstance(event, int):
-			event_type = event
-		else:
-			raise TypeError("Event must be of type int or str")
+		event_type = cls._convert_to_event_type(event)
 
 		if event_type not in cls._handlers[game_state_id]:
 			cls._handlers[game_state_id][event_type] = []
 
 		cls._handlers[game_state_id][event_type].append(handler)
+
+	@classmethod
+	def remove_handler(cls, handler: Callable[[pygame.event.Event], None], state_name: str | None = None, event: int | str | None = None):
+		if state_name is not None:
+			game_state_id = Common.get_game_state_id(state_name)
+
+			if event is not None:
+				cls._handlers[game_state_id][cls._convert_to_event_type(event)].remove(handler)
+			else:
+				for _event_type, handlers in cls._handlers[game_state_id].items():
+					if handler in handlers:
+						handlers.remove(handler)
+		else:
+			for _game_state_id, events in cls._handlers.items():
+				for _event_type, handlers in events.items():
+					if handler in handlers:
+						handlers.remove(handler)
 
 	@classmethod
 	def handle_events(cls, current_game_state: int):
