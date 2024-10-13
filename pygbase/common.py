@@ -2,6 +2,8 @@ import enum
 import logging
 from typing import Any
 
+import pygame.typing
+
 
 class ParticleOptions(enum.Enum):
 	NAME = enum.auto()
@@ -21,7 +23,7 @@ class Common:
 
 	_resource_types: dict[str, int] = {}
 
-	_particle_settings: dict[str, dict["ParticleOptions", str | list[str] | tuple[float] | bool]] = {
+	_particle_settings: dict[str, dict["ParticleOptions", str | list[pygame.typing.ColorLike] | tuple[float] | bool]] = {
 		"default": {
 			ParticleOptions.NAME: "default",
 			ParticleOptions.COLOUR: ["white"],
@@ -78,7 +80,7 @@ class Common:
 	def add_particle_setting(
 			cls,
 			name: str,
-			colour: list,
+			colour: list[pygame.typing.ColorLike],
 			size: tuple[float, float],
 			size_decay: tuple[float, float],
 			velocity_decay: tuple[float, float],
@@ -101,7 +103,7 @@ class Common:
 			logging.warning(f"Particle setting name: `{name}` already taken")
 
 	@classmethod
-	def get_particle_setting(cls, name: str) -> dict[ParticleOptions, list[str] | tuple[float] | bool]:
+	def get_particle_setting(cls, name: str) -> dict[ParticleOptions, list[pygame.typing.ColorLike] | tuple[float] | bool]:
 		if name in cls._particle_settings:
 			return cls._particle_settings[name]
 		else:

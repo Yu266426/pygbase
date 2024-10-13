@@ -12,7 +12,7 @@ class AffectorTypes(enum.Enum):
 
 
 class ParticleAttractor:
-	def __init__(self, pos: tuple | pygame.Vector2, radius: float, strength: float):
+	def __init__(self, pos: pygame.typing.Point, radius: float, strength: float):
 		self.pos = pygame.Vector2(pos)
 		self.radius = radius
 		self.strength = strength

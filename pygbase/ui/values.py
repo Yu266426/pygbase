@@ -29,7 +29,7 @@ class UIAlignment(enum.Enum):
 	BOTTOM_RIGHT = enum.auto()
 
 	@classmethod
-	def set_rect(cls, rect: pygame.Rect | pygame.FRect, alignment: "UIAlignment", pos: tuple | pygame.Vector2):
+	def set_rect(cls, rect: pygame.Rect | pygame.FRect, alignment: "UIAlignment", pos: pygame.typing.Point):
 		if alignment == cls.TOP_LEFT:
 			rect.topleft = pos
 		elif alignment == cls.TOP_MID:

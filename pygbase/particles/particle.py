@@ -7,7 +7,7 @@ from ..common import ParticleOptions as Options
 
 
 class Particle:
-	def __init__(self, pos: tuple | pygame.Vector2, settings: dict, initial_velocity=(0, 0)):
+	def __init__(self, pos: pygame.typing.Point, settings: dict, initial_velocity=(0, 0)):
 		self.pos = pygame.Vector2(pos)
 
 		self.size: float = random.uniform(
@@ -40,7 +40,7 @@ class Particle:
 	def alive(self):
 		return self.size > 0.2 and not self.has_moved_chunk
 
-	def update(self, delta: float, colliders: list[pygame.Rect]):
+	def update(self, delta: float, colliders: list[pygame.Rect | pygame.FRect]):
 		# Pre-calculate some repeated values
 		gravity_x = self.gravity[0]
 		gravity_y = self.gravity[1]

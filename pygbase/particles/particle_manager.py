@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class ParticleManager:
-	def __init__(self, chunk_size: int = 400, colliders: tuple[pygame.Rect] = ()):
+	def __init__(self, chunk_size: int = 400, colliders: tuple[pygame.Rect | pygame.FRect] = ()):
 		self.chunk_size = chunk_size
 
 		self.particles: dict[tuple[int, int], list[Particle]] = {}
@@ -60,14 +60,14 @@ class ParticleManager:
 
 		return colliders
 
-	def add_particle(self, pos: tuple | pygame.Vector2, settings: dict, initial_velocity=(0, 0)):
+	def add_particle(self, pos: pygame.typing.Point, settings: dict, initial_velocity=(0, 0)):
 		chunk_pos = self.get_chunk(pos)
 
 		self.particles.setdefault(
 			chunk_pos, []
 		).append(Particle(pos, settings, initial_velocity))
 
-	def get_particles(self, pos: tuple | pygame.Vector2, size: tuple | pygame.Vector2) -> list[Particle]:
+	def get_particles(self, pos: pygame.typing.Point, size: tuple | pygame.Vector2) -> list[Particle]:
 		# TODO: Optimize in same way as `get_surrounding_colliders`
 		left_chunk_col, top_chunk_row = self.get_chunk(pos)
 		right_chunk_col, bottom_chunk_row, = self.get_chunk(pos + size)
@@ -85,7 +85,7 @@ class ParticleManager:
 
 		self.particles.clear()
 
-	def get_chunk(self, pos: tuple | pygame.Vector2):
+	def get_chunk(self, pos: pygame.typing.Point):
 		return int(pos[0] // self.chunk_size), int(pos[1] // self.chunk_size)
 
 	def add_spawner(self, spawner: "SpawnerType") -> "SpawnerType":

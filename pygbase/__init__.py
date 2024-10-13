@@ -1,5 +1,7 @@
 import logging
 
+import pygame.typing
+
 import pygbase.utils
 
 from .app import App
@@ -8,7 +10,7 @@ from .common import Common
 from .debug import DebugDisplay
 from .events import EventManager
 from .game_state import GameState
-from .graphics.animation import Animation, AnimationManager
+from .graphics import *
 from .graphics.image import Image
 from .graphics.sprite_sheet import SpriteSheet
 from .inputs import InputManager
@@ -20,7 +22,13 @@ from .transition_states import FadeTransition
 from .ui import *
 
 
-def init(screen_size: tuple[int, int], logging_level=logging.DEBUG, rotate_resolution: float = 0.5, max_light_radius: int = 600, light_radius_interval: int = 2):
+def init(
+		screen_size: tuple[int, int],
+		logging_level=logging.DEBUG,
+		rotate_resolution: float = 0.5,
+		max_light_radius: int = 600,
+		light_radius_interval: int = 2
+):
 	logging.basicConfig(level=logging_level, format="%(asctime)s - %(levelname)s - %(message)s")
 
 	pygame.init()
@@ -96,7 +104,7 @@ def add_sound_resource(name: str, type_id: int, dir_path: str, sound_ending: str
 
 def add_particle_setting(
 		name: str,
-		colour: list,
+		colour: list[pygame.typing.ColorLike],
 		size: tuple[float, float],
 		size_decay: tuple[float, float],
 		velocity_decay: tuple[float, float],

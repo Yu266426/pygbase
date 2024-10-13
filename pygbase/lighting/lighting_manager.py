@@ -20,7 +20,7 @@ class LightingManager:
 		self.lights.append(light_source)
 		return light_source
 
-	def remove_light(self, light_source):
+	def remove_light(self, light_source: Light):
 		if light_source in self.lights:
 			self.lights.remove(light_source)
 

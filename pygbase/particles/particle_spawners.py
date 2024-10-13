@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class ParticleSpawner:
-	def __init__(self, pos, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: "ParticleManager"):
+	def __init__(self, pos: pygame.typing.Point, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: "ParticleManager"):
 		self.active = start_active
 
 		self.pos = pygame.Vector2(pos)
@@ -64,7 +64,7 @@ class PointSpawner(ParticleSpawner):
 
 
 class CircleSpawner(ParticleSpawner):
-	def __init__(self, pos, cooldown: float, amount: int, radius: float, start_active: bool, particle_type: str, manager: "ParticleManager", linear_velocity_range: tuple[tuple[float, float], tuple[float, float]] = ((0, 0), (0, 0)), radial_velocity_range: tuple[float, float] = (0, 0)):
+	def __init__(self, pos: pygame.typing.Point, cooldown: float, amount: int, radius: float, start_active: bool, particle_type: str, manager: "ParticleManager", linear_velocity_range: tuple[tuple[float, float], tuple[float, float]] = ((0, 0), (0, 0)), radial_velocity_range: tuple[float, float] = (0, 0)):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
 		self.pos = pygame.Vector2(pos)
 		self.radius = radius
@@ -89,7 +89,7 @@ class CircleSpawner(ParticleSpawner):
 
 
 class RectSpawner(ParticleSpawner):
-	def __init__(self, pos, cooldown: float, amount: int, size: tuple, start_active: bool, particle_type: str, manager: "ParticleManager"):
+	def __init__(self, pos: pygame.typing.Point, cooldown: float, amount: int, size: tuple, start_active: bool, particle_type: str, manager: "ParticleManager"):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
 
 		self.size = size
