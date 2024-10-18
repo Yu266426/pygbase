@@ -1,11 +1,11 @@
 import pygame
 
-from .ui_element import UIElementType
+from .ui_element import UIElement
 from .ui_elements import Frame
 from .values import UIValue
 
 
-class UIManager:
+class UIManager[UIElementType: UIElement]:
 	def __init__(self):
 		self._frames: list[Frame] = [Frame((UIValue(0, False), UIValue(0, False)), (UIValue(1, False), UIValue(1, False)))]
 

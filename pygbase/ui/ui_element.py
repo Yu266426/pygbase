@@ -1,4 +1,4 @@
-from typing import Optional, Callable, TypeVar, TYPE_CHECKING
+from typing import Optional, Callable, TYPE_CHECKING
 
 import pygame
 
@@ -130,6 +130,3 @@ class UIElement:
 
 	def draw(self, surface: pygame.Surface):
 		pass
-
-
-UIElementType = TypeVar('UIElementType', bound=UIElement)

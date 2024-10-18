@@ -9,5 +9,5 @@ setup(
 	author_email="yu266426@gmail.com",
 	license="MIT",
 	packages=["pygbase", "pygbase.graphics", "pygbase.particles", "pygbase.ui", "pygbase.lighting"],
-	install_requires=["pygame-ce>=2.3.0"]
+	install_requires=["pygame-ce>=2.5.2"]
 )

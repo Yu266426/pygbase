@@ -4,14 +4,14 @@ from typing import Optional, Callable
 import pygame
 
 from .text import Text
-from .ui_element import UIElement, UIElementType
+from .ui_element import UIElement
 from .values import UIActionTriggers, UIValue, UIAlignment
 from ..graphics.image import Image
 from ..inputs import InputManager
 from ..resources import ResourceManager
 
 
-class Frame(UIElement):
+class Frame[UIElementType: UIElement](UIElement):
 	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"] = None, bg_colour=None, blocks_mouse: bool = True):
 		super().__init__(pos, size, container, blocks_mouse=blocks_mouse)
 
@@ -97,7 +97,7 @@ class Frame(UIElement):
 			surface.blit(self.surface, self.pos)
 
 
-class VerticalScrollingFrame(Frame):
+class VerticalScrollingFrame[UIElementType: UIElement](Frame):
 	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], scroll_speed: float, container: Optional["Frame"] = None, bg_colour=None):
 		super().__init__(pos, size, container=container, bg_colour=bg_colour)
 

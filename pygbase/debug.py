@@ -33,14 +33,19 @@ class DebugDisplay:
 			cls._debug_surface.fill((0, 0, 0, 0))
 
 	@classmethod
-	def draw_rect(cls, rect: pygame.Rect, color, width: int = 1):
+	def draw_rect(cls, rect: pygame.typing.RectLike, color: pygame.typing.ColorLike, width: int = 1):
 		if cls._active:
 			pygame.draw.rect(cls._debug_surface, color, rect, width=width)
 
 	@classmethod
-	def draw_circle(cls, center: pygame.Vector2 | tuple, radius: float, color, width: int = 1):
+	def draw_circle(cls, center: pygame.typing.Point, radius: float, color: pygame.typing.ColorLike, width: int = 1):
 		if cls._active:
 			pygame.draw.circle(cls._debug_surface, color, center, radius, width=width)
+
+	@classmethod
+	def draw_line(cls, start: pygame.typing.Point, end: pygame.typing.Point, color: pygame.typing.ColorLike, width: int = 1):
+		if cls._active:
+			pygame.draw.line(cls._debug_surface, color, start, end, width=width)
 
 	@classmethod
 	def draw(cls, screen: pygame.Surface) -> None:

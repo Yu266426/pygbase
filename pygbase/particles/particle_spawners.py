@@ -66,15 +66,7 @@ class PointSpawner(ParticleSpawner):
 class CircleSpawner(ParticleSpawner):
 	def __init__(self, pos: pygame.typing.Point, cooldown: float, amount: int, radius: float, start_active: bool, particle_type: str, manager: "ParticleManager", linear_velocity_range: tuple[tuple[float, float], tuple[float, float]] = ((0, 0), (0, 0)), radial_velocity_range: tuple[float, float] = (0, 0)):
 		super().__init__(pos, cooldown, amount, start_active, particle_type, manager)
-		self.pos = pygame.Vector2(pos)
 		self.radius = radius
-
-		self.timer = Timer(cooldown, True, True)
-		self.amount = amount
-
-		self.type = particle_type
-
-		self.manager = manager
 
 		self.linear_velocity_range = linear_velocity_range
 		self.radial_velocity_range = radial_velocity_range

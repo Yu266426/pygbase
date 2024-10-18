@@ -106,8 +106,8 @@ class Menu(pygbase.GameState, name="menu"):
 			add_on_to_previous=(False, True)
 		)
 
-		print(text_1.pos)
-		print(text_2.pos)
+		# print(text_1.pos)
+		# print(text_2.pos)
 
 		self.left_image: pygbase.Image = pygbase.ResourceManager.get_resource("image", "left")
 

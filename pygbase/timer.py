@@ -42,8 +42,8 @@ class Timer:
 		self._is_done = True
 		self._is_just_done = True
 
-	def done(self):
+	def done(self) -> bool:
 		return self._is_done
 
-	def just_done(self):
+	def just_done(self) -> bool:
 		return self._is_just_done

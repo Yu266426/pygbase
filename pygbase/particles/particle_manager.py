@@ -1,4 +1,4 @@
-from typing import TypeVar, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import pygame
 
@@ -9,9 +9,6 @@ from ..particles.particle import Particle
 
 if TYPE_CHECKING:
 	from .particle_spawners import ParticleSpawner
-
-	SpawnerType = TypeVar("SpawnerType", bound=ParticleSpawner)
-	AffectorType = TypeVar("AffectorType", bound=ParticleAttractor)
 
 
 class ParticleManager:
@@ -88,15 +85,15 @@ class ParticleManager:
 	def get_chunk(self, pos: pygame.typing.Point):
 		return int(pos[0] // self.chunk_size), int(pos[1] // self.chunk_size)
 
-	def add_spawner(self, spawner: "SpawnerType") -> "SpawnerType":
+	def add_spawner[SpawnerType](self, spawner: SpawnerType) -> SpawnerType:
 		self.spawners.append(spawner)
 		return spawner
 
-	def remove_spawner(self, spawner: "SpawnerType"):
+	def remove_spawner[SpawnerType](self, spawner: SpawnerType):
 		if spawner in self.spawners:
 			self.spawners.remove(spawner)
 
-	def add_affector(self, affector_type: AffectorTypes, affector: "AffectorType") -> "AffectorType":
+	def add_affector[AffectorType](self, affector_type: AffectorTypes, affector: AffectorType) -> AffectorType:
 		self.affectors[affector_type].append(affector)
 		return affector
 

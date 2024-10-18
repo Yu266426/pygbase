@@ -37,12 +37,17 @@ class Common:
 	}
 
 	@classmethod
-	def set_value(cls, name: str, value: Any) -> None:
+	def set_value(cls, name: str, value: Any):
 		cls._values[name] = value
 
 	@classmethod
 	def get_value(cls, name: str) -> Any:
 		return cls._values[name]
+
+	@classmethod
+	def remove_value(cls, name: str):
+		if name in cls._values:
+			del cls._values[name]
 
 	@classmethod
 	def add_game_state(cls, name: str, game_state_id: int):

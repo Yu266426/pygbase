@@ -7,6 +7,19 @@ from ..common import ParticleOptions as Options
 
 
 class Particle:
+	__slots__ = [
+		"pos",
+		"size",
+		"size_decay",
+		"colour",
+		"velocity",
+		"velocity_decay",
+		"gravity",
+		"effector",
+		"bounce_ranges",
+		"has_moved_chunk"
+	]
+
 	def __init__(self, pos: pygame.typing.Point, settings: dict, initial_velocity=(0, 0)):
 		self.pos = pygame.Vector2(pos)
 
@@ -42,8 +55,8 @@ class Particle:
 
 	def update(self, delta: float, colliders: list[pygame.Rect | pygame.FRect]):
 		# Pre-calculate some repeated values
-		gravity_x = self.gravity[0]
-		gravity_y = self.gravity[1]
+		gravity_x = self.gravity[0] * delta
+		gravity_y = self.gravity[1] * delta
 		decay = delta * self.velocity_decay
 		size_decay = delta * self.size_decay
 
