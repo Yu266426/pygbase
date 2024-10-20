@@ -2,17 +2,16 @@ import math
 
 import pygame
 
-import pygbase
 from ..camera import Camera
-
+from ..common import Common
 
 class Light:
 	cached_lights: list[pygame.Surface] = []
 
-	def __init__(self, pos: pygame.Vector2 | tuple[float, float], brightness: float, radius: float, variation: float, variation_speed: float, camera_affected: bool = True, tint=(255, 255, 255)):
+	def __init__(self, pos: pygame.typing.Point, brightness: float, radius: float, variation: float, variation_speed: float, camera_affected: bool = True, tint=(255, 255, 255)):
 		self.start_time = pygame.time.get_ticks() / 1000
 
-		self.pos = pos
+		self.pos = pygame.Vector2(pos)
 
 		self.brightness = pygame.math.clamp(brightness, 0, 1)
 		self.add_brightness = pygame.math.clamp(brightness - 1, 0, 1)
@@ -34,7 +33,7 @@ class Light:
 
 		self.camera_affected = camera_affected
 
-		self.radius_interval = pygbase.Common.get_value("light_radius_interval")
+		self.radius_interval = Common.get_value("lighting_radius_interval")
 
 	def link_pos(self, pos: pygame.Vector2) -> "Light":
 		self.pos = pos

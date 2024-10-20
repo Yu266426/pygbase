@@ -27,7 +27,9 @@ def init(
 		logging_level=logging.DEBUG,
 		rotate_resolution: float = 0.5,
 		max_light_radius: int = 600,
-		light_radius_interval: int = 2
+		max_shadow_radius: int = 50,
+		light_radius_interval: int = 2,
+		shadow_ratio: float = 1
 ):
 	logging.basicConfig(level=logging_level, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -42,7 +44,7 @@ def init(
 	EventManager.init()
 	InputManager.register_handlers()
 
-	lighting.init_lighting(max_light_radius, light_radius_interval)
+	lighting.init_lighting_system(max_light_radius, max_shadow_radius, light_radius_interval, shadow_ratio)
 
 	DebugDisplay.init()
 

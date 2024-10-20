@@ -7,7 +7,7 @@ from .inputs import InputManager
 
 
 class Camera:
-	def __init__(self, pos: tuple[int | float, int | float] | pygame.Vector2 = (0, 0), shake_amount: float = 2):
+	def __init__(self, pos: pygame.typing.Point = (0, 0), shake_amount: float = 2):
 		self.pos: pygame.Vector2 = pygame.Vector2(pos)
 
 		self._shake_amount: float = shake_amount
@@ -37,17 +37,17 @@ class Camera:
 	def set_pos(self, target: pygame.Vector2):
 		self.pos.update(target.copy())
 
-	def lerp_to_target(self, target: pygame.Vector2, amount: float):
+	def lerp_to_target(self, target: pygame.typing.Point, amount: float):
 		amount = max(0.0, min(amount, 1.0))
 		if self.pos.distance_to(target) < 0.1:  # Correct any minor position error
 			self.pos.update(target)
 		else:
 			self.pos.update(self.pos.lerp(target, amount))
 
-	def screen_to_world(self, pos: pygame.Vector2 | tuple):
+	def screen_to_world(self, pos: pygame.typing.Point) -> pygame.Vector2:
 		return pygame.Vector2(pos[0] + self.pos.x + self._current_shake_offset.x, pos[1] + self.pos.y + self._current_shake_offset.y)
 
-	def world_to_screen(self, pos: pygame.Vector2 | tuple):
+	def world_to_screen(self, pos: pygame.typing.Point) -> tuple[int, int]:
 		return round(pos[0] - self.pos.x - self._current_shake_offset.x), round(pos[1] - self.pos.y - self._current_shake_offset.y)
 
 	def world_to_screen_rect[RectType](self, rect: RectType) -> RectType:
@@ -57,7 +57,7 @@ class Camera:
 
 
 class CameraController:
-	def __init__(self, pos: tuple | pygame.Vector2 = (0, 0), keep_in: tuple | None = None):
+	def __init__(self, pos: pygame.typing.Point = (0, 0), keep_in: tuple | None = None):
 		self._camera: Camera = Camera(pos)
 		self._prev_target: pygame.Vector2 = self._camera.pos.copy()
 
@@ -69,7 +69,7 @@ class CameraController:
 		self.keep_in = keep_in
 
 	@property
-	def camera(self):
+	def camera(self) -> Camera:
 		return self._camera
 
 	def _handle_bounds(self):
@@ -127,5 +127,5 @@ class CameraController:
 		self._mouse_control()
 
 	@property
-	def world_mouse_pos(self):
+	def world_mouse_pos(self) -> pygame.Vector2:
 		return self._world_mouse_pos
