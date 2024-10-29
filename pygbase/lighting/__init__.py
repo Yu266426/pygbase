@@ -43,7 +43,7 @@ def generate_lights(max_radius: int, interval: int, power: float = 1.4):
 def generate_shadows(max_radius: int, interval: int, shadow_ratio: float, power: float = 3):
 	shadows = Shadow.cached_shadows
 
-	# Create largest shadow surface
+	# Create the largest shadow surface
 	max_shadow_surf = pygame.Surface((max_radius * 2, max_radius * 2), flags=pygame.SRCALPHA)
 	for inner in range(max_radius, 0, -1):
 		factor = 1 - (inner / max_radius) ** power

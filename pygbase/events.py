@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Callable
 
 import pygame
 
@@ -85,7 +85,7 @@ class EventManager:
 			handler(pygame.event.Event(event_type, kwargs))
 
 	@classmethod
-	def post_event(cls, event: int | str, **kwargs: dict[str, Any]):
+	def post_event(cls, event: int | str, **kwargs):
 		if isinstance(event, int):
 			pygame.event.post(pygame.event.Event(event, kwargs))
 		elif isinstance(event, str):
