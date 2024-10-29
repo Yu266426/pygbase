@@ -8,17 +8,38 @@ class DebugDisplay:
 
 	_debug_surface: pygame.Surface
 
+	_show_timing_debug: bool = False
+	_timing_font: pygame.font.SysFont
+	_timing_surf: pygame.Surface
+
 	@classmethod
 	def init(cls) -> None:
 		cls._debug_surface = pygame.Surface(Common.get_value("screen_size"), flags=pygame.SRCALPHA)
+		cls._timing_font: pygame.font.SysFont = pygame.font.SysFont("arial", 30)
 
 	@classmethod
-	def show(cls) -> None:
+	def show(cls):
 		cls._active = True
 
 	@classmethod
-	def hide(cls) -> None:
+	def hide(cls):
 		cls._active = False
+
+	@classmethod
+	def toggle(cls):
+		cls._active = not cls._active
+
+	@classmethod
+	def show_fps(cls):
+		cls._show_timing_debug = True
+
+	@classmethod
+	def hide_fps(cls):
+		cls._show_timing_debug = False
+
+	@classmethod
+	def toggle_fps(cls):
+		cls._show_timing_debug = not cls._show_timing_debug
 
 	@classmethod
 	def is_active(cls) -> bool:
@@ -31,6 +52,11 @@ class DebugDisplay:
 		"""
 		if cls._active:
 			cls._debug_surface.fill((0, 0, 0, 0))
+
+	@classmethod
+	def update_timing_text(cls, delta: float, fps: float, ):
+		if cls._show_timing_debug:
+			cls._timing_surf = cls._timing_font.render(f"fps: {fps}, delta: {delta}", True, "yellow")
 
 	@classmethod
 	def draw_rect(cls, rect: pygame.typing.RectLike, color: pygame.typing.ColorLike, width: int = 1):
@@ -48,9 +74,13 @@ class DebugDisplay:
 			pygame.draw.line(cls._debug_surface, color, start, end, width=width)
 
 	@classmethod
-	def draw(cls, screen: pygame.Surface) -> None:
+	def draw(cls, surface: pygame.Surface) -> None:
 		"""
 		Called at end of frame on top of everything
 		"""
 		if cls._active:
-			screen.blit(cls._debug_surface, (0, 0))
+			surface.blit(cls._debug_surface, (0, 0))
+
+		if cls._show_timing_debug:
+			rect = cls._timing_surf.get_rect(topright=(Common.get_value("screen_width") - 20, 20))
+			surface.blit(cls._timing_surf, rect)

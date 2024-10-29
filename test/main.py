@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
 	pygbase.init((800, 800))
 	pygbase.DebugDisplay.show()
+	pygbase.DebugDisplay.show_fps()
 
 	pygbase.add_image_resource("image", 1, str(CURRENT_DIR / "images"))
 

@@ -1,11 +1,11 @@
 import gc
 import logging
-from typing import Type, Union, Optional, Callable
+from typing import Type, Union, Callable
 
 import pygame
 
-from .debug import DebugDisplay
 from .common import Common
+from .debug import DebugDisplay
 from .events import EventManager
 from .game_state import GameState
 from .inputs import InputManager
@@ -16,7 +16,7 @@ class App:
 	def __init__(
 			self,
 			after_load_state: Type[GameState],
-			title: Optional[str] = None,
+			title: str = "Pygbase Window",
 			flags=0,
 			vsync=True,
 			fixed_time_fps: int = 60,
@@ -24,12 +24,11 @@ class App:
 	):
 		self.is_running: bool = True
 
-		self.screen: pygame.Surface = pygame.display.set_mode((Common.get_value("screen_width"), Common.get_value("screen_height")), flags=flags, vsync=vsync)
-		self.clock: pygame.time.Clock = pygame.time.Clock()
-
 		self.title = title
-		if self.title is not None:
-			pygame.display.set_caption(self.title)
+
+		self.window = pygame.Window(title, Common.get_value("screen_size"))
+		self.screen: pygame.Surface = self.window.get_surface()
+		self.clock: pygame.time.Clock = pygame.time.Clock()
 
 		self.game_state: Union[Loading, GameState] = Loading(after_load_state, run_on_load_complete)
 
@@ -45,9 +44,6 @@ class App:
 		EventManager.handle_events(self.game_state.id)
 
 	def update(self, delta):
-		if self.title is None:
-			pygame.display.set_caption(f"fps: {round(self.clock.get_fps())}, delta: {delta}")
-
 		self.game_state.update(delta)
 
 	def fixed_update(self):
@@ -90,9 +86,11 @@ class App:
 				update_timer -= self.fixed_time_rate
 
 			# Drawing
+			DebugDisplay.update_timing_text(delta, round(self.clock.get_fps()))
+
 			self.draw()
 			DebugDisplay.draw(self.screen)
-			pygame.display.flip()
+			self.window.flip()
 
 			# State check
 			self.switch_state()
