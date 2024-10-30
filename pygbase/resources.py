@@ -66,11 +66,13 @@ class ResourceManager:
 			for file_name in file_names:
 				if file_name.endswith(resource_type.file_ending):
 					file_path = os.path.join(dir_path, file_name)
+					name = file_name[:-len(resource_type.file_ending)]
 
 					resource_type.generate_config(config_path, file_name)
-					cls._resources_to_load.append((type_id, file_path, file_name[:-4]))
 
-					names.add(file_name[:-4])
+					cls._resources_to_load.append((type_id, file_path, name))
+
+					names.add(name)
 
 		# Reorganise config json
 		with open(config_path, "r") as config_file:

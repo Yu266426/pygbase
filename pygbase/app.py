@@ -26,6 +26,8 @@ class App:
 
 		self.title = title
 
+		# TODO: add flag handling and vsync
+		# ^ This is dependent partly on pygame though :/
 		self.window = pygame.Window(title, Common.get_value("screen_size"))
 		self.screen: pygame.Surface = self.window.get_surface()
 		self.clock: pygame.time.Clock = pygame.time.Clock()
