@@ -7,16 +7,16 @@ import pygbase.utils
 from .app import App
 from .camera import Camera, CameraController
 from .common import Common
-from .debug import DebugDisplay
-from .events import EventManager
+from .debug import Debug
+from .events import Events
 from .game_state import GameState
 from .graphics import *
 from .graphics.image import Image
 from .graphics.sprite_sheet import SpriteSheet
-from .inputs import InputManager
+from .inputs import Inputs
 from .lighting import *
 from .particles import *
-from .resources import ResourceType, ResourceManager
+from .resources import ResourceType, Resources
 from .timer import Timer
 from .transition_states import FadeTransition
 from .ui import *
@@ -41,18 +41,18 @@ def init(
 
 	Common.set_value("rotate_resolution", rotate_resolution)
 
-	EventManager.init()
-	InputManager.register_handlers()
+	Events.init()
+	Inputs.register_handlers()
 
 	lighting.init_lighting_system(max_light_radius, max_shadow_radius, light_radius_interval, shadow_ratio)
 
-	DebugDisplay.init()
+	Debug.init()
 
 
 def add_resource_type(type_id: int, resource_type: ResourceType):
 	Common.add_resource_type(resource_type.name, type_id)
 
-	ResourceManager.add_resource_type(type_id, resource_type)
+	Resources.add_resource_type(type_id, resource_type)
 
 
 def add_image_resource(name: str, type_id: int, dir_path: str, default_scale: float = 1):

@@ -3,7 +3,7 @@ import enum
 import pygame
 
 from .values import UIAlignment
-from ..debug import DebugDisplay
+from ..debug import Debug
 
 
 class TextOverflowBehaviour(enum.Enum):
@@ -67,4 +67,4 @@ class Text:
 
 	def draw(self, surface: pygame.Surface) -> None:
 		surface.blit(self.rendered_text, self.text_rect)
-		DebugDisplay.draw_rect(self.text_rect, "yellow")
+		Debug.draw_rect(self.text_rect, "yellow")

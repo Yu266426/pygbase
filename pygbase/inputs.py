@@ -1,9 +1,9 @@
 import pygame.mouse
 
-from .events import EventManager
+from .events import Events
 
 
-class InputManager:
+class Inputs:
 	# Keyboard
 	_keys_down = [False] * 512
 	_keys_up = [False] * 512
@@ -93,9 +93,9 @@ class InputManager:
 	@classmethod
 	def register_handlers(cls):
 		"""(Called by the engine)"""
-		EventManager.add_handler("all", pygame.MOUSEBUTTONDOWN, cls._mouse_down_handler)
-		EventManager.add_handler("all", pygame.MOUSEBUTTONUP, cls._mouse_up_handler)
-		EventManager.add_handler("all", pygame.MOUSEWHEEL, cls._mouse_wheel_handler)
+		Events.add_handler("all", pygame.MOUSEBUTTONDOWN, cls._mouse_down_handler)
+		Events.add_handler("all", pygame.MOUSEBUTTONUP, cls._mouse_up_handler)
+		Events.add_handler("all", pygame.MOUSEWHEEL, cls._mouse_wheel_handler)
 
 	@classmethod
 	def _mouse_down_handler(cls, event: pygame.event.Event):

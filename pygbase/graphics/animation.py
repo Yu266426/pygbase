@@ -2,7 +2,7 @@ import pygame
 
 from .image import Image
 from ..camera import Camera
-from ..resources import ResourceManager
+from ..resources import Resources
 
 
 class Animation:
@@ -21,7 +21,7 @@ class Animation:
 
 	def _load_animation(self):
 		for index in range(self.anim_start_index, self.anim_start_index + self.length):
-			self.images.append(ResourceManager.get_resource(
+			self.images.append(Resources.get_resource(
 				self.type_name,
 				self.sprite_sheet_name
 			).get_image(index))

@@ -3,7 +3,7 @@ import random
 import pygame
 
 from .common import Common
-from .inputs import InputManager
+from .inputs import Inputs
 
 
 class Camera:
@@ -104,18 +104,18 @@ class CameraController:
 		self._world_mouse_pos = self._camera.screen_to_world(self._mouse_pos)
 
 	def _mouse_control(self, mouse_button: int = 1):
-		if InputManager.get_mouse_just_pressed(mouse_button):
+		if Inputs.get_mouse_just_pressed(mouse_button):
 			self._prev_mouse_pos = self._mouse_pos.copy()
 			self._prev_target = self._camera.pos.copy()
-		if InputManager.get_mouse_pressed(mouse_button):
+		if Inputs.get_mouse_pressed(mouse_button):
 			self._camera.set_pos(self._prev_target + (self._prev_mouse_pos - self._mouse_pos))
 
 		self._handle_bounds()
 
 	def _keyboard_control(self, delta: float, speed: float = 600):
-		if not InputManager.check_modifiers(pygame.KMOD_LCTRL):
-			x_input = InputManager.get_key_pressed(pygame.K_d) - InputManager.get_key_pressed(pygame.K_a)
-			y_input = InputManager.get_key_pressed(pygame.K_s) - InputManager.get_key_pressed(pygame.K_w)
+		if not Inputs.check_modifiers(pygame.KMOD_LCTRL):
+			x_input = Inputs.get_key_pressed(pygame.K_d) - Inputs.get_key_pressed(pygame.K_a)
+			y_input = Inputs.get_key_pressed(pygame.K_s) - Inputs.get_key_pressed(pygame.K_w)
 
 			self._camera.set_pos(self._camera.pos + pygame.Vector2(x_input, y_input) * speed * delta)
 

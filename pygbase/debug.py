@@ -3,7 +3,7 @@ import pygame
 from .common import Common
 
 
-class DebugDisplay:
+class Debug:
 	_active: bool = False
 
 	_debug_surface: pygame.Surface

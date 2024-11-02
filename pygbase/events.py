@@ -5,7 +5,7 @@ import pygame
 from .common import Common
 
 
-class EventManager:
+class Events:
 	_handlers: dict[int, dict[int, list[Callable[[pygame.event.Event], None]]]] = {}
 	_custom_events: dict[str, int] = {}
 

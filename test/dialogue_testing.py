@@ -22,7 +22,7 @@ class DialogueTesting(pygbase.GameState, name="dialogue"):
 	def update(self, delta: float):
 		self.dialogue_manager.update(delta)
 
-		if pygbase.InputManager.get_key_just_pressed(pygame.K_SPACE):
+		if pygbase.Inputs.get_key_just_pressed(pygame.K_SPACE):
 			self.dialogue_manager.set_current_node("first")
 
 	def draw(self, surface: pygame.Surface):

@@ -4,7 +4,7 @@ import pygame
 
 from .values import UIActionTriggers, UIValue
 from ..common import Common
-from ..inputs import InputManager
+from ..inputs import Inputs
 
 if TYPE_CHECKING:
 	from .ui_elements import Frame
@@ -98,22 +98,22 @@ class UIElement:
 
 				self.time = 0
 
-				if InputManager.get_mouse_just_pressed(0):
+				if Inputs.get_mouse_just_pressed(0):
 					self.clicked = True
 					self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
-			if InputManager.get_mouse_pressed(0):
+			if Inputs.get_mouse_pressed(0):
 				self.clicked = True
 				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
 				self.time = 0
-			if InputManager.get_mouse_just_released(0):
+			if Inputs.get_mouse_just_released(0):
 				self.clicked = False
 				self._perform_action(UIActionTriggers.ON_CLICK_UP)
 
 				self.time = 0
 
-			scroll_y = InputManager.get_scroll_y()
+			scroll_y = Inputs.get_scroll_y()
 			if scroll_y != 0:
 				self._perform_action(UIActionTriggers.ON_SCROLL_Y)
 		else:

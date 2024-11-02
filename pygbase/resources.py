@@ -40,7 +40,7 @@ class ResourceType:
 			return True
 
 
-class ResourceManager:
+class Resources:
 	_resource_types: dict[int, ResourceType] = {}
 
 	_max_load_per_update: int = 1

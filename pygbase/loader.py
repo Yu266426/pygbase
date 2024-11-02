@@ -3,7 +3,7 @@ from typing import Type, Callable
 import pygame
 
 from .game_state import GameState
-from .resources import ResourceManager
+from .resources import Resources
 
 
 class Loading(GameState, name="loading"):
@@ -12,13 +12,13 @@ class Loading(GameState, name="loading"):
 		self.id = -1
 		self._next_state = self
 
-		ResourceManager.init_load()
+		Resources.init_load()
 
 		self.after_load_state = after_load_state
 		self.run_on_load_complete = run_on_load_complete
 
 	def update(self, delta: float):
-		if ResourceManager.load_update():  # Done loading
+		if Resources.load_update():  # Done loading
 			for func in self.run_on_load_complete:
 				func()
 

@@ -7,8 +7,8 @@ from .text import Text
 from .ui_element import UIElement
 from .values import UIActionTriggers, UIValue, UIAlignment
 from ..graphics.image import Image
-from ..inputs import InputManager
-from ..resources import ResourceManager
+from ..inputs import Inputs
+from ..resources import Resources
 
 
 class Frame[UIElementType: UIElement](UIElement):
@@ -126,7 +126,7 @@ class VerticalScrollingFrame[UIElementType: UIElement](Frame):
 
 	def on_scroll(self):
 		if self.top_element is not None and self.bottom_element is not None:
-			scroll = InputManager.get_scroll_y()
+			scroll = Inputs.get_scroll_y()
 
 			for element in self.elements:
 				element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) + scroll * self.scroll_speed)
@@ -165,9 +165,9 @@ class ImageElement(UIElement):
 			index: int | None = None
 	):
 		if index is None:
-			self.image: Image = ResourceManager.get_resource(resource_type_name, resource_name)
+			self.image: Image = Resources.get_resource(resource_type_name, resource_name)
 		else:
-			self.image: Image = ResourceManager.get_resource(resource_type_name, resource_name).get_image(index)
+			self.image: Image = Resources.get_resource(resource_type_name, resource_name).get_image(index)
 
 		image_size = self.image.get_image().get_size()
 

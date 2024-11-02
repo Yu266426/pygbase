@@ -4,7 +4,7 @@ import pygame
 
 from .particle_affectors import AffectorTypes, ParticleAttractor
 from ..camera import Camera
-from ..debug import DebugDisplay
+from ..debug import Debug
 from ..particles.particle import Particle
 
 if TYPE_CHECKING:
@@ -148,16 +148,16 @@ class ParticleManager:
 		]
 
 		# Debug
-		if DebugDisplay.is_active():
+		if Debug.is_active():
 			for (col, row) in self.particles.keys():
-				DebugDisplay.draw_rect(pygame.Rect(
+				Debug.draw_rect(pygame.Rect(
 					camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
 					(self.chunk_size, self.chunk_size)
 				), "blue", width=2)
 
 			for chunk in self.chunked_colliders.values():
 				for collider in chunk:
-					DebugDisplay.draw_rect(pygame.Rect(
+					Debug.draw_rect(pygame.Rect(
 						camera.world_to_screen(collider.topleft),
 						collider.size
 					), "light blue", width=3)
@@ -169,9 +169,9 @@ class ParticleManager:
 
 					for row in range(top_chunk_row, bottom_chunk_row + 1):
 						for col in range(left_chunk_col, right_chunk_col + 1):
-							DebugDisplay.draw_circle(camera.world_to_screen(affector.pos), affector.radius, "yellow")
+							Debug.draw_circle(camera.world_to_screen(affector.pos), affector.radius, "yellow")
 
-							DebugDisplay.draw_rect(pygame.Rect(
+							Debug.draw_rect(pygame.Rect(
 								camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
 								(self.chunk_size, self.chunk_size)
 							), "yellow")

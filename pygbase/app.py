@@ -5,10 +5,10 @@ from typing import Type, Union, Callable
 import pygame
 
 from .common import Common
-from .debug import DebugDisplay
-from .events import EventManager
+from .debug import Debug
+from .events import Events
 from .game_state import GameState
-from .inputs import InputManager
+from .inputs import Inputs
 from .loader import Loading
 
 
@@ -36,14 +36,14 @@ class App:
 
 		self.fixed_time_rate = 1 / fixed_time_fps
 
-		EventManager.add_handler("all", pygame.QUIT, self.quit_handler)
+		Events.add_handler("all", pygame.QUIT, self.quit_handler)
 
 	def quit_handler(self, event: pygame.event.Event):
 		self.is_running = False
 
 	def handle_events(self):
-		InputManager.reset()
-		EventManager.handle_events(self.game_state.id)
+		Inputs.reset()
+		Events.handle_events(self.game_state.id)
 
 	def update(self, delta):
 		self.game_state.update(delta)
@@ -79,7 +79,7 @@ class App:
 			self.handle_events()
 
 			# Debug
-			DebugDisplay.clear()
+			Debug.clear()
 
 			# Update
 			self.update(delta)
@@ -88,10 +88,10 @@ class App:
 				update_timer -= self.fixed_time_rate
 
 			# Drawing
-			DebugDisplay.update_timing_text(delta, round(self.clock.get_fps()))
+			Debug.update_timing_text(delta, round(self.clock.get_fps()))
 
 			self.draw()
-			DebugDisplay.draw(self.screen)
+			Debug.draw(self.screen)
 			self.window.flip()
 
 			# State check
