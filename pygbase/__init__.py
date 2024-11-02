@@ -3,7 +3,6 @@ import logging
 import pygame.typing
 
 import pygbase.utils
-
 from .app import App
 from .camera import Camera, CameraController
 from .common import Common
@@ -19,6 +18,7 @@ from .particles import *
 from .resources import ResourceType, Resources
 from .timer import Timer
 from .transition_states import FadeTransition
+from .tweens import LinearTween, CubicTween
 from .ui import *
 
 
@@ -118,5 +118,5 @@ def add_particle_setting(
 	Common.add_particle_setting(name, colour, size, size_decay, velocity_decay, gravity, effector, bounce)
 
 
-def quit():
+def quit():  # NoQA
 	pygame.quit()

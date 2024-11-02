@@ -60,6 +60,22 @@ class Menu(pygbase.GameState, name="menu"):
 			add_on_to_previous=(False, True)
 		)
 
+		from tweens import Tweens
+		self.button_frame.add_element(
+			pygbase.Button(
+				(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
+				(pygbase.UIValue(1, False), pygbase.UIValue(0, False)),
+				"image",
+				"button",
+				self.button_frame,
+				self.set_next_state_type,
+				callback_args=(Tweens, ()),
+				text="Tweens"
+			),
+			align_with_previous=(True, False),
+			add_on_to_previous=(False, True)
+		)
+
 		self.button_frame.add_element(
 			pygbase.TextSelectionMenu(
 				(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
