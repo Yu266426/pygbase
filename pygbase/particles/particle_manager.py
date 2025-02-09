@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING
 
 import pygame
 
-from .particle_affectors import AffectorTypes, ParticleAttractor
 from ..camera import Camera
 from ..debug import Debug
 from ..particles.particle import Particle
+from .particle_affectors import AffectorTypes, ParticleAttractor
 
 if TYPE_CHECKING:
 	from .particle_spawners import ParticleSpawner
@@ -19,9 +19,7 @@ class ParticleManager:
 
 		self.spawners: list[ParticleSpawner] = []
 
-		self.affectors: dict[AffectorTypes, list[ParticleAttractor]] = {
-			AffectorTypes.ATTRACTOR: []
-		}
+		self.affectors: dict[AffectorTypes, list[ParticleAttractor]] = {AffectorTypes.ATTRACTOR: []}
 
 		self.chunked_colliders: dict[tuple[int, int], list[pygame.Rect]] = {}
 		self.generate_chunked_colliders(colliders)
@@ -35,14 +33,14 @@ class ParticleManager:
 				for y in range(collider.top, collider.bottom, self.chunk_size):
 					chunk_pos = self.get_chunk((x, y))
 
-					chunked_colliders.setdefault(
-						chunk_pos, []
-					).append(collider)
+					chunked_colliders.setdefault(chunk_pos, []).append(collider)
 
 		self.chunked_colliders = chunked_colliders
 
 	def pass_dynamic_colliders(self, colliders: list[pygame.Rect]):
-		self.dynamic_colliders[:] = colliders[:]  # Contents of dynamic_colliders gets set to contents of colliders
+		self.dynamic_colliders[:] = colliders[
+			:
+		]  # Contents of dynamic_colliders gets set to contents of colliders
 
 	def get_surrounding_colliders(self, chunk_pos: tuple):
 		min_row = chunk_pos[1] - 1
@@ -60,14 +58,15 @@ class ParticleManager:
 	def add_particle(self, pos: pygame.typing.Point, settings: dict, initial_velocity=(0, 0)):
 		chunk_pos = self.get_chunk(pos)
 
-		self.particles.setdefault(
-			chunk_pos, []
-		).append(Particle(pos, settings, initial_velocity))
+		self.particles.setdefault(chunk_pos, []).append(Particle(pos, settings, initial_velocity))
 
-	def get_particles(self, pos: pygame.typing.Point, size: tuple | pygame.Vector2) -> list[Particle]:
+	def get_particles(self, pos: pygame.typing.Point, size: pygame.typing.Point) -> list[Particle]:
 		# TODO: Optimize in same way as `get_surrounding_colliders`
 		left_chunk_col, top_chunk_row = self.get_chunk(pos)
-		right_chunk_col, bottom_chunk_row, = self.get_chunk(pos + size)
+		(
+			right_chunk_col,
+			bottom_chunk_row,
+		) = self.get_chunk((pos[0] + size[0], pos[1] + size[1]))
 
 		return [
 			particle
@@ -85,15 +84,17 @@ class ParticleManager:
 	def get_chunk(self, pos: pygame.typing.Point):
 		return int(pos[0] // self.chunk_size), int(pos[1] // self.chunk_size)
 
-	def add_spawner[SpawnerType](self, spawner: SpawnerType) -> SpawnerType:
+	def add_spawner[SpawnerType: "ParticleSpawner"](self, spawner: SpawnerType) -> SpawnerType:
 		self.spawners.append(spawner)
 		return spawner
 
-	def remove_spawner[SpawnerType](self, spawner: SpawnerType):
+	def remove_spawner(self, spawner: "ParticleSpawner"):
 		if spawner in self.spawners:
 			self.spawners.remove(spawner)
 
-	def add_affector[AffectorType](self, affector_type: AffectorTypes, affector: AffectorType) -> AffectorType:
+	def add_affector[AffectorType](
+		self, affector_type: AffectorTypes, affector: AffectorType
+	) -> AffectorType:
 		self.affectors[affector_type].append(affector)
 		return affector
 
@@ -107,14 +108,17 @@ class ParticleManager:
 					delta,
 					self.get_particles(
 						affector.pos - pygame.Vector2(affector.radius),
-						pygame.Vector2(affector.radius) * 2
-					)
+						pygame.Vector2(affector.radius) * 2,
+					),
 				)
 
 		particles_to_move: list[Particle] = []
 		chunks_to_delete: list[tuple[int, int]] = []
 		for chunk_pos, chunk in self.particles.items():
-			surrounding_colliders = [*self.get_surrounding_colliders(chunk_pos), *self.dynamic_colliders]
+			surrounding_colliders = [
+				*self.get_surrounding_colliders(chunk_pos),
+				*self.dynamic_colliders,
+			]
 
 			for particle in chunk:
 				particle.update(delta, surrounding_colliders)
@@ -135,43 +139,52 @@ class ParticleManager:
 		for particle in particles_to_move:
 			chunk_pos = self.get_chunk(particle.pos)
 
-			self.particles.setdefault(
-				chunk_pos, []
-			).append(particle)
+			self.particles.setdefault(chunk_pos, []).append(particle)
 			particle.has_moved_chunk = False
 
 	def draw(self, surface: pygame.Surface, camera: Camera):
-		[
-			particle.draw(surface, camera)
-			for chunk in self.particles.values()
-			for particle in chunk
-		]
+		[particle.draw(surface, camera) for chunk in self.particles.values() for particle in chunk]
 
 		# Debug
 		if Debug.is_active():
-			for (col, row) in self.particles.keys():
-				Debug.draw_rect(pygame.Rect(
-					camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
-					(self.chunk_size, self.chunk_size)
-				), "blue", width=2)
+			for col, row in self.particles.keys():
+				Debug.draw_rect(
+					pygame.Rect(
+						camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
+						(self.chunk_size, self.chunk_size),
+					),
+					"blue",
+					width=2,
+				)
 
 			for chunk in self.chunked_colliders.values():
 				for collider in chunk:
-					Debug.draw_rect(pygame.Rect(
-						camera.world_to_screen(collider.topleft),
-						collider.size
-					), "light blue", width=3)
+					Debug.draw_rect(
+						pygame.Rect(camera.world_to_screen(collider.topleft), collider.size),
+						"light blue",
+						width=3,
+					)
 
 			for affector_type, affectors in self.affectors.items():
 				for affector in affectors:
-					left_chunk_col, top_chunk_row = self.get_chunk(affector.pos - pygame.Vector2(affector.radius))
-					right_chunk_col, bottom_chunk_row, = self.get_chunk((affector.pos - pygame.Vector2(affector.radius)) + pygame.Vector2(affector.radius) * 2)
+					left_chunk_col, top_chunk_row = self.get_chunk(
+						affector.pos - pygame.Vector2(affector.radius)
+					)
+					(
+						right_chunk_col,
+						bottom_chunk_row,
+					) = self.get_chunk(
+						(affector.pos - pygame.Vector2(affector.radius)) + pygame.Vector2(affector.radius) * 2
+					)
 
 					for row in range(top_chunk_row, bottom_chunk_row + 1):
 						for col in range(left_chunk_col, right_chunk_col + 1):
 							Debug.draw_circle(camera.world_to_screen(affector.pos), affector.radius, "yellow")
 
-							Debug.draw_rect(pygame.Rect(
-								camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
-								(self.chunk_size, self.chunk_size)
-							), "yellow")
+							Debug.draw_rect(
+								pygame.Rect(
+									camera.world_to_screen((col * self.chunk_size, row * self.chunk_size)),
+									(self.chunk_size, self.chunk_size),
+								),
+								"yellow",
+							)

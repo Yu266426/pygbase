@@ -2,12 +2,12 @@ from collections.abc import Callable
 
 import pygame
 
+from ..common import Common
+from ..timer import Timer
 from .text import Text
 from .ui_elements import Button, Frame
 from .ui_manager import UIManager
 from .values import UIValue
-from ..common import Common
-from ..timer import Timer
 
 
 class DialogueNode:
@@ -36,7 +36,9 @@ class DialogueNode:
 			current_text = self.texts[index]
 			previous_text = self.texts[index - 1]
 
-			current_text.pos.update(previous_text.text_rect.right + word_gap, previous_text.text_rect.top)
+			current_text.pos.update(
+				previous_text.text_rect.right + word_gap, previous_text.text_rect.top
+			)
 			current_text.reposition()
 
 			if current_text.text_rect.right > width:
@@ -65,7 +67,9 @@ class DialogueNode:
 				self.just_finished_displaying = True
 				return
 
-			self.texts[self.current_word].set_text(self.words[self.current_word][:self.current_char])
+			self.texts[self.current_word].set_text(
+				self.words[self.current_word][: self.current_char]
+			)
 		else:
 			self.just_finished_displaying = False
 
@@ -75,7 +79,13 @@ class DialogueNode:
 
 
 class DialogueOption:
-	def __init__(self, response: str, next_node: str = "", callback: Callable[[...], None] = None, callback_args: tuple = ()):
+	def __init__(
+		self,
+		response: str,
+		next_node: str = "",
+		callback: Callable[..., None] | None = None,
+		callback_args: tuple = (),
+	):
 		self.response = response
 		self.next_node = next_node
 		self.callback = callback
@@ -103,23 +113,29 @@ class DialogueManager:
 		self.char_timer = Timer(char_timing, False, True)
 
 		self.ui_manager = UIManager()
-		self.text_background = self.ui_manager.add_frame(Frame(
-			(UIValue(0), UIValue(0.6, False)),
-			(UIValue(1, False), UIValue(0.4, False)),
-			self.ui_manager.base_container,
-			bg_colour=(20, 20, 20, 50)
-		))
+		self.text_background = self.ui_manager.add_frame(
+			Frame(
+				(UIValue(0), UIValue(0.6, False)),
+				(UIValue(1, False), UIValue(0.4, False)),
+				self.ui_manager.base_container,
+				bg_colour=(20, 20, 20, 50),
+			)
+		)
 
-		self.option_frame = self.ui_manager.add_frame(Frame(
-			(UIValue(0.75, False), UIValue(0.6, False)),
-			(UIValue(0.25, False), UIValue(0.4, False)),
-			self.ui_manager.base_container,
-			bg_colour=(50, 50, 50, 100)
-		))
+		self.option_frame = self.ui_manager.add_frame(
+			Frame(
+				(UIValue(0.75, False), UIValue(0.6, False)),
+				(UIValue(0.25, False), UIValue(0.4, False)),
+				self.ui_manager.base_container,
+				bg_colour=(50, 50, 50, 100),
+			)
+		)
 
-	def get_current_node(self) -> DialogueNode | None:
-		if self.current_node == "":
-			return None
+	def has_current_node(self) -> bool:
+		return self.current_node in self.nodes
+
+	def get_current_node(self) -> DialogueNode:
+		"""Has current node"""
 
 		return self.nodes[self.current_node]
 
@@ -155,27 +171,37 @@ class DialogueManager:
 	def generate_options(self):
 		options = self.get_options()
 		if len(options) == 0:
-			self.option_frame.add_element(Button(
-				(UIValue(0), UIValue(0)), (UIValue(1, False), UIValue(0)),
-				"image", "button",
-				self.option_frame,
-				self.option_callback, callback_args=(DialogueOption("Dismiss"),),
-				text="Dismiss"
-			))
+			self.option_frame.add_element(
+				Button(
+					(UIValue(0), UIValue(0)),
+					(UIValue(1, False), UIValue(0)),
+					"image",
+					"button",
+					self.option_frame,
+					self.option_callback,
+					callback_args=(DialogueOption("Dismiss"),),
+					text="Dismiss",
+				)
+			)
 		else:
 			for option in self.get_options():
-				self.option_frame.add_element(Button(
-					(UIValue(0), UIValue(0)), (UIValue(1, False), UIValue(0)),
-					"image", "button",
-					self.option_frame,
-					self.option_callback, callback_args=(option,),
-					text=option.response
-				))
+				self.option_frame.add_element(
+					Button(
+						(UIValue(0), UIValue(0)),
+						(UIValue(1, False), UIValue(0)),
+						"image",
+						"button",
+						self.option_frame,
+						self.option_callback,
+						callback_args=(option,),
+						text=option.response,
+					)
+				)
 
 	def update(self, delta: float):
 		self.ui_manager.update(delta)
 
-		if self.get_current_node() is not None:
+		if self.has_current_node():
 			self.char_timer.tick(delta)
 
 			if self.char_timer.just_done():
@@ -185,7 +211,7 @@ class DialogueManager:
 					self.generate_options()
 
 	def draw(self, surface: pygame.Surface):
-		if self.get_current_node() is not None:
+		if self.has_current_node():
 			self.ui_manager.draw(surface)
 
 			self.get_current_node().draw(surface)

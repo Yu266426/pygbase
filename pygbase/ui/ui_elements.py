@@ -1,18 +1,25 @@
 import logging
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import pygame
 
+from ..graphics.image import Image
+from ..inputs.input import Input
+from ..resources import Resources
 from .text import Text
 from .ui_element import UIElement
-from .values import UIActionTriggers, UIValue, UIAlignment
-from ..graphics.image import Image
-from ..inputs import Inputs
-from ..resources import Resources
+from .values import UIActionTriggers, UIAlignment, UIValue
 
 
 class Frame[UIElementType: UIElement](UIElement):
-	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"] = None, bg_colour=None, blocks_mouse: bool = True):
+	def __init__(
+		self,
+		pos: tuple[UIValue, UIValue],
+		size: tuple[UIValue, UIValue],
+		container: Optional["Frame"] = None,
+		bg_colour=None,
+		blocks_mouse: bool = True,
+	):
 		super().__init__(pos, size, container, blocks_mouse=blocks_mouse)
 
 		self.active: bool = True
@@ -34,7 +41,12 @@ class Frame[UIElementType: UIElement](UIElement):
 		for element in self.elements:
 			element.reposition()
 
-	def add_element(self, element: UIElementType, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElementType:
+	def add_element(
+		self,
+		element: UIElementType,
+		align_with_previous: tuple = (False, False),
+		add_on_to_previous: tuple = (False, False),
+	) -> UIElementType:
 		if len(self.elements) > 0:
 			prev_element = self.elements[-1]
 			# Align
@@ -47,24 +59,32 @@ class Frame[UIElementType: UIElement](UIElement):
 			# Add on
 			if add_on_to_previous[0]:
 				element.ui_pos = (
-					prev_element.ui_pos[0].add(prev_element.ui_size[0], prev_element.container_size[0]).add(element.ui_pos[0], prev_element.container_size[0]),
-					element.ui_pos[1]
+					prev_element.ui_pos[0]
+					.add(prev_element.ui_size[0], prev_element.container_size[0])
+					.add(element.ui_pos[0], prev_element.container_size[0]),
+					element.ui_pos[1],
 				)
 
 			if add_on_to_previous[1]:
 				element.ui_pos = (
 					element.ui_pos[0],
-					prev_element.ui_pos[1].add(prev_element.ui_size[1], prev_element.container_size[1]).add(element.ui_pos[1], prev_element.container_size[1])
+					prev_element.ui_pos[1]
+					.add(prev_element.ui_size[1], prev_element.container_size[1])
+					.add(element.ui_pos[1], prev_element.container_size[1]),
 				)
 
 		element.reposition()
 
 		# If element does not go out of frame, add it to the frame
 		if not (0 <= element._pos[0] and element._pos[0] + element.size[0] <= self._size[0]):
-			logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element._pos}) is not contained within frame (size: {self._size})")
+			logging.warning(
+				f"Element <{type(element).__name__}>(size: {element.size}, pos: {element._pos}) is not contained within frame (size: {self._size})"
+			)
 
 		if not (0 <= element._pos[1] and element._pos[1] + element.size[1] <= self._size[1]):
-			logging.warning(f"Element <{type(element).__name__}>(size: {element.size}, pos: {element._pos}) is not contained within frame (size: {self._size})")
+			logging.warning(
+				f"Element <{type(element).__name__}>(size: {element.size}, pos: {element._pos}) is not contained within frame (size: {self._size})"
+			)
 
 		self.elements.append(element)
 
@@ -98,7 +118,14 @@ class Frame[UIElementType: UIElement](UIElement):
 
 
 class VerticalScrollingFrame[UIElementType: UIElement](Frame):
-	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], scroll_speed: float, container: Optional["Frame"] = None, bg_colour=None):
+	def __init__(
+		self,
+		pos: tuple[UIValue, UIValue],
+		size: tuple[UIValue, UIValue],
+		scroll_speed: float,
+		container: Optional["Frame"] = None,
+		bg_colour=None,
+	):
 		super().__init__(pos, size, container=container, bg_colour=bg_colour)
 
 		self.scroll_speed = scroll_speed
@@ -110,10 +137,15 @@ class VerticalScrollingFrame[UIElementType: UIElement](Frame):
 
 		self.add_action(UIActionTriggers.ON_SCROLL_Y, self.on_scroll)
 
-	def add_element(self, element: UIElementType, align_with_previous: tuple = (False, False), add_on_to_previous: tuple = (False, False)) -> UIElementType:
+	def add_element(
+		self,
+		element: UIElementType,
+		align_with_previous: tuple = (False, False),
+		add_on_to_previous: tuple = (False, False),
+	) -> UIElementType:
 		super().add_element(element, align_with_previous, add_on_to_previous)
 
-		if self.top_element is None:
+		if self.top_element is None or self.bottom_element is None:
 			self.top_element = element
 			self.bottom_element = element
 		else:
@@ -126,24 +158,35 @@ class VerticalScrollingFrame[UIElementType: UIElement](Frame):
 
 	def on_scroll(self):
 		if self.top_element is not None and self.bottom_element is not None:
-			scroll = Inputs.get_scroll_y()
+			scroll = Input.mouse_scroll_y()
 
 			for element in self.elements:
-				element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) + scroll * self.scroll_speed)
+				element.ui_pos = (
+					element.ui_pos[0],
+					UIValue(
+						element.ui_pos[1].get_pixels(self.rect.height) + scroll * self.scroll_speed
+					),
+				)
 				element.reposition()
 
 			if self.top_element.pos.y > 0:
 				offset = self.top_element.pos.y
 
 				for element in self.elements:
-					element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) - offset)
+					element.ui_pos = (
+						element.ui_pos[0],
+						UIValue(element.ui_pos[1].get_pixels(self.rect.height) - offset),
+					)
 					element.reposition()
 
 			if self.bottom_element.pos.y < 0:
 				offset = self.bottom_element.pos.y
 
 				for element in self.elements:
-					element.ui_pos = element.ui_pos[0], UIValue(element.ui_pos[1].get_pixels(self.rect.height) - offset)
+					element.ui_pos = (
+						element.ui_pos[0],
+						UIValue(element.ui_pos[1].get_pixels(self.rect.height) - offset),
+					)
 					element.reposition()
 
 			for element in self.elements:
@@ -155,58 +198,59 @@ class VerticalScrollingFrame[UIElementType: UIElement](Frame):
 
 class ImageElement(UIElement):
 	def __init__(
-			self,
-			pos: tuple[UIValue, UIValue],
-			size: tuple[UIValue, UIValue],
-			resource_type_name: str,
-			resource_name: str,
-			container: Frame,
-			alignment: str = "l",
-			index: int | None = None
+		self,
+		pos: tuple[UIValue, UIValue],
+		size: tuple[UIValue, UIValue],
+		resource_type_name: str,
+		resource_name: str,
+		container: Frame,
+		alignment: str = "l",
+		index: int | None = None,
 	):
 		if index is None:
 			self.image: Image = Resources.get_resource(resource_type_name, resource_name)
 		else:
-			self.image: Image = Resources.get_resource(resource_type_name, resource_name).get_image(index)
+			self.image: Image = Resources.get_resource(resource_type_name, resource_name).get_image(
+				index
+			)
 
 		image_size = self.image.get_image().get_size()
 
 		if size[0].value != 0 and size[1].value != 0:
-			self.image: Image = self.image.scale((size[0].get_pixels(container.size.x), size[1].get_pixels(container.size.y)))
+			self.image: Image = self.image.scale(
+				(size[0].get_pixels(container.size.x), size[1].get_pixels(container.size.y))
+			)
 		elif size[0].value != 0:
 			new_width = size[0].get_pixels(container.size.x)
 
-			self.image: Image = self.image.scale((new_width, new_width * image_size[1] / image_size[0]))
+			self.image: Image = self.image.scale(
+				(new_width, new_width * image_size[1] / image_size[0])
+			)
 		elif size[1].value != 0:
 			new_height = size[1].get_pixels(container.size.y)
 
-			self.image: Image = self.image.scale((new_height * image_size[0] / image_size[1], new_height))
+			self.image: Image = self.image.scale(
+				(new_height * image_size[0] / image_size[1], new_height)
+			)
 
 		new_size = (
 			UIValue(self.image.get_image().get_width(), True),
-			UIValue(self.image.get_image().get_height(), True)
+			UIValue(self.image.get_image().get_height(), True),
 		)
 
 		self.alignment = alignment
 
 		if self.alignment == "l":
 			# Position unchanged
-			new_pos = (
-				pos[0].copy(),
-				pos[1].copy()
-			)
+			new_pos = (pos[0].copy(), pos[1].copy())
 		elif self.alignment == "r":
-			new_pos = (
-				pos[0].subtract(new_size[0], container.size.x),
-				pos[1].copy()
-			)
+			new_pos = (pos[0].subtract(new_size[0], container.size.x), pos[1].copy())
 		elif self.alignment == "c":
-			new_pos = (
-				pos[0].subtract(new_size[0] * 0.5, container.size.x),
-				pos[1].copy()
-			)
+			new_pos = (pos[0].subtract(new_size[0] * 0.5, container.size.x), pos[1].copy())
 		else:
-			raise ValueError(f"center: `{self.alignment}` on {self.__class__.__name__} is not valid")
+			raise ValueError(
+				f"center: `{self.alignment}` on {self.__class__.__name__} is not valid"
+			)
 
 		super().__init__(new_pos, new_size, container)
 
@@ -216,22 +260,30 @@ class ImageElement(UIElement):
 
 class Button(ImageElement):
 	def __init__(
-			self,
-			pos: tuple[UIValue, UIValue],
-			size: tuple[UIValue, UIValue],
-			resource_type_name: str,
-			resource_name: str,
-			container: Frame,
-			callback: Callable[..., None],
-			callback_args: tuple = (),
-			text: str = "",
-			text_colour="white",
-			font: str = "arial",
-			use_sys: bool = True,
-			alignment: str = "l",
-			index: int | None = None
+		self,
+		pos: tuple[UIValue, UIValue],
+		size: tuple[UIValue, UIValue],
+		resource_type_name: str,
+		resource_name: str,
+		container: Frame,
+		callback: Callable[..., None],
+		callback_args: tuple = (),
+		text: str = "",
+		text_colour="white",
+		font: str = "arial",
+		use_sys: bool = True,
+		alignment: str = "l",
+		index: int | None = None,
 	):
-		super().__init__(pos, size, resource_type_name, resource_name, container, alignment=alignment, index=index)
+		super().__init__(
+			pos,
+			size,
+			resource_type_name,
+			resource_name,
+			container,
+			alignment=alignment,
+			index=index,
+		)
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
 
@@ -241,12 +293,21 @@ class Button(ImageElement):
 		self.clicked_highlight = pygame.Surface(self.image.get_image().get_size()).convert_alpha()
 		self.clicked_highlight.fill((255, 255, 255, 70))
 
-		self.text: Text = Text((self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5), font, int(self.size[1] * 0.7), text_colour, text, use_sys=use_sys, max_width=int(self.rect.width * 0.9), alignment=UIAlignment.CENTER)
+		self.text: Text = Text(
+			(self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5),
+			font,
+			int(self.size[1] * 0.7),
+			text_colour,
+			text,
+			use_sys=use_sys,
+			max_width=int(self.rect.width * 0.9),
+			alignment=UIAlignment.CENTER,
+		)
 
 	def reposition(self):
 		super().reposition()
 
-		self.text.pos = (self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5)
+		self.text.pos.update(self.pos.x + self.rect.width / 2, self.pos.y + self.rect.height * 0.5)
 		self.text.reposition()
 
 	def draw(self, surface: pygame.Surface):
@@ -261,14 +322,15 @@ class Button(ImageElement):
 
 class TextElement(UIElement):
 	def __init__(
-			self,
-			pos: tuple[UIValue, UIValue],
-			font_name: str,
-			height: UIValue,
-			colour, text: str,
-			container: Frame,
-			use_sys: bool = True,
-			alignment: UIAlignment = UIAlignment.TOP_LEFT
+		self,
+		pos: tuple[UIValue, UIValue],
+		font_name: str,
+		height: UIValue,
+		colour,
+		text: str,
+		container: Frame,
+		use_sys: bool = True,
+		alignment: UIAlignment = UIAlignment.TOP_LEFT,
 	):
 		self.alignment = alignment
 		self.text = Text(
@@ -278,7 +340,7 @@ class TextElement(UIElement):
 			colour,
 			text,
 			use_sys=use_sys,
-			alignment=alignment
+			alignment=alignment,
 		)
 
 		# super().__init__(
@@ -289,9 +351,10 @@ class TextElement(UIElement):
 		# 		UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)
 		# 	), container)
 		super().__init__(
-			pos, (
-				UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)
-			), container)
+			pos,
+			(UIValue(self.text.text_rect.width), UIValue(self.text.text_rect.height)),
+			container,
+		)
 
 	def reposition(self):
 		super().reposition()
@@ -304,7 +367,7 @@ class TextElement(UIElement):
 		# logging.debug(f"Offset: {self.text.text}: {self.container_offset}")
 		UIAlignment.set_rect(rect, self.alignment, self.pos)
 
-		self.text.pos = UIAlignment.get_pos(self.alignment, rect)
+		self.text.pos.update(UIAlignment.get_pos(self.alignment, rect))
 		# logging.debug(f"Before: {self.text.text}: {self.text.pos}")
 		self.text.reposition()
 
@@ -320,10 +383,7 @@ class TextElement(UIElement):
 		self.text.set_text(new_text)
 
 		self._size = pygame.Vector2(self.text.text_rect.size)
-		self.ui_size = (
-			UIValue(self.size[0]),
-			UIValue(self.size[1])
-		)
+		self.ui_size = (UIValue(self.size[0]), UIValue(self.size[1]))
 
 		self.rect.size = self.text.text_rect.size
 
@@ -335,13 +395,13 @@ class TextElement(UIElement):
 
 class TextSelectionMenu(Frame):
 	def __init__(
-			self,
-			pos: tuple[UIValue, UIValue],
-			size: tuple[UIValue, UIValue],
-			image_resource_type_name: str,
-			options: list,
-			container: Frame,
-			bg_colour: tuple = (0, 0, 0, 150)
+		self,
+		pos: tuple[UIValue, UIValue],
+		size: tuple[UIValue, UIValue],
+		image_resource_type_name: str,
+		options: list,
+		container: Frame,
+		bg_colour: tuple = (0, 0, 0, 150),
 	):
 		super().__init__(pos, size, container=container, bg_colour=bg_colour)
 
@@ -350,10 +410,39 @@ class TextSelectionMenu(Frame):
 		self.index: int = 0
 		self.current_option = self.options[self.index]
 
-		self.add_element(Button((UIValue(0, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "left", self, self._change_option, callback_args=(-1,)))
-		self.add_element(Button((UIValue(1, False), UIValue(0, False)), (UIValue(0, False), UIValue(1, False)), image_resource_type_name, "right", self, self._change_option, callback_args=(1,), alignment="r"))
+		self.add_element(
+			Button(
+				(UIValue(0, False), UIValue(0, False)),
+				(UIValue(0, False), UIValue(1, False)),
+				image_resource_type_name,
+				"left",
+				self,
+				self._change_option,
+				callback_args=(-1,),
+			)
+		)
+		self.add_element(
+			Button(
+				(UIValue(1, False), UIValue(0, False)),
+				(UIValue(0, False), UIValue(1, False)),
+				image_resource_type_name,
+				"right",
+				self,
+				self._change_option,
+				callback_args=(1,),
+				alignment="r",
+			)
+		)
 
-		self.text = TextElement((UIValue(0.5, False), UIValue(0.5, False)), "arial", UIValue(0.7, False), (255, 255, 255), self.current_option, self, alignment=UIAlignment.CENTER)
+		self.text = TextElement(
+			(UIValue(0.5, False), UIValue(0.5, False)),
+			"arial",
+			UIValue(0.7, False),
+			(255, 255, 255),
+			self.current_option,
+			self,
+			alignment=UIAlignment.CENTER,
+		)
 		self.add_element(self.text)
 
 	def get_current_text(self) -> str:
@@ -374,14 +463,14 @@ class TextSelectionMenu(Frame):
 
 class ProgressBar(Frame):
 	def __init__(
-			self,
-			pos: tuple[UIValue, UIValue],
-			size: tuple[UIValue, UIValue],
-			starting_fill: float,
-			border_size: UIValue,
-			bar_colour: tuple | str,
-			background_colour: tuple | str,
-			container: Frame
+		self,
+		pos: tuple[UIValue, UIValue],
+		size: tuple[UIValue, UIValue],
+		starting_fill: float,
+		border_size: UIValue,
+		bar_colour: tuple | str,
+		background_colour: tuple | str,
+		container: Frame,
 	):
 		super().__init__(pos, size, container=container, bg_colour=background_colour)
 
@@ -401,7 +490,7 @@ class ProgressBar(Frame):
 			self.pos.x + self.border_size.get_pixels(self.size[0]),
 			self.pos.y + self.border_size.get_pixels(self.size[1]),
 			(self.size.x - self.border_size.get_pixels(self.size[0]) * 2) * self.fill_percent,
-			self.size.y - self.border_size.get_pixels(self.size[1]) * 2
+			self.size.y - self.border_size.get_pixels(self.size[1]) * 2,
 		)
 
 		pygame.draw.rect(surface, self.bar_colour, fill_rect)

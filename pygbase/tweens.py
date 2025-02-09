@@ -19,6 +19,14 @@ class Tween(abc.ABC):
 	def value(self) -> float:
 		pass
 
+	@property
+	def progress(self):
+		return self._progress
+
+	@progress.setter
+	def progress(self, value: float):
+		self._progress = pygame.math.clamp(value, 0.0, 1.0)
+
 	def _get_current_next_progress_values(self) -> tuple[float, float, float]:
 		current_index = int(self._progress * (self._num_values - 1))
 
@@ -33,11 +41,8 @@ class Tween(abc.ABC):
 
 		return current_value, next_value, progress_to_next
 
-	def set_progress(self, value: float):
-		self._progress = pygame.math.clamp(value, 0.0, 1.0)
-
 	def tick(self, delta: float):
-		self.set_progress(self._progress + delta / self._time)
+		self.progress = self._progress + delta / self._time
 
 
 class LinearTween(Tween):

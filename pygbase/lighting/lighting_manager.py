@@ -1,5 +1,3 @@
-import logging
-
 import pygame
 
 from .light import Light

@@ -2,8 +2,8 @@ import enum
 
 import pygame
 
-from .values import UIAlignment
 from ..debug import Debug
+from .values import UIAlignment
 
 
 class TextOverflowBehaviour(enum.Enum):
@@ -13,16 +13,16 @@ class TextOverflowBehaviour(enum.Enum):
 
 class Text:
 	def __init__(
-			self,
-			pos: tuple | pygame.Vector2,
-			font_name: str,
-			size: int,
-			colour: pygame.Color | str | tuple,
-			text: str = "",
-			use_sys: bool = False,
-			max_width: int = 0,
-			overflow_behaviour: TextOverflowBehaviour = TextOverflowBehaviour.SHRINK,
-			alignment: UIAlignment = UIAlignment.TOP_LEFT
+		self,
+		pos: tuple | pygame.Vector2,
+		font_name: str,
+		size: int,
+		colour: pygame.Color | str | tuple,
+		text: str = "",
+		use_sys: bool = False,
+		max_width: int = 0,
+		overflow_behaviour: TextOverflowBehaviour = TextOverflowBehaviour.SHRINK,
+		alignment: UIAlignment = UIAlignment.TOP_LEFT,
 	):
 		if use_sys:
 			self.font = pygame.font.SysFont(font_name, size)
@@ -39,8 +39,8 @@ class Text:
 		self.overflow_behaviour = overflow_behaviour
 		self.max_width = max_width
 
-		self.rendered_text: pygame.Surface | None = None
-		self.text_rect: pygame.Rect | None = None
+		self.rendered_text: pygame.Surface
+		self.text_rect: pygame.Rect
 		self._render_text()
 
 	def set_text(self, text: str):
@@ -49,7 +49,9 @@ class Text:
 
 	def _render_text(self):
 		if self.overflow_behaviour == TextOverflowBehaviour.WRAP:
-			self.rendered_text = self.font.render(self.text, True, self.colour, wraplength=self.max_width).convert_alpha()
+			self.rendered_text = self.font.render(
+				self.text, True, self.colour, wraplength=self.max_width
+			).convert_alpha()
 		elif self.overflow_behaviour == TextOverflowBehaviour.SHRINK:
 			self.rendered_text = self.font.render(self.text, True, self.colour).convert_alpha()
 

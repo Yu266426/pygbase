@@ -10,16 +10,14 @@ class GameState:
 
 	def __init_subclass__(cls, **kwargs):
 		if "name" not in kwargs:
-			raise KeyError("\"name\" keyword argument not in class definition. It should look like <class Child(GameState, name=\"child\")>")
+			raise KeyError(
+				'"name" keyword argument not in class definition. It should look like <class Child(GameState, name="child")>'
+			)
 
 		name = kwargs["name"]
 
 		# Disregard built in game_states
-		if (
-				name == "loading" or
-				name == "transition" or
-				name == "fade_transition"
-		):
+		if name == "loading" or name == "transition" or name == "fade_transition":
 			return
 
 		# Add id to common and child class, then increment by 1
@@ -44,7 +42,7 @@ class GameState:
 
 	def set_next_state_type(self, next_state: Type["GameState"], args: tuple):
 		if len(args) > 0:
-			self._next_state = next_state(*args)
+			self._next_state = next_state(*args)  # type: ignore
 		else:
 			self._next_state = next_state()
 

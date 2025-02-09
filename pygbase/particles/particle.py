@@ -17,27 +17,22 @@ class Particle:
 		"gravity",
 		"effector",
 		"bounce_ranges",
-		"has_moved_chunk"
+		"has_moved_chunk",
 	]
 
 	def __init__(self, pos: pygame.typing.Point, settings: dict, initial_velocity=(0, 0)):
 		self.pos = pygame.Vector2(pos)
 
-		self.size: float = random.uniform(
-			settings[Options.SIZE][0],
-			settings[Options.SIZE][1]
-		)
+		self.size: float = random.uniform(settings[Options.SIZE][0], settings[Options.SIZE][1])
 		self.size_decay: float = random.uniform(
-			settings[Options.SIZE_DECAY][0],
-			settings[Options.SIZE_DECAY][1]
+			settings[Options.SIZE_DECAY][0], settings[Options.SIZE_DECAY][1]
 		)
 
 		self.colour = random.choice(settings[Options.COLOUR])
 
 		self.velocity: pygame.Vector2 = pygame.Vector2(initial_velocity)
 		self.velocity_decay: float = random.uniform(
-			settings[Options.VELOCITY_DECAY][0],
-			settings[Options.VELOCITY_DECAY][1]
+			settings[Options.VELOCITY_DECAY][0], settings[Options.VELOCITY_DECAY][1]
 		)
 
 		self.gravity: tuple = settings[Options.GRAVITY]
@@ -97,4 +92,8 @@ class Particle:
 		self.size -= size_decay
 
 	def draw(self, screen: pygame.Surface, camera: Camera):
-		pygame.draw.rect(screen, self.colour, (camera.world_to_screen(self.pos - pygame.Vector2(round(self.size / 2))), (self.size, self.size)))
+		pygame.draw.rect(
+			screen,
+			self.colour,
+			(camera.world_to_screen(self.pos - pygame.Vector2(round(self.size / 2))), (self.size, self.size)),
+		)

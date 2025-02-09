@@ -34,7 +34,7 @@ class Tweens(pygbase.GameState, name="tweens"):
 			tween.tick(delta)
 
 			if tween.value() == self.tween_values[-1]:
-				tween.set_progress(0)
+				tween.progress = 0
 
 	def draw(self, surface: pygame.Surface):
 		surface.fill((20, 20, 20))

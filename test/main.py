@@ -2,12 +2,12 @@ import logging
 import pathlib
 
 import pygame
-
-import pygbase
 from menu import Menu
 
-if __name__ == '__main__':
-	CURRENT_DIR = pathlib.Path.cwd()
+import pygbase
+
+if __name__ == "__main__":
+	CURRENT_DIR = pathlib.Path.cwd() / "test"
 
 	pygbase.init((800, 800))
 	pygbase.Debug.show()
@@ -18,16 +18,14 @@ if __name__ == '__main__':
 	pygbase.Events.add_handler(
 		"all",
 		pygame.KEYDOWN,
-		handler=lambda e: pygbase.Events.post_event(pygame.QUIT) if e.key == pygame.K_ESCAPE else None
+		handler=lambda e: pygbase.Events.post_event(pygame.QUIT)
+		if e.key == pygame.K_ESCAPE
+		else None,
 	)
 
 	pygbase.Events.create_custom_event("test")
 
-	pygbase.Events.add_handler(
-		"all",
-		"test",
-		lambda e: logging.info("Received Test Event")
-	)
+	pygbase.Events.add_handler("all", "test", lambda e: logging.info("Received Test Event"))
 
 	pygbase.Events.post_event("test")
 

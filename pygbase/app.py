@@ -8,7 +8,7 @@ from .common import Common
 from .debug import Debug
 from .events import Events
 from .game_state import GameState
-from .inputs import Inputs
+from .inputs.input import Input
 from .loader import Loading
 
 
@@ -42,7 +42,7 @@ class App:
 		self.is_running = False
 
 	def handle_events(self):
-		Inputs.reset()
+		Input.reset()
 		Events.handle_events(self.game_state.id)
 
 	def update(self, delta):

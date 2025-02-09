@@ -1,17 +1,23 @@
-from typing import Optional, Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Optional
 
 import pygame
 
-from .values import UIActionTriggers, UIValue
 from ..common import Common
-from ..inputs import Inputs
+from ..inputs.input import Input
+from .values import UIActionTriggers, UIValue
 
 if TYPE_CHECKING:
 	from .ui_elements import Frame
 
 
 class UIElement:
-	def __init__(self, pos: tuple[UIValue, UIValue], size: tuple[UIValue, UIValue], container: Optional["Frame"], blocks_mouse: bool = True):
+	def __init__(
+		self,
+		pos: tuple[UIValue, UIValue],
+		size: tuple[UIValue, UIValue],
+		container: Optional["Frame"],
+		blocks_mouse: bool = True,
+	):
 		# UI data
 		self.container = container
 		self.container_size: tuple[float, float]
@@ -23,11 +29,11 @@ class UIElement:
 
 		self._pos = pygame.Vector2(
 			self.ui_pos[0].get_pixels(self.container_size[0]),
-			self.ui_pos[1].get_pixels(self.container_size[1])
+			self.ui_pos[1].get_pixels(self.container_size[1]),
 		)
 		self._size: pygame.Vector2 = pygame.Vector2(
 			self.ui_size[0].get_pixels(self.container_size[0]),
-			self.ui_size[1].get_pixels(self.container_size[1])
+			self.ui_size[1].get_pixels(self.container_size[1]),
 		)
 
 		self._rect: pygame.Rect = pygame.Rect(self._pos + self.container_offset, self.size)
@@ -42,14 +48,19 @@ class UIElement:
 		self.hovered = False
 		self.clicked = False
 
-		self._actions: dict[UIActionTriggers, list[tuple[Callable[..., None], tuple]]] = {trigger: [] for trigger in UIActionTriggers}  # TODO: Change to have list of preset actions. Callables would be an action with input of a Callable
+		self._actions: dict[UIActionTriggers, list[tuple[Callable[..., None], tuple]]] = {
+			trigger: [] for trigger in UIActionTriggers
+		}  # TODO: Change to have list of preset actions. Callables would be an action with input of a Callable
 
 	def _update_container_properties(self):
 		if self.container is None:
-			self.container_size = Common.get_value("screen_width"), Common.get_value("screen_height")
+			self.container_size = (
+				Common.get_value("screen_width"),
+				Common.get_value("screen_height"),
+			)
 			self.container_offset = (0, 0)
 		else:
-			self.container_size = self.container.size
+			self.container_size = self.container.size.x, self.container.size.y
 			self.container_offset = self.container.rect.topleft
 
 	@property
@@ -69,17 +80,19 @@ class UIElement:
 
 		self._pos.update(
 			self.ui_pos[0].get_pixels(self.container_size[0]),
-			self.ui_pos[1].get_pixels(self.container_size[1])
+			self.ui_pos[1].get_pixels(self.container_size[1]),
 		)
 		self._size.update(
 			self.ui_size[0].get_pixels(self.container_size[0]),
-			self.ui_size[1].get_pixels(self.container_size[1])
+			self.ui_size[1].get_pixels(self.container_size[1]),
 		)
 
 		self._rect.topleft = self.pos + self.container_offset
 		self._rect.size = self.size
 
-	def add_action(self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()) -> "UIElement":
+	def add_action(
+		self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()
+	) -> "UIElement":
 		self._actions[trigger].append((action, action_args))
 		return self
 
@@ -98,22 +111,22 @@ class UIElement:
 
 				self.time = 0
 
-				if Inputs.get_mouse_just_pressed(0):
+				if Input.mouse_just_pressed(0):
 					self.clicked = True
 					self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
-			if Inputs.get_mouse_pressed(0):
+			if Input.mouse_pressed(0):
 				self.clicked = True
 				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
 				self.time = 0
-			if Inputs.get_mouse_just_released(0):
+			if Input.mouse_just_released(0):
 				self.clicked = False
 				self._perform_action(UIActionTriggers.ON_CLICK_UP)
 
 				self.time = 0
 
-			scroll_y = Inputs.get_scroll_y()
+			scroll_y = Input.mouse_scroll_y()
 			if scroll_y != 0:
 				self._perform_action(UIActionTriggers.ON_SCROLL_Y)
 		else:

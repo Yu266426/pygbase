@@ -52,12 +52,12 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 		self.camera_controller.update(delta)
 		self.mouse_pos.update(self.camera_controller.camera.screen_to_world(pygame.mouse.get_pos()))
 
-		if pygbase.Inputs.get_mouse_pressed(0):
+		if pygbase.Input.mouse_pressed(0):
 			self.mouse_spawner.active = True
 		else:
 			self.mouse_spawner.active = False
 
-		if pygbase.Inputs.get_mouse_pressed(2):
+		if pygbase.Input.mouse_pressed(2):
 			self.mouse_attractor.strength = self.attractor_strength
 		else:
 			self.mouse_attractor.strength = 0

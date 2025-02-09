@@ -23,7 +23,9 @@ class Common:
 
 	_resource_types: dict[str, int] = {}
 
-	_particle_settings: dict[str, dict["ParticleOptions", str | list[pygame.typing.ColorLike] | tuple[float] | bool]] = {
+	_particle_settings: dict[
+		str, dict["ParticleOptions", str | list[pygame.typing.ColorLike] | tuple | bool]
+	] = {
 		"default": {
 			ParticleOptions.NAME: "default",
 			ParticleOptions.COLOUR: ["white"],
@@ -32,7 +34,7 @@ class Common:
 			ParticleOptions.VELOCITY_DECAY: (1.8, 2.2),
 			ParticleOptions.GRAVITY: (0, 0),
 			ParticleOptions.EFFECTOR: True,
-			ParticleOptions.BOUNCE: ((0.0, 0.1), (0.0, 0.1))
+			ParticleOptions.BOUNCE: ((0.0, 0.1), (0.0, 0.1)),
 		}
 	}
 
@@ -83,15 +85,15 @@ class Common:
 
 	@classmethod
 	def add_particle_setting(
-			cls,
-			name: str,
-			colour: list[pygame.typing.ColorLike],
-			size: tuple[float, float],
-			size_decay: tuple[float, float],
-			velocity_decay: tuple[float, float],
-			gravity: tuple[float, float],
-			effector: bool,
-			bounce: tuple[tuple[float, float], tuple[float, float]]
+		cls,
+		name: str,
+		colour: list[pygame.typing.ColorLike],
+		size: tuple[float, float],
+		size_decay: tuple[float, float],
+		velocity_decay: tuple[float, float],
+		gravity: tuple[float, float],
+		effector: bool,
+		bounce: tuple[tuple[float, float], tuple[float, float]],
 	):
 		if name not in cls._particle_settings:
 			cls._particle_settings[name] = {
@@ -102,15 +104,19 @@ class Common:
 				ParticleOptions.VELOCITY_DECAY: velocity_decay,
 				ParticleOptions.GRAVITY: gravity,
 				ParticleOptions.EFFECTOR: effector,
-				ParticleOptions.BOUNCE: bounce
+				ParticleOptions.BOUNCE: bounce,
 			}
 		else:
 			logging.warning(f"Particle setting name: `{name}` already taken")
 
 	@classmethod
-	def get_particle_setting(cls, name: str) -> dict[ParticleOptions, list[pygame.typing.ColorLike] | tuple[float] | bool]:
+	def get_particle_setting(
+		cls, name: str
+	) -> dict[ParticleOptions, str | list[pygame.typing.ColorLike] | tuple | bool]:
 		if name in cls._particle_settings:
 			return cls._particle_settings[name]
 		else:
-			logging.warning(f"Particle setting name: `{name}` does not exist. Using default settings.")
+			logging.warning(
+				f"Particle setting name: `{name}` does not exist. Using default settings."
+			)
 			return cls._particle_settings["default"]

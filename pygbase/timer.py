@@ -11,7 +11,7 @@ class Timer:
 	def set_cooldown(self, cooldown: float):
 		self._cooldown = cooldown
 
-	def tick(self, delta: float = 1 / 60):
+	def tick(self, delta: float):
 		self._time -= delta
 
 		if self._repeating:

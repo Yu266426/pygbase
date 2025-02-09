@@ -132,7 +132,7 @@ class Menu(pygbase.GameState, name="menu"):
 
 		self.progress_bar.set_fill_percent(int(self.text_selection_menu.current_option) / 9)
 
-		if pygbase.Inputs.get_key_just_pressed(pygame.K_SPACE):
+		if pygbase.Input.key_just_pressed(pygame.K_SPACE):
 			self.button_frame.ui_pos = (
 				self.button_frame.ui_pos[0].add(pygbase.UIValue(0.05, False), self.ui.base_container.size.x),
 				self.button_frame.ui_pos[1]
@@ -147,7 +147,7 @@ class Menu(pygbase.GameState, name="menu"):
 
 			self.text_selection_menu.reposition()
 
-		if pygbase.Inputs.get_key_just_pressed(pygame.K_ESCAPE):
+		if pygbase.Input.key_just_pressed(pygame.K_ESCAPE):
 			pygbase.Events.post_event(pygame.QUIT)
 
 	def draw(self, surface: pygame.Surface):

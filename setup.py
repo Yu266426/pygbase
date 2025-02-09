@@ -8,6 +8,6 @@ setup(
 	author="Yu266426",
 	author_email="yu266426@gmail.com",
 	license="MIT",
-	packages=["pygbase", "pygbase.graphics", "pygbase.particles", "pygbase.ui", "pygbase.lighting"],
+	packages=["pygbase", "pygbase.inputs", "pygbase.graphics", "pygbase.particles", "pygbase.ui", "pygbase.lighting"],
 	install_requires=["pygame-ce>=2.5.2"]
 )

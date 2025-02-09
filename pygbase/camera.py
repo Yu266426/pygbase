@@ -3,7 +3,7 @@ import random
 import pygame
 
 from .common import Common
-from .inputs import Inputs
+from .inputs.input import Input
 
 
 class Camera:
@@ -31,7 +31,7 @@ class Camera:
 			shake_amount = self._shake_amount + self._shake_time  # More shake the longer it is
 			self._current_shake_offset.update(
 				random.uniform(-shake_amount, shake_amount),
-				random.uniform(-shake_amount, shake_amount)
+				random.uniform(-shake_amount, shake_amount),
 			)
 
 	def set_pos(self, target: pygame.Vector2):
@@ -45,12 +45,19 @@ class Camera:
 			self.pos.update(self.pos.lerp(target, amount))
 
 	def screen_to_world(self, pos: pygame.typing.Point) -> pygame.Vector2:
-		return pygame.Vector2(pos[0] + self.pos.x + self._current_shake_offset.x, pos[1] + self.pos.y + self._current_shake_offset.y)
+		return pygame.Vector2(
+			pos[0] + self.pos.x + self._current_shake_offset.x,
+			pos[1] + self.pos.y + self._current_shake_offset.y,
+		)
 
 	def world_to_screen(self, pos: pygame.typing.Point) -> tuple[int, int]:
-		return round(pos[0] - self.pos.x - self._current_shake_offset.x), round(pos[1] - self.pos.y - self._current_shake_offset.y)
+		return round(pos[0] - self.pos.x - self._current_shake_offset.x), round(
+			pos[1] - self.pos.y - self._current_shake_offset.y
+		)
 
-	def world_to_screen_rect[RectType](self, rect: RectType) -> RectType:
+	def world_to_screen_rect[RectType: pygame.Rect | pygame.FRect](
+		self, rect: RectType
+	) -> RectType:
 		new_rect = rect.copy()
 		new_rect.topleft = self.world_to_screen(new_rect.topleft)
 		return new_rect
@@ -104,20 +111,22 @@ class CameraController:
 		self._world_mouse_pos = self._camera.screen_to_world(self._mouse_pos)
 
 	def _mouse_control(self, mouse_button: int = 1):
-		if Inputs.get_mouse_just_pressed(mouse_button):
+		if Input.mouse_just_pressed(mouse_button):
 			self._prev_mouse_pos = self._mouse_pos.copy()
 			self._prev_target = self._camera.pos.copy()
-		if Inputs.get_mouse_pressed(mouse_button):
+		if Input.mouse_pressed(mouse_button):
 			self._camera.set_pos(self._prev_target + (self._prev_mouse_pos - self._mouse_pos))
 
 		self._handle_bounds()
 
 	def _keyboard_control(self, delta: float, speed: float = 600):
-		if not Inputs.check_modifiers(pygame.KMOD_LCTRL):
-			x_input = Inputs.get_key_pressed(pygame.K_d) - Inputs.get_key_pressed(pygame.K_a)
-			y_input = Inputs.get_key_pressed(pygame.K_s) - Inputs.get_key_pressed(pygame.K_w)
+		if not Input.check_modifiers(pygame.KMOD_LCTRL):
+			x_input = Input.key_pressed(pygame.K_d) - Input.key_pressed(pygame.K_a)
+			y_input = Input.key_pressed(pygame.K_s) - Input.key_pressed(pygame.K_w)
 
-			self._camera.set_pos(self._camera.pos + pygame.Vector2(x_input, y_input) * speed * delta)
+			self._camera.set_pos(
+				self._camera.pos + pygame.Vector2(x_input, y_input) * speed * delta
+			)
 
 		self._handle_bounds()
 
