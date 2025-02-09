@@ -45,8 +45,6 @@ class Particle:
 
 			cls.PARTICLE_IMAGE_CACHE[particle_type] = cache
 
-		print(cls.PARTICLE_IMAGE_CACHE)
-
 	def __init__(self, pos: pygame.typing.Point, settings: dict, initial_velocity=(0, 0)):
 		self.pos = pygame.Vector2(pos)
 
