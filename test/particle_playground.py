@@ -29,14 +29,14 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 				(400, 400),
 				0.05, 200,
 				400,
-				True, "default",
+				True, "test",
 				self.particle_manager
 			)
 		)
 
 		self.mouse_spawner = self.particle_manager.add_spawner(
 			pygbase.CircleSpawner(
-				self.mouse_pos, 0.01, 30, 50, False, "default",
+				self.mouse_pos, 0.01, 30, 50, False, "test",
 				self.particle_manager
 			).link_pos(self.mouse_pos)
 		)

@@ -10,6 +10,7 @@ from .events import Events
 from .game_state import GameState
 from .inputs.input import Input
 from .loader import Loading
+from .particles.particle import Particle
 
 
 class App:
@@ -32,7 +33,8 @@ class App:
 		self.screen: pygame.Surface = self.window.get_surface()
 		self.clock: pygame.time.Clock = pygame.time.Clock()
 
-		self.game_state: Union[Loading, GameState] = Loading(after_load_state, run_on_load_complete)
+		load_complete_runners = (Particle.cache_particle_images,) + run_on_load_complete
+		self.game_state: Union[Loading, GameState] = Loading(after_load_state, load_complete_runners)
 
 		self.fixed_time_rate = 1 / fixed_time_fps
 

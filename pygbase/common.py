@@ -7,7 +7,7 @@ import pygame.typing
 
 class ParticleOptions(enum.Enum):
 	NAME = enum.auto()
-	COLOUR = enum.auto()
+	COLOR = enum.auto()
 	SIZE = enum.auto()
 	SIZE_DECAY = enum.auto()
 	VELOCITY_DECAY = enum.auto()
@@ -28,7 +28,7 @@ class Common:
 	] = {
 		"default": {
 			ParticleOptions.NAME: "default",
-			ParticleOptions.COLOUR: ["white"],
+			ParticleOptions.COLOR: ["white"],
 			ParticleOptions.SIZE: (4.0, 7.0),
 			ParticleOptions.SIZE_DECAY: (3.0, 5.0),
 			ParticleOptions.VELOCITY_DECAY: (1.8, 2.2),
@@ -85,20 +85,20 @@ class Common:
 
 	@classmethod
 	def add_particle_setting(
-		cls,
-		name: str,
-		colour: list[pygame.typing.ColorLike],
-		size: tuple[float, float],
-		size_decay: tuple[float, float],
-		velocity_decay: tuple[float, float],
-		gravity: tuple[float, float],
-		effector: bool,
-		bounce: tuple[tuple[float, float], tuple[float, float]],
+			cls,
+			name: str,
+			color: list[pygame.typing.ColorLike],
+			size: tuple[float, float],
+			size_decay: tuple[float, float],
+			velocity_decay: tuple[float, float],
+			gravity: tuple[float, float],
+			effector: bool,
+			bounce: tuple[tuple[float, float], tuple[float, float]],
 	):
 		if name not in cls._particle_settings:
 			cls._particle_settings[name] = {
 				ParticleOptions.NAME: name,
-				ParticleOptions.COLOUR: colour,
+				ParticleOptions.COLOR: color,
 				ParticleOptions.SIZE: size,
 				ParticleOptions.SIZE_DECAY: size_decay,
 				ParticleOptions.VELOCITY_DECAY: velocity_decay,
@@ -111,7 +111,7 @@ class Common:
 
 	@classmethod
 	def get_particle_setting(
-		cls, name: str
+			cls, name: str
 	) -> dict[ParticleOptions, str | list[pygame.typing.ColorLike] | tuple | bool]:
 		if name in cls._particle_settings:
 			return cls._particle_settings[name]
@@ -120,3 +120,7 @@ class Common:
 				f"Particle setting name: `{name}` does not exist. Using default settings."
 			)
 			return cls._particle_settings["default"]
+
+	@classmethod
+	def get_particle_settings(cls) -> dict[str, dict["ParticleOptions", str | list[pygame.typing.ColorLike] | tuple | bool]]:
+		return cls._particle_settings

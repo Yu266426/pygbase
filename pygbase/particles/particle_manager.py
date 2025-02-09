@@ -38,9 +38,7 @@ class ParticleManager:
 		self.chunked_colliders = chunked_colliders
 
 	def pass_dynamic_colliders(self, colliders: list[pygame.Rect]):
-		self.dynamic_colliders[:] = colliders[
-			:
-		]  # Contents of dynamic_colliders gets set to contents of colliders
+		self.dynamic_colliders[:] = colliders[:]  # Contents of dynamic_colliders gets set to contents of colliders
 
 	def get_surrounding_colliders(self, chunk_pos: tuple):
 		min_row = chunk_pos[1] - 1
@@ -93,7 +91,7 @@ class ParticleManager:
 			self.spawners.remove(spawner)
 
 	def add_affector[AffectorType](
-		self, affector_type: AffectorTypes, affector: AffectorType
+			self, affector_type: AffectorTypes, affector: AffectorType
 	) -> AffectorType:
 		self.affectors[affector_type].append(affector)
 		return affector
@@ -143,7 +141,7 @@ class ParticleManager:
 			particle.has_moved_chunk = False
 
 	def draw(self, surface: pygame.Surface, camera: Camera):
-		[particle.draw(surface, camera) for chunk in self.particles.values() for particle in chunk]
+		surface.fblits([particle.get_blit_pair(camera) for chunk in self.particles.values() for particle in chunk])
 
 		# Debug
 		if Debug.is_active():
