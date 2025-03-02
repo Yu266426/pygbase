@@ -47,3 +47,6 @@ class Timer:
 
 	def just_done(self) -> bool:
 		return self._is_just_done
+
+	def progress(self) -> float:
+		return 1 - self._time / self._cooldown
