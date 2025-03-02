@@ -18,8 +18,6 @@ class App:
 			self,
 			after_load_state: Type[GameState],
 			title: str = "Pygbase Window",
-			flags=0,
-			vsync=True,
 			fixed_time_fps: int = 60,
 			run_on_load_complete: tuple[Callable, ...] = ()
 	):

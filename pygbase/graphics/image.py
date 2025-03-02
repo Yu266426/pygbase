@@ -56,7 +56,7 @@ class Image:
 		image_index = min(max(image_index, 0), len(self.angled_images) - 1)
 		return self.angled_images[image_index]
 
-	def draw(self, surface: pygame.Surface, pos: pygame.Vector2 | tuple[float, float], angle: float = 0, flip: tuple[bool, bool] = (False, False), draw_pos: str = "topleft", flags: int = 0):
+	def draw(self, surface: pygame.Surface, pos: pygame.Vector2 | tuple[float, float], angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: tuple[bool, bool] = (False, False), draw_pos: str = "topleft", flags: int = 0):
 		factor = -1 if flip[0] ^ flip[1] else 1  # Exclusive or
 		image = self.get_image(angle * factor)
 
@@ -76,4 +76,6 @@ class Image:
 			raise ValueError(f"{draw_pos} not a valid position.")
 
 		rect = image.get_rect(center=center)
+		offset = (-pygame.Vector2(pivot_point)).rotate(-angle) + pivot_point
+		rect.center = offset + center
 		surface.blit(image, rect, special_flags=flags)

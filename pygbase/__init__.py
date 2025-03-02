@@ -11,6 +11,8 @@ __all__ = [
 	"FadeTransition",
 	"LinearTween",
 	"CubicTween",
+	"Resources",
+	"ResourceType"
 ]
 
 import pygbase.utils
@@ -35,13 +37,13 @@ from .ui import *
 
 
 def init(
-	screen_size: tuple[int, int],
-	logging_level=logging.DEBUG,
-	rotate_resolution: float = 0.5,
-	max_light_radius: int = 600,
-	max_shadow_radius: int = 50,
-	light_radius_interval: int = 2,
-	shadow_ratio: float = 1,
+		screen_size: tuple[int, int],
+		logging_level=logging.DEBUG,
+		rotate_resolution: float = 0.5,
+		max_light_radius: int = 600,
+		max_shadow_radius: int = 50,
+		light_radius_interval: int = 2,
+		shadow_ratio: float = 1,
 ):
 	logging.basicConfig(level=logging_level, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -118,14 +120,14 @@ def add_sound_resource(name: str, type_id: int, dir_path: str, sound_ending: str
 
 
 def add_particle_setting(
-	name: str,
-	colour: list[pygame.typing.ColorLike],
-	size: tuple[float, float],
-	size_decay: tuple[float, float],
-	velocity_decay: tuple[float, float],
-	gravity: tuple[float, float],
-	effector: bool,
-	bounce: tuple[tuple[float, float], tuple[float, float]],
+		name: str,
+		colour: list[pygame.typing.ColorLike],
+		size: tuple[float, float],
+		size_decay: tuple[float, float],
+		velocity_decay: tuple[float, float],
+		gravity: tuple[float, float],
+		effector: bool,
+		bounce: tuple[tuple[float, float], tuple[float, float]],
 ):
 	Common.add_particle_setting(
 		name, colour, size, size_decay, velocity_decay, gravity, effector, bounce

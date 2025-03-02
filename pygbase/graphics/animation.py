@@ -47,6 +47,7 @@ class Animation:
 				self.frame = 0
 
 	def draw_at_pos(self, screen: pygame.Surface, pos: pygame.Vector2 | tuple, camera: Camera, angle: float = 0, pivot_point: tuple[float, float] = (0, 0), flip: tuple[bool, bool] = (False, False), draw_pos: str = "topleft", flags: int = 0):
+		# TODO: Consolidate with Image code please
 		current_image = self.get_current_image()
 		image_surf = current_image.get_image(angle)
 

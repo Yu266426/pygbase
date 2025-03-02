@@ -155,7 +155,7 @@ class Menu(pygbase.GameState, name="menu"):
 
 		self.ui.draw(surface)
 
-		self.left_image.draw(surface, (400, 400), 20, (False, False))
-		self.left_image.draw(surface, (400, 500), 20, (True, False))
-		self.left_image.draw(surface, (400, 600), 20, (False, True))
-		self.left_image.draw(surface, (400, 700), 20, (True, True))
+		self.left_image.draw(surface, (400, 400), 20, flip=(False, False))
+		self.left_image.draw(surface, (400, 500), 20, flip=(True, False))
+		self.left_image.draw(surface, (400, 600), 20, flip=(False, True))
+		self.left_image.draw(surface, (400, 700), 20, flip=(True, True))
