@@ -75,9 +75,6 @@ class App:
 			delta = min(self.clock.tick() / 1000, 0.12)
 			update_timer += delta
 
-			# Events
-			self.handle_events()
-
 			# Debug
 			Debug.clear()
 
@@ -93,6 +90,9 @@ class App:
 			self.draw()
 			Debug.draw(self.screen)
 			self.window.flip()
+
+			# Events
+			self.handle_events()
 
 			# State check
 			self.switch_state()
