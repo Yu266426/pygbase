@@ -2,17 +2,17 @@ import logging
 import pathlib
 
 import pygame
-from menu import Menu
 
 import pygbase
+from menu import Menu
 
 if __name__ == "__main__":
 	CURRENT_DIR = pathlib.Path.cwd() / "test"
 
 	pygbase.init((800, 800))
-	pygbase.Debug.show()
+	# pygbase.Debug.show()
 	pygbase.Debug.show_fps()
-
+	#
 	pygbase.add_image_resource("image", 1, str(CURRENT_DIR / "images"))
 
 	pygbase.add_particle_setting(

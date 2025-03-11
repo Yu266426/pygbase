@@ -59,7 +59,7 @@ class Light:
 
 		self.camera_affected = camera_affected
 
-		self.radius_interval = Common.get_value("lighting_radius_interval")
+		self.radius_interval = Common.get("lighting_radius_interval")
 
 	def link_pos(self, pos: pygame.Vector2) -> "Light":
 		self.pos = pos

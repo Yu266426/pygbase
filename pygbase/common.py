@@ -39,15 +39,15 @@ class Common:
 	}
 
 	@classmethod
-	def set_value(cls, name: str, value: Any):
+	def set(cls, name: str, value: Any):
 		cls._values[name] = value
 
 	@classmethod
-	def get_value(cls, name: str) -> Any:
+	def get(cls, name: str) -> Any:
 		return cls._values[name]
 
 	@classmethod
-	def remove_value(cls, name: str):
+	def remove(cls, name: str):
 		if name in cls._values:
 			del cls._values[name]
 

@@ -2,23 +2,20 @@ import pygame
 
 import pygbase
 
+from pygbase.ui import *
+
 
 class ParticlePlayground(pygbase.GameState, name="particles"):
 	def __init__(self):
 		super().__init__()
 
-		self.ui = pygbase.UIManager()
-
 		from menu import Menu
-		self.ui.add_element(
-			pygbase.Button(
-				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)), (pygbase.UIValue(0.2, False), pygbase.UIValue(0, False)),
-				"image", "button",
-				self.ui.base_container,
-				self.set_next_state_type, callback_args=(Menu, ()),
-				text="Back",
-			)
-		)
+		with Button(self.set_next_state_type, callback_args=(Menu, ()), pos=(10, 10), size=(150, Fit())) as ui:
+			with Image("button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
+				Text("Back", 20, "white")
+
+		ui.resolve_layout(pygbase.Common.get("screen_size"))
+		self.ui = ui
 
 		self.camera_controller = pygbase.CameraController()
 		self.mouse_pos = pygame.Vector2(pygame.mouse.get_pos())

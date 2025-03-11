@@ -33,7 +33,7 @@ from .resources import Resources, ResourceType
 from .timer import Timer
 from .transition_states import FadeTransition
 from .tweens import CubicTween, LinearTween
-from .ui import *
+from .ui.dialogue import DialogueOption, DialogueManager, DialogueNode
 
 
 def init(
@@ -49,11 +49,11 @@ def init(
 
 	pygame.init()
 
-	Common.set_value("screen_width", screen_size[0])
-	Common.set_value("screen_height", screen_size[1])
-	Common.set_value("screen_size", screen_size)
+	Common.set("screen_width", screen_size[0])
+	Common.set("screen_height", screen_size[1])
+	Common.set("screen_size", screen_size)
 
-	Common.set_value("rotate_resolution", rotate_resolution)
+	Common.set("rotate_resolution", rotate_resolution)
 
 	Events.init()
 	Input.register_handlers()
