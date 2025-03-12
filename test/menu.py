@@ -1,5 +1,3 @@
-import sys
-
 import pygame
 
 import pygbase
@@ -14,7 +12,7 @@ class Menu(pygbase.GameState, name="menu"):
 		from dialogue_testing import DialogueTesting
 		from tweens import Tweens
 		with Frame(size=(Grow(), Grow()), padding=Padding.all(10)) as ui:
-			with Frame(size=(250, Grow()), layout=Layout.TOP_TO_BOTTOM, padding=Padding.all(5), gap=10, bg_color=(50, 50, 50, 100)):
+			with Frame(size=(250, Grow()), layout=Layout.TOP_TO_BOTTOM, padding=Padding.all(5), gap=10, bg_color=(50, 50, 50, 100)) as button_frame:
 				with Button(print, callback_args=("Button Pressed!",), size=(Grow(), Fit())):
 					with Image("button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
 						Text("click", 30, "white")
@@ -31,8 +29,8 @@ class Menu(pygbase.GameState, name="menu"):
 					with Image("button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
 						Text("Tweens", 30, "white")
 
-		ui.resolve_layout(pygbase.Common.get("screen_size"))
 		self.ui = ui
+		self.button_frame = button_frame
 
 		# self.button_frame.add_element(
 		# 	pygbase.TextSelectionMenu(

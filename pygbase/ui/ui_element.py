@@ -7,7 +7,7 @@ import pygame
 
 from ..debug import Debug
 from .values import Fit, Layout, Grow, Padding, XAlign, YAlign, EPSILON, UIActionTriggers
-from .. import Input
+from .. import Input, Common
 
 
 class Frame:
@@ -77,33 +77,27 @@ class Frame:
 		self._surface: pygame.Surface | None = None
 
 		# UI actions
-		self.time: float = 0
+		self._time: float = 0
 		self.can_interact: bool = True
 		self.blocks_mouse: bool = True
 
-		self.timed_actions: dict[int, list[UIActionTriggers]] = {}  # TODO: Use in some way?
-
-		self.hovered: bool = False
-		self.clicked: bool = False
+		self._hovered: bool = False
+		self._clicked: bool = False
 
 		self._actions: dict[UIActionTriggers, list[tuple[Callable[..., None], tuple]]] = {
 			trigger: [] for trigger in UIActionTriggers
 		}  # TODO: Change to have list of preset actions. Callables would be an action with input of a Callable
 
-	@property
-	def pos(self) -> pygame.Vector2:
-		return self._resolved_pos
-
-	@property
-	def _draw_pos(self):
-		if self.parent is not None:
-			return self.pos - self.parent.pos
-		else:
-			return self.pos
+		self._timed_actions: dict[int, list[UIActionTriggers]] = {}  # TODO: Use in some way?
 
 	@property
 	def size(self) -> pygame.Vector2:
 		return self._resolved_size
+
+	# TODO: Rework so setting these will trigger a layout recalculation
+	@property
+	def pos(self) -> tuple[float, float]:
+		return self._resolved_pos.x, self._resolved_pos.y
 
 	@property
 	def x(self) -> float:
@@ -120,6 +114,13 @@ class Frame:
 	@y.setter
 	def y(self, value: float):
 		self._resolved_pos.y = value
+
+	@property
+	def _draw_pos(self):
+		if self.parent is not None:
+			return self._resolved_pos - self.parent._resolved_pos
+		else:
+			return self.pos
 
 	@property
 	def width(self) -> float:
@@ -169,6 +170,11 @@ class Frame:
 			return False  # True -> Suppress exception
 
 		self.element_stack.pop()
+
+		# If empty, then this is the parent element
+		if len(self.element_stack) == 0:
+			self.resolve_layout(Common.get("screen_size"))
+
 		return False
 
 	def resolve_layout(self, size: tuple[float, float]) -> tuple[float, float]:
@@ -667,46 +673,49 @@ class Frame:
 		for child in self.children:
 			child.update(delta)
 
-		self.time += delta
+		self._time += delta
 
 		if self.rect.collidepoint(pygame.mouse.get_pos()):
-			if not self.hovered:
-				self.hovered = True
+			if not self._hovered:
+				self._hovered = True
 				self._perform_action(UIActionTriggers.ON_HOVER_ENTER)
 
-				self.time = 0
+				self._time = 0
 
 				if Input.mouse_just_pressed(0):
-					self.clicked = True
+					self._clicked = True
 					self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
 			if Input.mouse_pressed(0):
-				self.clicked = True
+				self._clicked = True
 				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
-				self.time = 0
+				self._time = 0
 			if Input.mouse_just_released(0):
-				self.clicked = False
+				self._clicked = False
 				self._perform_action(UIActionTriggers.ON_CLICK_UP)
 
-				self.time = 0
+				self._time = 0
 
 			scroll_y = Input.mouse_scroll_y()
 			if scroll_y != 0:
 				self._perform_action(UIActionTriggers.ON_SCROLL_Y)
 		else:
-			if self.hovered:
-				self.hovered = False
+			if self._hovered:
+				self._hovered = False
 				self._perform_action(UIActionTriggers.ON_HOVER_EXIT)
 
-				self.time = 0
+				self._time = 0
 
-			if self.clicked:
-				self.clicked = False
+			if self._clicked:
+				self._clicked = False
 
-				self.time = 0
+				self._time = 0
 
 	def _draw_self(self, surface: pygame.Surface):
+		pass
+
+	def _draw_overlay(self, surface: pygame.Surface):
 		pass
 
 	def draw(self, surface: pygame.Surface):
@@ -722,5 +731,7 @@ class Frame:
 
 		for child in self.children:
 			child.draw(self._surface)
+
+		self._draw_overlay(self._surface)
 
 		surface.blit(self._surface, self._draw_pos)

@@ -67,7 +67,9 @@ class Text(Frame):
 	def _draw_self(self, surface: pygame.Surface):
 		if self._text_surface is not None:
 			surface.blit(self._text_surface, self._draw_pos)
-		# Debug.draw_rect(self._text_surface.get_rect(topleft=self._draw_pos), "yellow", width=1)
+
+
+# Debug.draw_rect(self._text_surface.get_rect(topleft=self._draw_pos), "yellow", width=1)
 
 
 class Image(Frame):
@@ -176,3 +178,9 @@ class Button(Frame):
 		)
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
+
+	def _draw_overlay(self, surface: pygame.Surface):
+		if self._hovered:
+			surface.fill((20, 20, 20), special_flags=pygame.BLEND_ADD)
+		if self._clicked:
+			surface.fill((20, 20, 20), special_flags=pygame.BLEND_ADD)
