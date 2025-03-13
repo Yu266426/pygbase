@@ -19,7 +19,7 @@ class Menu(pygbase.GameState, name="menu"):
 
 				with Button(self.set_next_state_type, callback_args=(ParticlePlayground, ()), size=(Grow(), Fit())):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
-						Text("Particle Testing", 30, "white")
+						Text("Particles", 30, "white")
 
 				with Button(self.set_next_state_type, callback_args=(DialogueTesting, ()), size=(Grow(), Fit())):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):

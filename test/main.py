@@ -6,6 +6,14 @@ import pygame
 import pygbase
 from menu import Menu
 
+
+def toggle_debug(event: pygame.Event):
+	if event.key == pygame.K_F3:
+		pygbase.Debug.toggle()
+	if event.key == pygame.K_F4:
+		pygbase.Debug.toggle_fps()
+
+
 if __name__ == "__main__":
 	CURRENT_DIR = pathlib.Path.cwd() / "test"
 
@@ -32,6 +40,13 @@ if __name__ == "__main__":
 		handler=lambda e: pygbase.Events.post_event(pygame.QUIT)
 		if e.key == pygame.K_ESCAPE
 		else None,
+	)
+
+	# Debug toggle
+	pygbase.Events.add_handler(
+		"all",
+		pygame.KEYDOWN,
+		handler=toggle_debug
 	)
 
 	pygbase.Events.create_custom_event("test")

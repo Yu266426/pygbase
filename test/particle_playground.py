@@ -17,13 +17,14 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 		ui.resolve_layout(pygbase.Common.get("screen_size"))
 		self.ui = ui
 
-		self.camera_controller = pygbase.CameraController()
+		self.camera_start_pos = pygame.Vector2(-pygbase.Common.get("screen_width") / 2, -pygbase.Common.get("screen_height") / 2)
+		self.camera_controller = pygbase.CameraController(self.camera_start_pos)
 		self.mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
 
 		self.particle_manager = pygbase.ParticleManager(chunk_size=100)
 		self.circle_spawner = self.particle_manager.add_spawner(
 			pygbase.CircleSpawner(
-				(400, 400),
+				(0, 0),
 				0.05, 200,
 				400,
 				True, "test",
@@ -61,9 +62,13 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 
 		self.particle_manager.update(delta)
 
+		if not pygbase.Input.mouse_pressed(1) and pygbase.Input.key_just_pressed(pygame.K_SPACE):
+			self.camera_controller.camera.set_pos(self.camera_start_pos)
+
 	def draw(self, surface: pygame.Surface):
 		surface.fill((20, 20, 20))
 
 		self.particle_manager.draw(surface, self.camera_controller.camera)
 
+		pygame.draw.circle(surface, "yellow", self.camera_controller.camera.world_to_screen((0, 0)), 5)
 		self.ui.draw(surface)
