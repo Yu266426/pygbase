@@ -77,7 +77,7 @@ class Image(Frame):
 
 	def __init__(
 			self,
-			image_name: str | None = None,
+			image: str | pygame.Surface,
 			pos: tuple[float, float] = (0, 0),
 			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
 			layout: Layout = Layout.LEFT_TO_RIGHT,
@@ -87,6 +87,11 @@ class Image(Frame):
 			y_align: YAlign = YAlign.TOP,
 			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
 	):
+		"""
+
+		:param image: str ("resource_name/image_name") | Surface
+		"""
+
 		super().__init__(
 			pos,
 			size,
@@ -98,21 +103,35 @@ class Image(Frame):
 			bg_color,
 		)
 
-		self.image_name = image_name
+		self.image = image
 
-		if image_name is not None:
-			self._raw_image = Resources.get_resource("image", image_name).get_image()
+		if isinstance(image, str):
+			split_image = image.split("/")
+			if len(split_image) != 2:
+				raise ValueError(f"Image: `{image}` should be in the form \"resource_name/image_name\"")
 
-			if self._raw_image.get_height() == 0:
+			resource_name, image_name = split_image[0], split_image[1]
+
+			self._raw_image_surface: pygame.Surface = Resources.get_resource(resource_name, image_name).get_image()
+
+			if self._raw_image_surface.get_height() == 0:
 				raise ValueError("Image height is zero; cannot compute aspect ratio.")
-			self._aspect_ratio = self._raw_image.get_width() / self._raw_image.get_height()
-			# print(self.background_color, self._aspect_ratio)
+			self._aspect_ratio = self._raw_image_surface.get_width() / self._raw_image_surface.get_height()
 
-			self._image = self._raw_image.copy()
-			self._size.update(self._raw_image.get_width(), self._raw_image.get_height())
+			self._image_surface = self._raw_image_surface.copy()
+			self._size.update(self._raw_image_surface.get_width(), self._raw_image_surface.get_height())
+		elif isinstance(image, pygame.Surface):
+			self._raw_image_surface: pygame.Surface = image
+
+			self._aspect_ratio = self._raw_image_surface.get_width() / self._raw_image_surface.get_height()
+
+			self._image_surface = self._raw_image_surface.copy()
+			self._size.update(self._raw_image_surface.get_width(), self._raw_image_surface.get_height())
+		else:
+			raise ValueError(f"Type of image: `{type(image)}` is not str or Surface")
 
 	def _fix_aspect_ratio(self):
-		if self.image_name is not None:
+		if self.image is not None:
 			if isinstance(self.size_settings[0], Fit):
 				# print("Fixed X:", self.min_width, self.width, self._iter_min_size.x)
 
@@ -143,11 +162,11 @@ class Image(Frame):
 		self._fix_aspect_ratio()
 
 	def _draw_self(self, surface: pygame.Surface):
-		if self.image_name is not None and self.size != pygame.Vector2(self._image.get_size()):
-			self._image = pygame.transform.scale(
-				self._raw_image, (int(self.width), int(self.height))
+		if self.image is not None and self.size != pygame.Vector2(self._image_surface.get_size()):
+			self._image_surface = pygame.transform.scale(
+				self._raw_image_surface, (int(self.width), int(self.height))
 			)
-		surface.blit(self._image, self._draw_pos)
+		surface.blit(self._image_surface, self._draw_pos)
 
 
 class Button(Frame):

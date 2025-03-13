@@ -144,7 +144,7 @@ class DialogueManager:
 					callback_args=(DialogueOption("Dismiss"),),
 			):
 				with Image(
-						image_name="button",
+						image="image/button",
 						size=(Grow(), Fit()),
 						x_align=XAlign.CENTER,
 						y_align=YAlign.CENTER,
@@ -159,7 +159,7 @@ class DialogueManager:
 						size=(Grow(), Fit()),
 				):
 					with Image(
-							image_name="button",
+							image="image/button",
 							size=(Grow(), Fit()),
 							x_align=XAlign.CENTER,
 							y_align=YAlign.CENTER,
