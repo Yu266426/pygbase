@@ -23,6 +23,8 @@ class Text(Frame):
 			x_align: XAlign = XAlign.LEFT,
 			y_align: YAlign = YAlign.TOP,
 			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+			can_interact: bool = False,
+			blocks_mouse: bool = False,
 	):
 		super().__init__(
 			pos,
@@ -33,6 +35,8 @@ class Text(Frame):
 			x_align,
 			y_align,
 			bg_color,
+			can_interact,
+			blocks_mouse
 		)
 
 		self._text = text
@@ -86,6 +90,8 @@ class Image(Frame):
 			x_align: XAlign = XAlign.LEFT,
 			y_align: YAlign = YAlign.TOP,
 			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+			can_interact: bool = False,
+			blocks_mouse: bool = False,
 	):
 		"""
 
@@ -101,6 +107,8 @@ class Image(Frame):
 			x_align,
 			y_align,
 			bg_color,
+			can_interact,
+			blocks_mouse
 		)
 
 		self.image = image
@@ -184,6 +192,8 @@ class Button(Frame):
 			x_align: XAlign = XAlign.LEFT,
 			y_align: YAlign = YAlign.TOP,
 			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+			can_interact: bool = True,
+			blocks_mouse: bool = True,
 	):
 		super().__init__(
 			pos,
@@ -194,6 +204,8 @@ class Button(Frame):
 			x_align,
 			y_align,
 			bg_color,
+			can_interact,
+			blocks_mouse
 		)
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)

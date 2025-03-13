@@ -30,6 +30,8 @@ class Frame:
 			x_align: XAlign = XAlign.LEFT,
 			y_align: YAlign = YAlign.TOP,
 			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+			can_interact: bool = False,
+			blocks_mouse: bool = False,
 	):
 		self._pos = pygame.Vector2(pos)
 		self._resolved_pos = pygame.Vector2(pos)
@@ -77,9 +79,9 @@ class Frame:
 		self._surface: pygame.Surface | None = None
 
 		# UI actions
-		self._time: float = 0
-		self.can_interact: bool = True
-		self.blocks_mouse: bool = True
+		self._time: float = 0  # TODO: Use multiple times for different actions?
+		self.can_interact: bool = can_interact
+		self.blocks_mouse: bool = blocks_mouse
 
 		self._hovered: bool = False
 		self._clicked: bool = False
@@ -675,23 +677,23 @@ class Frame:
 
 		self._time += delta
 
-		if self.rect.collidepoint(pygame.mouse.get_pos()):
+		if self.can_interact and self.rect.collidepoint(pygame.mouse.get_pos()):
 			if not self._hovered:
 				self._hovered = True
 				self._perform_action(UIActionTriggers.ON_HOVER_ENTER)
 
 				self._time = 0
 
-				if Input.mouse_just_pressed(0):
-					self._clicked = True
-					self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
-
-			if Input.mouse_pressed(0):
+			if Input.mouse_just_pressed(0, consume=self.blocks_mouse):
 				self._clicked = True
 				self._perform_action(UIActionTriggers.ON_CLICK_DOWN)
 
+			if Input.mouse_pressed(0, consume=self.blocks_mouse):
+				self._perform_action(UIActionTriggers.ON_CLICK_HOLD)
+
 				self._time = 0
-			if Input.mouse_just_released(0):
+
+			if Input.mouse_just_released(0, consume=self.blocks_mouse):
 				self._clicked = False
 				self._perform_action(UIActionTriggers.ON_CLICK_UP)
 
