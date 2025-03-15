@@ -25,13 +25,20 @@ if __name__ == "__main__":
 
 	pygbase.add_particle_setting(
 		"test",
-		[(143, 186, 255), (102, 237, 255), (82, 154, 255), (255, 40, 30), (255, 90, 0), (255, 154, 0)],
+		[
+			(143, 186, 255),
+			(102, 237, 255),
+			(82, 154, 255),
+			(255, 40, 30),
+			(255, 90, 0),
+			(255, 154, 0),
+		],
 		(4, 7),
 		(3, 5),
 		(0.6, 1.2),
 		(0, 0),
 		True,
-		((0, 0), (0, 0))
+		((0, 0), (0, 0)),
 	)
 
 	pygbase.Events.add_handler(
@@ -43,11 +50,7 @@ if __name__ == "__main__":
 	)
 
 	# Debug toggle
-	pygbase.Events.add_handler(
-		"all",
-		pygame.KEYDOWN,
-		handler=toggle_debug
-	)
+	pygbase.Events.add_handler("all", pygame.KEYDOWN, handler=toggle_debug)
 
 	pygbase.Events.create_custom_event("test")
 

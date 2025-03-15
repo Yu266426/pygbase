@@ -15,19 +15,21 @@ class Menu(pygbase.GameState, name="menu"):
 			with Frame(size=(250, Grow()), layout=Layout.TOP_TO_BOTTOM, padding=Padding.all(5), gap=10, bg_color=(50, 50, 50, 100)) as button_frame:
 				with Button(print, callback_args=("Button Pressed!",), size=(Grow(), Fit())):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
-						Text("Click", 30, "white")
+						Text("Click", 40, "white")
 
 				with Button(self.set_next_state_type, callback_args=(ParticlePlayground, ()), size=(Grow(), Fit())):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
-						Text("Particles", 30, "white")
+						Text("Particles", 40, "white")
 
 				with Button(self.set_next_state_type, callback_args=(DialogueTesting, ()), size=(Grow(), Fit())):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
-						Text("Dialogue", 30, "white")
+						Text("Dialogue", 40, "white")
 
 				with Button(self.set_next_state_type, callback_args=(Tweens, ()), size=(Grow(), Fit())):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
-						Text("Tweens", 30, "white")
+						Text("Tweens", 40, "white")
+
+				TextSelectionMenu(["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"], size=(Grow(), Fit()))
 
 		self.ui = ui
 		self.button_frame = button_frame

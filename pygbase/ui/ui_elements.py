@@ -2,9 +2,9 @@ from typing import Callable
 
 import pygame
 
-from .ui_element import Frame
-from .values import Fit, Grow, Layout, Padding, XAlign, YAlign, UIActionTriggers
 from .. import Resources
+from .ui_element import Frame
+from .values import Fit, Grow, Layout, Padding, UIActionTriggers, XAlign, YAlign
 
 
 class Text(Frame):
@@ -26,18 +26,7 @@ class Text(Frame):
 			can_interact: bool = False,
 			blocks_mouse: bool = False,
 	):
-		super().__init__(
-			pos,
-			size,
-			layout,
-			padding,
-			gap,
-			x_align,
-			y_align,
-			bg_color,
-			can_interact,
-			blocks_mouse
-		)
+		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
 
 		self._text = text
 		self._font_size = font_size
@@ -52,18 +41,22 @@ class Text(Frame):
 		self._text = text
 
 		# Find the minimum size based on the largest word
-		self._iter_min_size.x = 0
-		self._iter_min_size.y = 0
+		self._min_size.x = 0
+		self._min_size.y = 0
 		for word in text.split(" "):
 			word_size = self.font.size(word)
-			self._iter_min_size.x = max(self._iter_min_size.x, word_size[0])
-			self._iter_min_size.y = max(self._iter_min_size.y, word_size[1])
+			self._min_size.x = max(self._min_size.x, word_size[0])
+			self._min_size.y = max(self._min_size.y, word_size[1])
 
 		# Set the preferred size of the full text
 		self._size.update(self.font.size(self._text))
 
+		self.dirty = True
+
 	def _wrap_text(self):
-		self._text_surface = self.font.render(self._text, True, self.color, wraplength=int(self.size.x))
+		self._text_surface = self.font.render(
+			self._text, True, self.color, wraplength=int(self.size.x)
+		)
 		self.min_height = self._text_surface.height
 
 		super()._wrap_text()
@@ -71,9 +64,6 @@ class Text(Frame):
 	def _draw_self(self, surface: pygame.Surface):
 		if self._text_surface is not None:
 			surface.blit(self._text_surface, self._draw_pos)
-
-
-# Debug.draw_rect(self._text_surface.get_rect(topleft=self._draw_pos), "yellow", width=1)
 
 
 class Image(Frame):
@@ -98,25 +88,14 @@ class Image(Frame):
 		:param image: str ("resource_name/image_name") | Surface
 		"""
 
-		super().__init__(
-			pos,
-			size,
-			layout,
-			padding,
-			gap,
-			x_align,
-			y_align,
-			bg_color,
-			can_interact,
-			blocks_mouse
-		)
+		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
 
 		self.image = image
 
 		if isinstance(image, str):
 			split_image = image.split("/")
 			if len(split_image) != 2:
-				raise ValueError(f"Image: `{image}` should be in the form \"resource_name/image_name\"")
+				raise ValueError(f'Image: `{image}` should be in the form "resource_name/image_name"')
 
 			resource_name, image_name = split_image[0], split_image[1]
 
@@ -195,18 +174,7 @@ class Button(Frame):
 			can_interact: bool = True,
 			blocks_mouse: bool = True,
 	):
-		super().__init__(
-			pos,
-			size,
-			layout,
-			padding,
-			gap,
-			x_align,
-			y_align,
-			bg_color,
-			can_interact,
-			blocks_mouse
-		)
+		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
 
@@ -215,3 +183,73 @@ class Button(Frame):
 			surface.fill((20, 20, 20), special_flags=pygame.BLEND_ADD)
 		if self._clicked:
 			surface.fill((20, 20, 20), special_flags=pygame.BLEND_ADD)
+
+
+class TextSelectionMenu(Frame):
+	ID = "text_selection_menu"
+
+	def __init__(
+			self,
+			options: list[str],
+			pos: tuple[float, float] = (0, 0),
+			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+			layout: Layout = Layout.LEFT_TO_RIGHT,
+			padding: Padding = Padding(),
+			gap: float = 0,
+			x_align: XAlign = XAlign.LEFT,
+			y_align: YAlign = YAlign.TOP,
+			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+			can_interact: bool = False,
+			blocks_mouse: bool = False,
+	):
+		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
+
+		self.index = 0
+		self.options = options
+
+		with self:
+			with Button(self._left_callback, size=(Fit(), Grow()), bg_color="blue"):
+				Image("image/left", size=(Fit(), Grow()))
+
+			with Frame(size=(Grow(), Grow()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
+				self._text_element = Text(self.text, 30, "white")
+
+			with Button(self._right_callback, size=(Fit(), Grow()), bg_color="yellow"):
+				Image("image/right", size=(Fit(), Grow()))
+
+	@property
+	def text(self) -> str:
+		return self.options[self.index]
+
+	def _left_callback(self):
+		self.index -= 1
+		self.index %= len(self.options)
+
+		self._text_element.set_text(self.text)
+
+	def _right_callback(self):
+		self.index += 1
+		self.index %= len(self.options)
+
+		self._text_element.set_text(self.text)
+
+
+class ProgressBar(Frame):
+	def __init__(
+			self,
+			pos: tuple[float, float] = (0, 0),
+			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+			layout: Layout = Layout.LEFT_TO_RIGHT,
+			padding: Padding = Padding(),
+			gap: float = 0,
+			x_align: XAlign = XAlign.LEFT,
+			y_align: YAlign = YAlign.TOP,
+			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+			can_interact: bool = False,
+			blocks_mouse: bool = False,
+	):
+		super().__init__(
+			pos,
+			size,
+			layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse
+		)

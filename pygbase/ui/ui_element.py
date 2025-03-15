@@ -16,6 +16,8 @@ class Frame:
 
 	Handles positioning, sizing and layout of UI elements in a hierarchical structure.
 	"""
+
+	# For debugging purposes
 	ID: str = "frame"
 
 	element_stack: deque[Self] = deque()
@@ -65,7 +67,9 @@ class Frame:
 
 		self.children: list["Frame"] = []
 
+		self.current_resolve_size = (0, 0)
 		self.dirty = True
+		self._is_base = False
 
 		self._prev_resolved_pos = pygame.Vector2(-1, -1)
 		self._prev_resolved_size = pygame.Vector2(-1, -1)
@@ -73,7 +77,7 @@ class Frame:
 
 		self.parent: Frame | None = self.element_stack[-1] if len(self.element_stack) > 0 else None
 		if self.parent is not None:
-			self.parent.children.append(self)
+			self.parent.children.append(self)  # NoQA: Dunno why pycharm thinks this is wrong
 
 		# Surface
 		self._surface: pygame.Surface | None = None
@@ -176,6 +180,7 @@ class Frame:
 		# If empty, then this is the parent element
 		if len(self.element_stack) == 0:
 			self.resolve_layout(Common.get("screen_size"))
+			self._is_base = True
 
 		return False
 
@@ -184,6 +189,8 @@ class Frame:
 		Iterative layout resolution.
 		Wrap the layout passes in a loop until the layout converges.
 		"""
+		self.current_resolve_size = size
+
 		# Create a temporary root frame to act as a container for self.
 		root = Frame(size=size)
 		root._resolved_size = root._size.copy()
@@ -191,7 +198,7 @@ class Frame:
 		self.parent = root
 
 		iterations = 0
-		max_iterations = 10  # Safeguard to prevent infinite loops
+		max_iterations = 8  # Safeguard to prevent infinite loops
 
 		while iterations < max_iterations:
 			root._propagate_dirtiness()
@@ -224,12 +231,6 @@ class Frame:
 		return self.min_width, self.min_height
 
 	def _propagate_dirtiness(self):
-		self.dirty |= (
-				(self._prev_resolved_pos - self._resolved_pos).length_squared() > EPSILON
-				or (self._prev_resolved_size - self._resolved_size).length_squared() > EPSILON
-				or (self._prev_resolved_min_size - self._resolved_min_size).length_squared() > EPSILON
-		)
-
 		for child in self.children:
 			self.dirty |= child._propagate_dirtiness()
 
@@ -244,6 +245,12 @@ class Frame:
 		# 	self._prev_resolved_min_size,
 		# 	self._resolved_min_size,
 		# )
+
+		self.dirty |= (
+				(self._prev_resolved_pos - self._resolved_pos).length_squared() > EPSILON
+				or (self._prev_resolved_size - self._resolved_size).length_squared() > EPSILON
+				or (self._prev_resolved_min_size - self._resolved_min_size).length_squared() > EPSILON
+		)
 
 		return self.dirty
 
@@ -662,7 +669,9 @@ class Frame:
 		for child in self.children:
 			child._resolve_position()
 
-	def add_action(self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()) -> Self:
+	def add_action(
+			self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()
+	) -> Self:
 		self._actions[trigger].append((action, action_args))
 		return self
 
@@ -672,6 +681,12 @@ class Frame:
 				action[0](*action[1])
 
 	def update(self, delta: float):
+		# Check if ui needs to re-resolve only on the base element
+		if self._is_base:
+			self._propagate_dirtiness()
+			if self.dirty:
+				self.resolve_layout(self.current_resolve_size)
+
 		for child in self.children:
 			child.update(delta)
 
