@@ -1,23 +1,20 @@
 import pygame
 
 import pygbase
+from pygbase.ui import *
 
 
 class Tweens(pygbase.GameState, name="tweens"):
 	def __init__(self):
 		super().__init__()
 
-		self.ui = pygbase.UIManager()
-
 		from menu import Menu
-		self.back_button = self.ui.add_element(
-			pygbase.Button(
-				(pygbase.UIValue(0.02, False), pygbase.UIValue(0.02, False)),
-				(pygbase.UIValue(0.2, False), pygbase.UIValue(0)),
-				"image", "button", self.ui.base_container,
-				self.set_next_state_type, (Menu, ()), "Back"
-			)
-		)
+		with Button(self.set_next_state_type, callback_args=(Menu, ()), pos=(10, 10), size=(150, Fit())) as ui:
+			with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
+				Text("Back", 20, "white")
+
+		ui.resolve_layout(pygbase.Common.get("screen_size"))
+		self.ui = ui
 
 		self.tween_time = 3
 		self.tween_values = (0, 0.2, 0.7, 1)

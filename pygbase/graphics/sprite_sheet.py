@@ -2,7 +2,6 @@ import pygame
 
 from .image import Image
 from ..camera import Camera
-from ..ui.text import Text
 
 
 class SpriteSheet:
@@ -52,11 +51,11 @@ class SpriteSheet:
 
 	def draw_sheet(self, display: pygame.Surface, camera: Camera):
 		display.blit(self.image, -camera.pos)
-
-		# TODO: Fix
-		text = Text((0, 0), "arial", 100, "white", use_sys=True)
-		for row in range(self.n_rows):
-			for col in range(self.n_cols):
-				text.pos = (col * self.tile_width - camera.pos.x, row * self.tile_height - camera.pos.y)
-				text.reposition()
-				text.draw(display)
+		#
+	# # TODO: Fix
+	# text = RawText((0, 0), "arial", 100, "white", use_sys=True)
+	# for row in range(self.n_rows):
+	# 	for col in range(self.n_cols):
+	# 		text.pos = (col * self.tile_width - camera.pos.x, row * self.tile_height - camera.pos.y)
+	# 		text.reposition()
+	# 		text.draw(display)

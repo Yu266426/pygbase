@@ -27,9 +27,11 @@ class App:
 
 		# TODO: add flag handling and vsync
 		# ^ This is dependent partly on pygame though :/
-		self.window = pygame.Window(title, Common.get_value("screen_size"))
+		self.window = pygame.Window(title, Common.get("screen_size"))
 		self.screen: pygame.Surface = self.window.get_surface()
 		self.clock: pygame.time.Clock = pygame.time.Clock()
+
+		Common.set("screen", self.screen)
 
 		load_complete_runners = (Particle.cache_particle_images,) + run_on_load_complete
 		self.game_state: Union[Loading, GameState] = Loading(after_load_state, load_complete_runners)

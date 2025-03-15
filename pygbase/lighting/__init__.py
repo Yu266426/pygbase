@@ -7,9 +7,9 @@ from .shadow import Shadow
 
 
 def init_lighting_system(max_light_radius: int, max_shadow_radius: int, interval: int, shadow_ratio: float):
-	pygbase.Common.set_value("max_light_radius", max_light_radius)
-	pygbase.Common.set_value("lighting_radius_interval", interval)
-	pygbase.Common.set_value("shadow_ratio", shadow_ratio)
+	pygbase.Common.set("max_light_radius", max_light_radius)
+	pygbase.Common.set("lighting_radius_interval", interval)
+	pygbase.Common.set("shadow_ratio", shadow_ratio)
 
 	generate_lights(max_light_radius, interval)
 	generate_shadows(max_shadow_radius, interval, shadow_ratio)

@@ -15,7 +15,7 @@ class Input:
 	# Mouse
 	_mouse_down: list[bool] = [False, False, False]
 	_mouse_up: list[bool] = [False, False, False]
-	_mouse_pressed: tuple[bool, bool, bool] = (False, False, False)
+	_mouse_pressed: list[bool, bool, bool] = [False, False, False]
 
 	_scroll: pygame.Vector2 = pygame.Vector2()
 
@@ -32,7 +32,7 @@ class Input:
 		"""(Called by the engine)"""
 		cls._mouse_down[:] = [False, False, False]
 		cls._mouse_up[:] = [False, False, False]
-		cls._mouse_pressed = pygame.mouse.get_pressed(3)
+		cls._mouse_pressed[:] = list(pygame.mouse.get_pressed(3))
 
 		cls._scroll.update(0)
 
@@ -75,7 +75,7 @@ class Input:
 
 	@staticmethod
 	def _get_input_type_from_input(
-		user_input: MouseInput | ControllerInput | int | str,
+			user_input: MouseInput | ControllerInput | int | str,
 	) -> InputTypes:
 		# Check for mouse
 		if isinstance(user_input, MouseInput):
@@ -114,6 +114,8 @@ class Input:
 			return 1
 		elif key == MouseInput.RIGHT_CLICK:
 			return 2
+		else:
+			raise ValueError(f"Unknown key: `{key}`")
 
 	@classmethod
 	def _keybind_is_joystick(cls, keybind: str):
@@ -132,51 +134,82 @@ class Input:
 			raise ValueError(f"Keybind: <{keybind}> not defined")
 
 	# Getters
-	# TODO: Make just_pressed, just_released, get_axis, get_vector2
+	# TODO: Add just_pressed, just_released, get_axis, get_vector2
 	@classmethod
-	def pressed(cls, keybind: str) -> float:
+	def pressed(cls, keybind: str, consume: bool = False) -> float:
 		cls._check_keybind_exists(keybind)
 
 		user_input, input_type = cls._keybinds[keybind]
 
 		if input_type == InputTypes.KEY:
-			return cls.key_pressed(user_input)
+			return float(cls.key_pressed(user_input, consume))
 		elif input_type == InputTypes.MOUSE:
-			return cls.mouse_pressed(user_input)
+			return float(cls.mouse_pressed(user_input, consume))
 		else:
-			pass
+			# TODO: Handle controller inputs
+			raise NotImplementedError("Controllers are not supported yet")
 
 	@classmethod
-	def key_pressed(cls, key_id: int) -> bool:
+	def key_pressed(cls, key_id: int, consume: bool = False) -> bool:
 		"""Returns if a key is held down"""
-		return cls._keys_pressed[key_id]
+		val = cls._keys_pressed[key_id]
+
+		if consume:
+			cls._keys_pressed[key_id] = False
+
+		return val
 
 	@classmethod
-	def key_just_pressed(cls, key_id: int) -> bool:
-		return cls._keys_down[key_id]
+	def key_just_pressed(cls, key_id: int, consume: bool = False) -> bool:
+		val = cls._keys_down[key_id]
+
+		if consume:
+			cls._keys_down[key_id] = False
+
+		return val
 
 	@classmethod
-	def key_just_released(cls, key_id: int) -> bool:
-		return cls._keys_up[key_id]
+	def key_just_released(cls, key_id: int, consume: bool = False) -> bool:
+		val = cls._keys_up[key_id]
+
+		if consume:
+			cls._keys_up[key_id] = False
+
+		return val
 
 	@classmethod
-	def mouse_pressed(cls, mouse_button: int) -> bool:
+	def mouse_pressed(cls, mouse_button: int, consume: bool = False) -> bool:
 		if 0 <= mouse_button <= 2:
-			return cls._mouse_pressed[mouse_button]
+			val = cls._mouse_pressed[mouse_button]
+
+			if consume:
+				cls._mouse_pressed[mouse_button] = False
+
+			return val
 		else:
 			raise ValueError("Mouse button must be between 0-2")
 
 	@classmethod
-	def mouse_just_pressed(cls, mouse_button: int) -> bool:
+	def mouse_just_pressed(cls, mouse_button: int, consume: bool = False) -> bool:
 		if 0 <= mouse_button <= 2:
-			return cls._mouse_down[mouse_button]
+			val = cls._mouse_down[mouse_button]
+
+			if consume:
+				cls._mouse_down[mouse_button] = False
+
+			return val
 		else:
 			raise ValueError("Mouse button must be between 0-2")
 
 	@classmethod
-	def mouse_just_released(cls, mouse_button: int) -> bool:
+	def mouse_just_released(cls, mouse_button: int, consume: bool = False) -> bool:
 		if 0 <= mouse_button <= 2:
-			return cls._mouse_up[mouse_button]
+			val = cls._mouse_up[mouse_button]
+
+			if consume:
+				cls._mouse_up[mouse_button] = False
+
+			return val
 		else:
 			raise ValueError("Mouse button must be between 0-2")
 

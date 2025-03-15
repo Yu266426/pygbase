@@ -11,7 +11,7 @@ class Shadow:
 		self.pos = pygame.Vector2(pos)
 		self.size = size
 
-		self.radius_interval = Common.get_value("lighting_radius_interval")
+		self.radius_interval = Common.get("lighting_radius_interval")
 
 		self.surf = self.cached_shadows[int(size / self.radius_interval)].copy()
 		self.surf_rect = self.surf.get_rect(center=self.pos)

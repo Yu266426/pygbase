@@ -18,7 +18,7 @@ class Image:
 
 		self.rotatable = rotatable
 
-		self.rotate_angle = Common.get_value("rotate_resolution")
+		self.rotate_angle = Common.get("rotate_resolution")
 		self.angled_images = []
 
 		if rotatable:

@@ -31,7 +31,7 @@ class FadeTransition(Transition, name="fade_transition"):
 		self.fade_in = True
 
 		self.fade_surface = pygame.Surface(
-			(Common.get_value("screen_width"), Common.get_value("screen_height")),
+			(Common.get("screen_width"), Common.get("screen_height")),
 			flags=pygame.SRCALPHA
 		)
 

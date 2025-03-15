@@ -80,8 +80,8 @@ class CameraController:
 		return self._camera
 
 	def _handle_bounds(self):
-		screen_width = Common.get_value("screen_width")
-		screen_height = Common.get_value("screen_height")
+		screen_width = Common.get("screen_width")
+		screen_height = Common.get("screen_height")
 		if self.keep_in is not None:
 			if self.keep_in[2] - self.keep_in[0] < screen_width:
 				if self.keep_in[0] < self._camera.pos.x:

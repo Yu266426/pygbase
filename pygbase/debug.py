@@ -14,7 +14,7 @@ class Debug:
 
 	@classmethod
 	def init(cls) -> None:
-		cls._debug_surface = pygame.Surface(Common.get_value("screen_size"), flags=pygame.SRCALPHA)
+		cls._debug_surface = pygame.Surface(Common.get("screen_size"), flags=pygame.SRCALPHA)
 		cls._timing_font: pygame.font.SysFont = pygame.font.SysFont("arial", 30)
 
 	@classmethod
@@ -82,5 +82,5 @@ class Debug:
 			surface.blit(cls._debug_surface, (0, 0))
 
 		if cls._show_timing_debug:
-			rect = cls._timing_surf.get_rect(topright=(Common.get_value("screen_width") - 20, 20))
+			rect = cls._timing_surf.get_rect(topright=(Common.get("screen_width") - 20, 20))
 			surface.blit(cls._timing_surf, rect)
