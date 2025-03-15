@@ -29,47 +29,14 @@ class Menu(pygbase.GameState, name="menu"):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
 						Text("Tweens", 40, "white")
 
-				TextSelectionMenu(["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"], size=(Grow(), Fit()))
+				TextSelector(["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"], size=(Grow(), Fit()))
+				self.selector = TextSelector(["1", "2", "3", "4", "5", "6", "7", "8", "9"], size=(Grow(), Fit()))
+
+				self.progress_bar = ProgressBar("green", size=(Grow(), 60), bg_color=(0, 0, 0, 100), padding=Padding.all(5))
 
 		self.ui = ui
 		self.button_frame = button_frame
 
-		# self.button_frame.add_element(
-		# 	pygbase.TextSelectionMenu(
-		# 		(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
-		# 		(pygbase.UIValue(1, False), pygbase.UIValue(0.1, False)),
-		# 		"image",
-		# 		["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "OVER NINE THOUSAND"],
-		# 		self.button_frame
-		# 	),
-		# 	align_with_previous=(True, False),
-		# 	add_on_to_previous=(False, True)
-		# )
-		#
-		# self.text_selection_menu = self.button_frame.add_element(
-		# 	pygbase.TextSelectionMenu(
-		# 		(pygbase.UIValue(0.1, False), pygbase.UIValue(0.01, False)),
-		# 		(pygbase.UIValue(0.8, False), pygbase.UIValue(0.1, False)),
-		# 		"image",
-		# 		["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-		# 		self.button_frame
-		# 	),
-		# 	align_with_previous=(False, False),
-		# 	add_on_to_previous=(False, True)
-		# )
-		#
-		# self.progress_bar = self.button_frame.add_element(
-		# 	pygbase.ProgressBar(
-		# 		(pygbase.UIValue(0, False), pygbase.UIValue(0.01, False)),
-		# 		(pygbase.UIValue(1, False), pygbase.UIValue(0.1, False)),
-		# 		int(self.text_selection_menu.current_option) / 9,
-		# 		pygbase.UIValue(5),
-		# 		"green",
-		# 		(0, 0, 0, 100),
-		# 		self.button_frame,
-		# 	), add_on_to_previous=(False, True)
-		# )
-		#
 		# text_1 = self.ui.add_element(
 		# 	pygbase.TextElement((pygbase.UIValue(0.7, False), pygbase.UIValue(0.1, False)), "arial", pygbase.UIValue(0.1, False), "white", "Test1", self.ui.base_container)
 		# )
@@ -80,16 +47,13 @@ class Menu(pygbase.GameState, name="menu"):
 		# 	add_on_to_previous=(False, True)
 		# )
 
-		# print(text_1.pos)
-		# print(text_2.pos)
-
 		self.left_image: pygbase.Image = pygbase.Resources.get_resource("image", "left")
 
 	def update(self, delta: float):
 		self.ui.update(delta)
 
-		# self.progress_bar.set_fill_percent(int(self.text_selection_menu.current_option) / 9)
-		#
+		self.progress_bar.set_fill(int(self.selector.text) / 9)
+
 		# if pygbase.Input.key_just_pressed(pygame.K_SPACE):
 		# 	self.button_frame.ui_pos = (
 		# 		self.button_frame.ui_pos[0].add(pygbase.UIValue(0.05, False), self.ui.base_container.size.x),
@@ -111,10 +75,11 @@ class Menu(pygbase.GameState, name="menu"):
 	def draw(self, surface: pygame.Surface):
 		surface.fill((20, 20, 20))
 
-		self.ui.draw(surface)
 		# sys.exit()
 
 		self.left_image.draw(surface, (400, 400), 20, flip=(False, False))
 		self.left_image.draw(surface, (400, 500), 20, flip=(True, False))
 		self.left_image.draw(surface, (400, 600), 20, flip=(False, True))
 		self.left_image.draw(surface, (400, 700), 20, flip=(True, True))
+
+		self.ui.draw(surface)

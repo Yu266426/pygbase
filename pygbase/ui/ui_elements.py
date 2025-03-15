@@ -185,7 +185,7 @@ class Button(Frame):
 			surface.fill((20, 20, 20), special_flags=pygame.BLEND_ADD)
 
 
-class TextSelectionMenu(Frame):
+class TextSelector(Frame):
 	ID = "text_selection_menu"
 
 	def __init__(
@@ -237,6 +237,8 @@ class TextSelectionMenu(Frame):
 class ProgressBar(Frame):
 	def __init__(
 			self,
+			color: pygame.typing.ColorLike,
+			starting_fill: float = 0.0,
 			pos: tuple[float, float] = (0, 0),
 			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
 			layout: Layout = Layout.LEFT_TO_RIGHT,
@@ -248,8 +250,20 @@ class ProgressBar(Frame):
 			can_interact: bool = False,
 			blocks_mouse: bool = False,
 	):
-		super().__init__(
-			pos,
-			size,
-			layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse
+		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
+
+		self._fill_percent = starting_fill
+		self._color = color
+
+	def set_fill(self, percent: float):
+		self._fill_percent = percent
+
+	def _draw_self(self, surface: pygame.Surface):
+		fill_rect = pygame.Rect(
+			self._draw_pos.x + self.padding.left,
+			self._draw_pos.y + self.padding.top,
+			(self.size.x - self.padding.left - self.padding.right) * self._fill_percent,
+			self.size.y - self.padding.top - self.padding.bottom,
 		)
+
+		pygame.draw.rect(surface, self._color, fill_rect)
