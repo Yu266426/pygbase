@@ -36,14 +36,14 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 			pygbase.CircleSpawner(
 				self.mouse_pos, 0.01, 30, 50, False, "test",
 				self.particle_manager
-			).link_pos(self.mouse_pos)
+			)
 		)
 
-		self.attractor_strength = 40000
 		self.mouse_attractor = self.particle_manager.add_affector(
 			pygbase.AffectorTypes.ATTRACTOR,
-			pygbase.ParticleAttractor(self.mouse_pos, 200, self.attractor_strength).link_pos(self.mouse_pos)
+			pygbase.ParticleAttractor(self.mouse_pos, 200, 40000)
 		)
+		self.mouse_attractor.active = False
 
 	def update(self, delta: float):
 		self.ui.update(delta)
@@ -56,9 +56,9 @@ class ParticlePlayground(pygbase.GameState, name="particles"):
 			self.mouse_spawner.active = False
 
 		if pygbase.Input.mouse_pressed(2):
-			self.mouse_attractor.strength = self.attractor_strength
+			self.mouse_attractor.active = True
 		else:
-			self.mouse_attractor.strength = 0
+			self.mouse_attractor.active = False
 
 		self.particle_manager.update(delta)
 

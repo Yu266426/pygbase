@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import pygame
 
 if TYPE_CHECKING:
-	from particles.particle import Particle
+	from .particle import Particle
 
 
 class AffectorTypes(enum.Enum):
@@ -13,25 +13,35 @@ class AffectorTypes(enum.Enum):
 
 class ParticleAttractor:
 	def __init__(self, pos: pygame.typing.Point, radius: float, strength: float):
-		self.pos = pygame.Vector2(pos)
+		self._linked_pos: bool
+		if isinstance(pos, pygame.Vector2):
+			self._linked_pos = True
+			self.pos = pos
+		else:
+			self._linked_pos = False
+			self.pos = pygame.Vector2(pos)
+
 		self.radius = radius
 		self.strength = strength
 
-	def update_pos(self, new_pos):
-		self.pos.update(new_pos)
+		self.active = True
 
-	def link_pos(self, pos: pygame.Vector2) -> "ParticleAttractor":
-		self.pos = pos
-		return self
+	def update_pos(self, pos):
+		if self._linked_pos:
+			raise RuntimeError("Cannot modify linked position")
 
-	def get_towards(self, pos: pygame.Vector2) -> tuple[pygame.Vector2, float]:
+		self.pos.update(pos)
+
+	def _get_towards(self, pos: pygame.Vector2) -> tuple[pygame.Vector2, float]:
 		direction_vector = self.pos - pos
 		return direction_vector.normalize(), direction_vector.length()
 
 	def affect_particles(self, delta: float, particles: list["Particle"]):
+		"""Will run when active"""
+
 		for particle in particles:
 			if particle.effector:
-				direction_vector, distance = self.get_towards(particle.pos)
+				direction_vector, distance = self._get_towards(particle.pos)
 
 				if distance > self.radius:
 					continue

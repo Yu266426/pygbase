@@ -14,9 +14,13 @@ if TYPE_CHECKING:
 
 class ParticleSpawner:
 	def __init__(self, pos: pygame.typing.Point, cooldown: float, amount: int, start_active: bool, particle_type: str, manager: "ParticleManager"):
-		self.active = start_active
-
-		self.pos = pygame.Vector2(pos)
+		self._linked_pos: bool
+		if isinstance(pos, pygame.Vector2):
+			self._linked_pos = True
+			self.pos = pos
+		else:
+			self._linked_pos = False
+			self.pos = pygame.Vector2(pos)
 
 		self.timer = Timer(cooldown, True, True)
 		self.amount = amount
@@ -26,24 +30,26 @@ class ParticleSpawner:
 
 		self.particle_settings = Common.get_particle_setting(particle_type)
 
-	def link_pos(self, pos: pygame.Vector2) -> "ParticleSpawner":
-		self.pos = pos
-		return self
+		self.active = start_active
 
-	def update_pos(self, new_pos):
-		self.pos.update(new_pos)
+	def update_pos(self, pos):
+		if self._linked_pos:
+			raise RuntimeError("Cannot modify linked position")
+
+		self.pos.update(pos)
 
 	@abstractmethod
 	def spawn(self):
 		pass
 
 	def update(self, delta: float):
-		if self.active:
-			self.timer.tick(delta)
+		"""Will run when active"""
 
-			if self.timer.done():
-				for _ in range(self.amount):
-					self.spawn()
+		self.timer.tick(delta)
+
+		if self.timer.done():
+			for _ in range(self.amount):
+				self.spawn()
 
 
 class PointSpawner(ParticleSpawner):

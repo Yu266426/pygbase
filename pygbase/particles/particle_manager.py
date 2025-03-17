@@ -98,17 +98,19 @@ class ParticleManager:
 
 	def update(self, delta: float):
 		for spawner in self.spawners:
-			spawner.update(delta)
+			if spawner.active:
+				spawner.update(delta)
 
 		for affector_type, affectors in self.affectors.items():
 			for affector in affectors:
-				affector.affect_particles(
-					delta,
-					self.get_particles(
-						affector.pos - pygame.Vector2(affector.radius),
-						pygame.Vector2(affector.radius) * 2,
-					),
-				)
+				if affector.active:
+					affector.affect_particles(
+						delta,
+						self.get_particles(
+							affector.pos - pygame.Vector2(affector.radius),
+							pygame.Vector2(affector.radius) * 2,
+						),
+					)
 
 		particles_to_move: list[Particle] = []
 		chunks_to_delete: list[tuple[int, int]] = []
