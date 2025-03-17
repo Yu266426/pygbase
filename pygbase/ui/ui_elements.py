@@ -14,7 +14,7 @@ class Text(Frame):
 			self,
 			text: str,
 			font_size: int,
-			color: str,
+			color: pygame.typing.ColorLike,
 			pos: tuple[float, float] = (0, 0),
 			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
 			layout: Layout = Layout.LEFT_TO_RIGHT,
@@ -191,6 +191,8 @@ class TextSelector(Frame):
 	def __init__(
 			self,
 			options: list[str],
+			left_button_image: str,
+			right_button_image: str,
 			pos: tuple[float, float] = (0, 0),
 			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
 			layout: Layout = Layout.LEFT_TO_RIGHT,
@@ -209,13 +211,13 @@ class TextSelector(Frame):
 
 		with self:
 			with Button(self._left_callback, size=(Fit(), Grow()), bg_color="blue"):
-				Image("image/left", size=(Fit(), Grow()))
+				Image(left_button_image, size=(Fit(), Grow()))
 
 			with Frame(size=(Grow(), Grow()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
 				self._text_element = Text(self.text, 30, "white")
 
 			with Button(self._right_callback, size=(Fit(), Grow()), bg_color="yellow"):
-				Image("image/right", size=(Fit(), Grow()))
+				Image(right_button_image, size=(Fit(), Grow()))
 
 	@property
 	def text(self) -> str:

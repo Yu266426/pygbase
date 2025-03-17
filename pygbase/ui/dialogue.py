@@ -99,7 +99,9 @@ class DialogueOption:
 
 
 class DialogueManager:
-	def __init__(self, word_gap: float, char_timing: float):
+	def __init__(self, word_gap: float, char_timing: float, button_image: str):
+		self.button_path = button_image
+
 		self.current_node = ""
 		self.nodes: dict[str, DialogueNode] = {}
 		self.options: dict[str, list[DialogueOption]] = {}
@@ -138,19 +140,19 @@ class DialogueManager:
 	def _generate_options(self):
 		options = self.get_options()
 		if len(options) == 0:
-			with Button(
-					self.option_callback,
-					size=(Grow(), Fit()),
-					callback_args=(DialogueOption("Dismiss"),),
-			):
-				with Image(
-						image="image/button",
-						size=(Grow(), Fit()),
-						x_align=XAlign.CENTER,
-						y_align=YAlign.CENTER,
-				):
-					Text("dismiss", 30, "white")
-
+			# with Button(
+			# 		self.option_callback,
+			# 		size=(Grow(), Fit()),
+			# 		callback_args=(DialogueOption("Dismiss"),),
+			# ):
+			# 	with Image(
+			# 			image=self.button_path,
+			# 			size=(Grow(), Fit()),
+			# 			x_align=XAlign.CENTER,
+			# 			y_align=YAlign.CENTER,
+			# 	):
+			# 		Text("dismiss", 30, "white")
+			pass
 		else:
 			for option in self.get_options():
 				with Button(
@@ -159,7 +161,7 @@ class DialogueManager:
 						size=(Grow(), Fit()),
 				):
 					with Image(
-							image="image/button",
+							image=self.button_path,
 							size=(Grow(), Fit()),
 							x_align=XAlign.CENTER,
 							y_align=YAlign.CENTER,

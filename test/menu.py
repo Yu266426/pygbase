@@ -29,8 +29,8 @@ class Menu(pygbase.GameState, name="menu"):
 					with Image("image/button", size=(Grow(), Fit()), x_align=XAlign.CENTER, y_align=YAlign.CENTER):
 						Text("Tweens", 40, "white")
 
-				TextSelector(["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"], size=(Grow(), Fit()))
-				self.selector = TextSelector(["1", "2", "3", "4", "5", "6", "7", "8", "9"], size=(Grow(), Fit()))
+				TextSelector(["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"], "image/left", "image/right", size=(Grow(), Fit()))
+				self.selector = TextSelector(["1", "2", "3", "4", "5", "6", "7", "8", "9"], "image/left", "image/right", size=(Grow(), Fit()))
 
 				self.progress_bar = ProgressBar("green", size=(Grow(), 60), bg_color=(0, 0, 0, 100), padding=Padding.all(5))
 

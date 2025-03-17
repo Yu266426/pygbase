@@ -714,6 +714,14 @@ class Frame:
 
 				self._time = 0
 
+			# Consume mouse for now:
+			# TODO: Improve by hooking these into actual events
+			if self.blocks_mouse:
+				for i in range(1, 3):
+					Input.mouse_just_pressed(i, consume=self.blocks_mouse)
+					Input.mouse_pressed(i, consume=self.blocks_mouse)
+					Input.mouse_just_released(i, consume=self.blocks_mouse)
+
 			scroll_y = Input.mouse_scroll_y()
 			if scroll_y != 0:
 				self._perform_action(UIActionTriggers.ON_SCROLL_Y)
