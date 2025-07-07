@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 
-use pyo3::{
-    prelude::*,
-    types::{PyList, PyTuple},
-};
+use pyo3::{prelude::*, types::PyList};
 use rand::{rngs::SmallRng, SeedableRng};
 
 use crate::{
@@ -15,9 +12,9 @@ use crate::{
 #[pyclass]
 pub struct ParticleManager {
     particles: Vec<Particle>,
-    pub rng: SmallRng,
+    rng: SmallRng,
     spawners: HashMap<usize, Box<dyn ParticleSpawner>>,
-    spawner_index: usize,
+    next_spawner_id: usize,
 }
 
 #[pymethods]
@@ -26,23 +23,26 @@ impl ParticleManager {
     pub fn new() -> Self {
         Self {
             particles: Vec::new(),
-            rng: SmallRng::from_entropy(),
+            rng: SmallRng::from_rng(&mut rand::rng()),
             spawners: HashMap::new(),
-            spawner_index: 0,
+            next_spawner_id: 0,
         }
     }
 
-    pub fn activate_spawner(&mut self, index: usize) {
-        if let Some(spawner) = self.spawners.get_mut(&index) {
-            spawner.as_mut().activate();
-        }
-        // TODO: add error if not found here
+    pub fn activate_spawner(&mut self, index: usize) -> PyResult<()> {
+        self.spawners
+            .get_mut(&index)
+            .map(|s| s.activate())
+            .ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>(index.to_string()))?;
+        Ok(())
     }
 
-    pub fn deactivate_spawner(&mut self, index: usize) {
-        if let Some(spawner) = self.spawners.get_mut(&index) {
-            spawner.as_mut().deactivate();
-        }
+    pub fn deactivate_spawner(&mut self, index: usize) -> PyResult<()> {
+        self.spawners
+            .get_mut(&index)
+            .map(|s| s.deactivate())
+            .ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>(index.to_string()))?;
+        Ok(())
     }
 
     #[pyo3(signature=(pos, cooldown, amount, start_active, radial_vel_range=(0.0, 0.0)))]
@@ -82,66 +82,62 @@ impl ParticleManager {
     }
 
     pub fn update(&mut self, delta: f64) {
-        let mut particles_to_spawn = Vec::new();
-        for (_index, spawner) in &mut self.spawners {
-            particles_to_spawn.extend(spawner.as_mut().update(delta, &mut self.rng));
+        // Let every spawner emit new particles.
+        let mut new_particles = Vec::new();
+        for spawner in self.spawners.values_mut() {
+            new_particles.extend(spawner.update(delta, &mut self.rng));
+        }
+        for p in new_particles {
+            self.add_particle_from_data(p);
         }
 
-        for particle in particles_to_spawn {
-            self.add_particle_from_struct(particle);
-        }
-
+        // Update existing particles.
         for particle in &mut self.particles {
             particle.update(delta);
         }
 
-        self.particles.retain(|e| e.size > 0.2);
+        // Drop particles that have effectively disappeared.
+        self.particles.retain(|p| p.size > 0.2);
     }
 
-    pub fn get_particle_positions<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyList>> {
-        let positions: Vec<Bound<PyTuple>> = self
+    pub fn particle_positions<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyList>> {
+        let data: Vec<(f64, f64)> = self.particles.iter().map(|p| (p.pos.x, p.pos.y)).collect();
+        PyList::new(py, data)
+    }
+
+    pub fn particle_sizes<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyList>> {
+        let data: Vec<f64> = self.particles.iter().map(|p| p.size).collect();
+        PyList::new(py, data)
+    }
+
+    pub fn particle_colors<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyList>> {
+        let data: Vec<(u8, u8, u8)> = self
             .particles
             .iter()
-            .map(|e| PyTuple::new_bound(py, vec![e.pos.x, e.pos.y]))
+            .map(|p| (p.color.0, p.color.1, p.color.2))
             .collect();
-
-        Ok(PyList::new_bound(py, positions))
-    }
-
-    pub fn get_particle_sizes<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyList>> {
-        let sizes: Vec<f64> = self.particles.iter().map(|e| e.size).collect();
-
-        Ok(PyList::new_bound(py, sizes))
-    }
-
-    pub fn get_particle_colors<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyList>> {
-        let colors: Vec<Bound<PyTuple>> = self
-            .particles
-            .iter()
-            .map(|e| PyTuple::new_bound(py, vec![e.color.0, e.color.1, e.color.2]))
-            .collect();
-
-        Ok(PyList::new_bound(py, colors))
+        PyList::new(py, data)
     }
 }
 
 impl ParticleManager {
-    fn add_particle_from_struct(&mut self, particle: ParticleSpawnData) {
+    fn add_particle_from_data(&mut self, data: ParticleSpawnData) {
         self.add_particle(
-            particle.pos,
-            particle.vel,
-            particle.vel_decay,
-            particle.gravity,
-            particle.effector,
-            particle.size,
-            particle.size_decay,
-            particle.color,
+            data.pos,
+            data.vel,
+            data.vel_decay,
+            data.gravity,
+            data.effector,
+            data.size,
+            data.size_decay,
+            data.color,
         );
     }
 
     fn add_spawner(&mut self, spawner: Box<dyn ParticleSpawner>) -> usize {
-        self.spawners.insert(self.spawner_index, spawner);
-        self.spawner_index += 1;
-        self.spawner_index - 1
+        let id = self.next_spawner_id;
+        self.spawners.insert(id, spawner);
+        self.next_spawner_id += 1;
+        id
     }
 }

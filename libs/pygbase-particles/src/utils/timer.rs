@@ -6,6 +6,7 @@ pub struct Timer {
     is_just_done: bool,
 }
 
+#[allow(dead_code)]
 impl Timer {
     pub fn new(cooldown: f64, start_done: bool, repeating: bool) -> Self {
         Self {

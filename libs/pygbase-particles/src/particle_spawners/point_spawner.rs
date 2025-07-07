@@ -37,20 +37,20 @@ impl ParticleSpawner for PointSpawner {
         let speed = if (self.radial_vel_range.0 - self.radial_vel_range.1).abs() < f64::EPSILON {
             0.0
         } else {
-            rng.gen_range(self.radial_vel_range.0..self.radial_vel_range.1)
+            rng.random_range(self.radial_vel_range.0..self.radial_vel_range.1)
         };
-        let angle = rng.gen_range(0.0..(2.0 * PI));
+        let angle = rng.random_range(0.0..(2.0 * PI));
 
         let vel = (angle.cos() * speed, angle.sin() * speed);
 
-        let vel_decay = rng.gen_range(1.2..2.3);
-        let size = rng.gen_range(4.0..6.0);
-        let size_decay = rng.gen_range(2.0..4.0);
-        
+        let vel_decay = rng.random_range(1.2..2.3);
+        let size = rng.random_range(4.0..6.0);
+        let size_decay = rng.random_range(2.0..4.0);
+
         let color = (
-            rng.gen_range(0..255),
-            rng.gen_range(0..255),
-            rng.gen_range(0..255),
+            rng.random_range(0..255),
+            rng.random_range(0..255),
+            rng.random_range(0..255),
         );
 
         ParticleSpawnData {
