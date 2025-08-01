@@ -1,11 +1,7 @@
-[build-system]
-requires = ["setuptools>=75.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "pygbase-engine"
 version = "0.0.1"
-description = "A simple engine for pygame"
+description = "A simple engine based on pygame-ce"
 readme = "README.md"
 authors = [{ name = "Yu266426", email = "yu266426@gmail.com" }]
 license = { file = "LICENSE" }
@@ -15,10 +11,17 @@ classifiers = [
 ]
 keywords = ["pygame", "pygame-ce", "game", "game engine"]
 dependencies = [
-    "pygame-ce==2.5.5",
-    "setuptools==80.9.0",
+    "pygame-ce>=2.5.5"
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 
 [project.urls]
 Homepage = "https://github.com/Yu266426/pygbase"
+
+[build-system]
+requires = ["uv_build>=0.8.4"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "pygbase"
+module-root = ""
