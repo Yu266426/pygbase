@@ -64,6 +64,8 @@ class UIAlignment(enum.Enum):
 		elif alignment == cls.BOTTOM_RIGHT:
 			return rect.bottomright
 
+		raise RuntimeError(f"Unknown alignment: {alignment}")
+
 
 class TextOverflowBehaviour(enum.Enum):
 	WRAP = enum.auto()

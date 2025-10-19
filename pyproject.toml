@@ -13,7 +13,7 @@ keywords = ["pygame", "pygame-ce", "game", "game engine"]
 dependencies = [
     "pygame-ce>=2.5.5"
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 
 [project.urls]
 Homepage = "https://github.com/Yu266426/pygbase"

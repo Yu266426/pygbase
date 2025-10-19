@@ -9,9 +9,9 @@ from menu import Menu
 
 def toggle_debug(event: pygame.Event):
 	if event.key == pygame.K_F3:
-		pygbase.Debug.toggle()
-	if event.key == pygame.K_F4:
 		pygbase.Debug.toggle_fps()
+	if event.key == pygame.K_F4:
+		pygbase.Debug.toggle()
 
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 	pygbase.init((800, 800))
 	# pygbase.Debug.show()
 	pygbase.Debug.show_fps()
-	#
+
 	pygbase.add_image_resource("image", 1, str(CURRENT_DIR / "images"))
 
 	pygbase.add_particle_setting(

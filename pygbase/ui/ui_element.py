@@ -738,11 +738,11 @@ class Frame:
 				self._time = 0
 
 	def _draw_self(self, surface: pygame.Surface):
-		"""Drawn on parent"""
+		"""Drawn on parent – used to draw self"""
 		pass
 
 	def _draw_overlay(self, surface: pygame.Surface):
-		"""Drawn on self"""
+		"""Drawn on self – used to draw on top of self (and children)"""
 		pass
 
 	def draw(self, surface: pygame.Surface):
