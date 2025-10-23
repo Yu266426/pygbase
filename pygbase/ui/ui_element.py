@@ -23,17 +23,17 @@ class Frame:
 	element_stack: deque[Self] = deque()
 
 	def __init__(
-			self,
-			pos: tuple[float, float] = (0, 0),
-			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
-			layout: Layout = Layout.LEFT_TO_RIGHT,
-			padding: Padding = Padding(),
-			gap: float = 0,
-			x_align: XAlign = XAlign.LEFT,
-			y_align: YAlign = YAlign.TOP,
-			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
-			can_interact: bool = False,
-			blocks_mouse: bool = False,
+		self,
+		pos: tuple[float, float] = (0, 0),
+		size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+		layout: Layout = Layout.LEFT_TO_RIGHT,
+		padding: Padding = Padding(),
+		gap: float = 0,
+		x_align: XAlign = XAlign.LEFT,
+		y_align: YAlign = YAlign.TOP,
+		bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+		can_interact: bool = False,
+		blocks_mouse: bool = False,
 	):
 		self._pos = pygame.Vector2(pos)
 		self._resolved_pos = pygame.Vector2(pos)
@@ -169,7 +169,7 @@ class Frame:
 		return self
 
 	def __exit__(
-			self, exc_type: Type | None, exc_value: Any | None, traceback: TracebackType | None
+		self, exc_type: Type | None, exc_value: Any | None, traceback: TracebackType | None
 	) -> bool:
 		if exc_type is not None:
 			logging.error(f"Exception raised {exc_value}")
@@ -247,9 +247,9 @@ class Frame:
 		# )
 
 		self.dirty |= (
-				(self._prev_resolved_pos - self._resolved_pos).length_squared() > EPSILON
-				or (self._prev_resolved_size - self._resolved_size).length_squared() > EPSILON
-				or (self._prev_resolved_min_size - self._resolved_min_size).length_squared() > EPSILON
+			(self._prev_resolved_pos - self._resolved_pos).length_squared() > EPSILON
+			or (self._prev_resolved_size - self._resolved_size).length_squared() > EPSILON
+			or (self._prev_resolved_min_size - self._resolved_min_size).length_squared() > EPSILON
 		)
 
 		return self.dirty
@@ -604,7 +604,7 @@ class Frame:
 							shrink_children.remove(child)
 
 						remaining_height -= (
-								child.height - prev_height
+							child.height - prev_height
 						)  # remaining_height is negative
 
 		for child in self.children:
@@ -670,7 +670,7 @@ class Frame:
 			child._resolve_position()
 
 	def add_action(
-			self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()
+		self, trigger: UIActionTriggers, action: Callable[..., None], action_args: tuple = ()
 	) -> Self:
 		self._actions[trigger].append((action, action_args))
 		return self

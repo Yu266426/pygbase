@@ -11,22 +11,24 @@ class Text(Frame):
 	ID: str = "text"
 
 	def __init__(
-			self,
-			text: str,
-			font_size: int,
-			color: pygame.typing.ColorLike,
-			pos: tuple[float, float] = (0, 0),
-			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
-			layout: Layout = Layout.LEFT_TO_RIGHT,
-			padding: Padding = Padding(),
-			gap: float = 0,
-			x_align: XAlign = XAlign.LEFT,
-			y_align: YAlign = YAlign.TOP,
-			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
-			can_interact: bool = False,
-			blocks_mouse: bool = False,
+		self,
+		text: str,
+		font_size: int,
+		color: pygame.typing.ColorLike,
+		pos: tuple[float, float] = (0, 0),
+		size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+		layout: Layout = Layout.LEFT_TO_RIGHT,
+		padding: Padding = Padding(),
+		gap: float = 0,
+		x_align: XAlign = XAlign.LEFT,
+		y_align: YAlign = YAlign.TOP,
+		bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+		can_interact: bool = False,
+		blocks_mouse: bool = False,
 	):
-		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
+		super().__init__(
+			pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse
+		)
 
 		self._text = text
 		self._font_size = font_size
@@ -70,50 +72,64 @@ class Image(Frame):
 	ID: str = "image"
 
 	def __init__(
-			self,
-			image: str | pygame.Surface,
-			pos: tuple[float, float] = (0, 0),
-			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
-			layout: Layout = Layout.LEFT_TO_RIGHT,
-			padding: Padding = Padding(),
-			gap: float = 0,
-			x_align: XAlign = XAlign.LEFT,
-			y_align: YAlign = YAlign.TOP,
-			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
-			can_interact: bool = False,
-			blocks_mouse: bool = False,
+		self,
+		image: str | pygame.Surface,
+		pos: tuple[float, float] = (0, 0),
+		size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+		layout: Layout = Layout.LEFT_TO_RIGHT,
+		padding: Padding = Padding(),
+		gap: float = 0,
+		x_align: XAlign = XAlign.LEFT,
+		y_align: YAlign = YAlign.TOP,
+		bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+		can_interact: bool = False,
+		blocks_mouse: bool = False,
 	):
 		"""
 
 		:param image: str ("resource_name/image_name") | Surface
 		"""
 
-		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
+		super().__init__(
+			pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse
+		)
 
 		self.image = image
 
 		if isinstance(image, str):
 			split_image = image.split("/")
 			if len(split_image) != 2:
-				raise ValueError(f'Image: `{image}` should be in the form "resource_name/image_name"')
+				raise ValueError(
+					f'Image: `{image}` should be in the form "resource_name/image_name"'
+				)
 
 			resource_name, image_name = split_image[0], split_image[1]
 
-			self._raw_image_surface: pygame.Surface = Resources.get_resource(resource_name, image_name).get_image()
+			self._raw_image_surface: pygame.Surface = Resources.get_resource(
+				resource_name, image_name
+			).get_image()
 
 			if self._raw_image_surface.get_height() == 0:
 				raise ValueError("Image height is zero; cannot compute aspect ratio.")
-			self._aspect_ratio = self._raw_image_surface.get_width() / self._raw_image_surface.get_height()
+			self._aspect_ratio = (
+				self._raw_image_surface.get_width() / self._raw_image_surface.get_height()
+			)
 
 			self._image_surface = self._raw_image_surface.copy()
-			self._size.update(self._raw_image_surface.get_width(), self._raw_image_surface.get_height())
+			self._size.update(
+				self._raw_image_surface.get_width(), self._raw_image_surface.get_height()
+			)
 		elif isinstance(image, pygame.Surface):
 			self._raw_image_surface: pygame.Surface = image
 
-			self._aspect_ratio = self._raw_image_surface.get_width() / self._raw_image_surface.get_height()
+			self._aspect_ratio = (
+				self._raw_image_surface.get_width() / self._raw_image_surface.get_height()
+			)
 
 			self._image_surface = self._raw_image_surface.copy()
-			self._size.update(self._raw_image_surface.get_width(), self._raw_image_surface.get_height())
+			self._size.update(
+				self._raw_image_surface.get_width(), self._raw_image_surface.get_height()
+			)
 		else:
 			raise ValueError(f"Type of image: `{type(image)}` is not str or Surface")
 
@@ -160,21 +176,23 @@ class Button(Frame):
 	ID: str = "button"
 
 	def __init__(
-			self,
-			callback: Callable[..., None],
-			callback_args: tuple = (),
-			pos: tuple[float, float] = (0, 0),
-			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
-			layout: Layout = Layout.LEFT_TO_RIGHT,
-			padding: Padding = Padding(),
-			gap: float = 0,
-			x_align: XAlign = XAlign.LEFT,
-			y_align: YAlign = YAlign.TOP,
-			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
-			can_interact: bool = True,
-			blocks_mouse: bool = True,
+		self,
+		callback: Callable[..., None],
+		callback_args: tuple = (),
+		pos: tuple[float, float] = (0, 0),
+		size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+		layout: Layout = Layout.LEFT_TO_RIGHT,
+		padding: Padding = Padding(),
+		gap: float = 0,
+		x_align: XAlign = XAlign.LEFT,
+		y_align: YAlign = YAlign.TOP,
+		bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+		can_interact: bool = True,
+		blocks_mouse: bool = True,
 	):
-		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
+		super().__init__(
+			pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse
+		)
 
 		self.add_action(UIActionTriggers.ON_CLICK_UP, callback, action_args=callback_args)
 
@@ -189,22 +207,24 @@ class TextSelector(Frame):
 	ID = "text_selection_menu"
 
 	def __init__(
-			self,
-			options: list[str],
-			left_button_image: str,
-			right_button_image: str,
-			pos: tuple[float, float] = (0, 0),
-			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
-			layout: Layout = Layout.LEFT_TO_RIGHT,
-			padding: Padding = Padding(),
-			gap: float = 0,
-			x_align: XAlign = XAlign.LEFT,
-			y_align: YAlign = YAlign.TOP,
-			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
-			can_interact: bool = False,
-			blocks_mouse: bool = False,
+		self,
+		options: list[str],
+		left_button_image: str,
+		right_button_image: str,
+		pos: tuple[float, float] = (0, 0),
+		size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+		layout: Layout = Layout.LEFT_TO_RIGHT,
+		padding: Padding = Padding(),
+		gap: float = 0,
+		x_align: XAlign = XAlign.LEFT,
+		y_align: YAlign = YAlign.TOP,
+		bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+		can_interact: bool = False,
+		blocks_mouse: bool = False,
 	):
-		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
+		super().__init__(
+			pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse
+		)
 
 		self.index = 0
 		self.options = options
@@ -238,21 +258,23 @@ class TextSelector(Frame):
 
 class ProgressBar(Frame):
 	def __init__(
-			self,
-			color: pygame.typing.ColorLike,
-			starting_fill: float = 0.0,
-			pos: tuple[float, float] = (0, 0),
-			size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
-			layout: Layout = Layout.LEFT_TO_RIGHT,
-			padding: Padding = Padding(),
-			gap: float = 0,
-			x_align: XAlign = XAlign.LEFT,
-			y_align: YAlign = YAlign.TOP,
-			bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
-			can_interact: bool = False,
-			blocks_mouse: bool = False,
+		self,
+		color: pygame.typing.ColorLike,
+		starting_fill: float = 0.0,
+		pos: tuple[float, float] = (0, 0),
+		size: tuple[float | Fit | Grow, float | Fit | Grow] = (Fit(), Fit()),
+		layout: Layout = Layout.LEFT_TO_RIGHT,
+		padding: Padding = Padding(),
+		gap: float = 0,
+		x_align: XAlign = XAlign.LEFT,
+		y_align: YAlign = YAlign.TOP,
+		bg_color: pygame.typing.ColorLike = (0, 0, 0, 0),
+		can_interact: bool = False,
+		blocks_mouse: bool = False,
 	):
-		super().__init__(pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse)
+		super().__init__(
+			pos, size, layout, padding, gap, x_align, y_align, bg_color, can_interact, blocks_mouse
+		)
 
 		self._fill_percent = starting_fill
 		self._color = color
