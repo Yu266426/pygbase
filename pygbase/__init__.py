@@ -2,7 +2,7 @@ import logging
 
 import pygame.typing
 
-import utils
+import pygbase.utils
 
 from .app import App
 from .camera import Camera, CameraController
@@ -23,7 +23,6 @@ from .tweens import CubicTween, LinearTween
 from .ui.dialogue import DialogueOption, DialogueManager, DialogueNode
 
 __all__ = [
-	"utils",
 	"App",
 	"Camera",
 	"CameraController",
