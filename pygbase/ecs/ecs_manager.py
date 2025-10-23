@@ -9,19 +9,27 @@ class ECS:
 		self._entities: dict[int, set[type[Component]]] = {}
 		self._components: dict[type[Component], dict[int, Component]] = {}
 
-	def create_entity[T: Entity](self, base: type[T] = Entity) -> T:
+	def create_entity[T: Entity](
+		self, base: type[T] = Entity, components: dict[type[Component], tuple[...]] | None = None
+	) -> T:
 		"""
 		:param base: Base class of entity to spawn
+		:param components: Components entity should spawn with (overrides default components)
 		:return: Newly created entity
 		"""
 
 		new_entity = base(self._next_entity_id)
 		self._next_entity_id += 1
 
-		self._entities[new_entity.id] = set(new_entity.default_components.keys())
+		entity_components = {}
+		entity_components.update(new_entity.default_components)
+		if components is not None:
+			entity_components.update(components)
+
+		self._entities[new_entity.id] = set(entity_components.keys())
 
 		# Create default components for the entity
-		for component_type, component_data in new_entity.default_components.items():
+		for component_type, component_data in entity_components.items():
 			self._components.setdefault(component_type, {})[new_entity.id] = component_type(
 				*component_data
 			)
